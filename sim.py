@@ -11,6 +11,11 @@ class BoolLiteral:
     # type: SimType = BoolType()
 
 @dataclass
+class Statement:
+    command: str
+    statement : "AST"
+
+@dataclass
 class NumLiteral:
     value: Fraction
     # type: SimType = NumType()
@@ -47,7 +52,6 @@ class UnOp:
 
 
 
-
 AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | StringLiteral
 
 Value = Fraction
@@ -63,8 +67,14 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
     if environment is None:
         environment = {}
     match program:
-        
-
+        case Statement(command, statement):
+            match command:
+                case "print":
+                    if isinstance(statement,StringLiteral) :
+                        print(eval_string(statement))
+                    else:
+                        print(eval(statement))
+            return
         case NumLiteral(val):
             return val
         case Variable(name):
@@ -196,6 +206,16 @@ def test_Logic():
     # assert eval_bool(e) == False
     # e = UnOp("!", False)
     # assert eval_bool(e) == True
+
+    e = Statement("print", x5)
+    eval(e)
+
+    e = Statement("print",StringLiteral("karthikeya"))
+    eval(e)
+
+    # print("print(\"karthikeya\")".split())
+    # print("")
+
 
 test_Logic()
 
