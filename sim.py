@@ -1,18 +1,38 @@
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Union, Mapping
+from typing import Union, Mapping, Optional, NewType
+
+
+@dataclass
+class BoolLiteral:
+    value: bool
+    def __init__(self, *args):
+        self.value = bool(*args)
+    # type: SimType = BoolType()
 
 @dataclass
 class NumLiteral:
     value: Fraction
+    # type: SimType = NumType()
     def __init__(self, *args):
         self.value = Fraction(*args)
+
+@dataclass
+class StringLiteral:
+    value : str
+    def __init__(self, *args):
+        self.value = str(*args)
 
 @dataclass
 class BinOp:
     operator: str
     left: 'AST'
     right: 'AST'
+    def get_left(self):
+        return self.left
+    def get_right(self):
+        return self.right
+
 
 @dataclass
 class Variable:
@@ -24,22 +44,54 @@ class Let:
     e1: 'AST'
     e2: 'AST'
 
-
-@dataclass
-class BoolLiteral:
-    val: bool
-
-
 @dataclass
 class UnOp:
     operator: str
     mid: 'AST'
 
-AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp
+@dataclass
+class Statement:
+    command: str
+    statement : "AST"
+
+@dataclass
+class IfElse:
+    condition: 'AST'
+    then_body: 'AST'
+    else_body: 'AST' 
+
+@dataclass
+class Seq:
+    statement1: 'AST'
+    statement2: 'AST'
+
+@dataclass
+class MutVar:
+    name: str
+    value: 'AST'
+    def __init__(self, name) -> None:
+        self.value = None
+        self.name = name
+    def get(self):
+        return self.value
+    def put(self, val):
+        self.value = val
+
+
+@dataclass
+class While:
+    condition: 'AST'
+    body: 'AST'
+
+
+AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | Statement | StringLiteral | IfElse | MutVar | While | Seq
 
 Value = Fraction
 Val = bool
+
 # Val_string = string
+
+@dataclass
 class InvalidProgram(Exception):
     pass
 
@@ -47,15 +99,67 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
     if environment is None:
         environment = {}
     match program:
-        case NumLiteral(value):
-            return value
+        
+        case Statement(command , statement):
+            match command:
+                case "print":
+                    if isinstance(statement,StringLiteral) :
+                        print(eval_string(statement))
+                    else:
+                        print(eval(statement)) 
+            return 
+
+        case IfElse(c, b, e):
+            match eval_bool(c):
+                case True: 
+                    return eval(b)
+                case False: 
+                    return eval(e)
+            
+        case Seq(s1, s2):
+            s1 = eval(s1)
+            s2 = eval(s2)
+            return 
+
+        case MutVar(name):
+            if program.value != None:
+                return program.get()
+                # if name in environment:
+                #     return program.get() | environment[name]
+                # raise InvalidProgram()
+            return
+        # case MutVar(name, value):
+            
+        #     e = eval(value, environment)
+        #     program.put(e)
+        #     # environment[name] = e
+        #     return 
+
+        case While(c, b):
+            if eval_bool(c):
+                eval(b)
+                eval(While(c, b))
+            return 
+
+        case BinOp("=", MutVar(name), val):
+            program.get_left().put(eval(val))
+            return
+
+
+
+        case NumLiteral(val):
+            return val
         case Variable(name):
             if name in environment:
                 return environment[name]
             raise InvalidProgram()
+        
         case Let(Variable(name), e1, e2):
             v1 = eval(e1, environment)
-            return eval(e2, environment | { name: v1 })
+            return eval(e2, environment | { name: v1})
+        case Let(MutVar(name), e1, e2):
+            v1 = eval(e1, environment)
+            return eval(e2, environment | { name: v1})
         case BinOp("+", left, right):
             return eval(left, environment) + eval(right, environment)
         case BinOp("-", left, right):
@@ -70,34 +174,66 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             return eval(mid)+Fraction(1)
         case UnOp("--", mid):
             return eval(mid)-Fraction(1)
+        case BinOp("<<", left, right):
+            try:
+                if(eval(right) < 0):
+                    raise InvalidProgram(Exception)
+            except InvalidProgram:
+                print("Shift operator must be non negative") 
+            return int(eval(left, environment)) << int(eval(right, environment))
+        case BinOp(">>", left, right):
+            try:
+                if(eval(right) < 0):
+                    raise InvalidProgram(Exception)
+            except InvalidProgram:
+                print("Shift operator must be non negative") 
+            return int(eval(left, environment)) >> int(eval(right, environment))
+        case BinOp("|", left, right):
+            return eval(left, environment) | eval(right, environment)
+        case BinOp("&", left, right):
+            return eval(left, environment) & eval(right, environment)
+        case BinOp("^", left, right):
+            return eval(left, environment) ^ eval(right, environment)
         
+    
     raise InvalidProgram()
+
+
+def eval_string(program: AST) -> str:
+    match program:
+        
+        case StringLiteral(val):
+            return val
+        case BinOp("+", left, right):
+            return left + right
+        # case BinOp("")
+    raise InvalidProgram()
+    
 
 def eval_bool(program: AST) -> Val:
     match program:
-        case BoolLiteral(val):
-            return val        
+        case BoolLiteral(value):
+            return value
+        case BinOp("==", left, right):
+            return (eval(left)==eval(right))
         case BinOp(">", left, right):
             return (eval(left)>eval(right))
         case BinOp("<", left, right):
             return (eval(left)<eval(right))
         case BinOp(">=", left, right):
             return (eval(left)>=eval(right))  
+        case BinOp("<=", left, right):
+            return (eval(left)<=eval(right))  
+        case BinOp("!=", left, right):
+            return (eval(left)!=eval(right))
+        case UnOp("!", mid):
+            return (not eval_bool(mid))
+        case BinOp("&&", left, right):
+            return eval_bool(left) and eval_bool(right)
+        case BinOp("||", left, right):
+            return eval_bool(left) or eval_bool(right)    
     raise InvalidProgram()  
 
-def eval_string(program: AST) -> Val:
-    match program:
-        case BoolLiteral(val):
-            return val        
-        case BinOp(">", left, right):
-            return (eval(left)>eval(right))
-        case BinOp("<", left, right):
-            return (eval(left)<eval(right))
-        case BinOp(">=", left, right):
-            return (eval(left)>=eval(right))  
-    raise InvalidProgram()  
-
-        
 
 def test_eval():
     e1 = NumLiteral(2)
@@ -111,6 +247,7 @@ def test_eval():
 
 def test_let_eval():
     a  = Variable("a")
+
     e1 = NumLiteral(5)
     e2 = BinOp("+", a, a)
     e  = Let(a, e1, e2)
@@ -120,19 +257,73 @@ def test_let_eval():
     e  = Let(a, e1, BinOp("+", a, Let(a, e2, e2)))
     assert eval(e) == 25
     e  = Let(a, e1, BinOp("+", Let(a, e2, e2), a))
-    assert eval(e) == 25
+    assert eval(e) == 25    
     e3 = NumLiteral(6)
     e  = BinOp("+", Let(a, e1, e2), Let(a, e3, e2))
     assert eval(e) == 22
 
+# test_let_eval()
 
 def test_Logic():
-    x1 = NumLiteral(2)
-    x2 = NumLiteral(2)
+    x1 = NumLiteral(5)
+    x2 = NumLiteral(3)
     x3 = BinOp(">=",x1,x2)
     x4 = BinOp("<",x1,x2)
+    x5 = BinOp("+", x1, x2)
+    e = BinOp("<<", x1, x2)
+    assert eval(e) == 40
     assert eval_bool(x3) == True
     assert eval_bool(x4) == False
+    x1 = BoolLiteral(True)
+    x2 = BoolLiteral(False)
+    e = BinOp("&&", x1, x2)
+    # print(e)
+    assert eval_bool(e) == False
+    e = UnOp("!", BoolLiteral(True))
+    # print(eval_bool(e)) 
+    assert eval_bool(e) == False  
 
-test_Logic()
+    # assert eval_bool(e) == False
+    # e = UnOp("!", False)
+    # assert eval_bool(e) == True
+    e = Statement("print", x5)
+    eval(e)
 
+    e = Statement("print",StringLiteral("karthikeya"))
+    eval(e)
+
+    # print("print(\"karthikeya\")".split())
+    # print("")
+
+# test_Logic()
+
+def test_IfElse():
+    a = NumLiteral(2)
+    b = NumLiteral(5)
+    c = Variable('c')
+    x1 = BinOp("==", a, b)
+    x2 = Let(c,BinOp("+", a, b),c)
+    x3 = Let(c,BinOp("*", a, b),c)
+    e1 = IfElse(x1, x2, x3)
+    print(eval(e1))
+    # print(eval(c))
+
+# test_IfElse()
+
+def test_While():
+    p = MutVar('p')
+    p_g = BinOp("=", p, NumLiteral(1))
+    i = MutVar('i')
+    i_g = BinOp("=", i, NumLiteral(1))
+    
+    # print(p.get(), i.get())
+    cond = BinOp("<=", i, NumLiteral(10))
+    x1 = BinOp("*", p, i)
+    x2 = BinOp("+", i, NumLiteral(1))
+    x3 = BinOp("=", p, x1)
+    x4 = BinOp("=", i, x2)
+    e = Seq(Seq(p_g, i_g),While(cond, Seq(x3, x4)))
+    eval(e)
+    print(p.get(), i.get())
+
+test_While()
