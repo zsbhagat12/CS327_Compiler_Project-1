@@ -28,6 +28,10 @@ class BinOp:
     operator: str
     left: 'AST'
     right: 'AST'
+    def get_left(self):
+        return self.left
+    def get_right(self):
+        return self.right
 
 
 @dataclass
@@ -56,6 +60,10 @@ class IfElse:
     then_body: 'AST'
     else_body: 'AST' 
 
+@dataclass
+class Seq:
+    statement1: 'AST'
+    statement2: 'AST'
 
 @dataclass
 class MutVar:
@@ -70,8 +78,13 @@ class MutVar:
         self.value = val
 
 
+@dataclass
+class While:
+    condition: 'AST'
+    body: 'AST'
 
-AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | Statement | StringLiteral | IfElse | MutVar 
+
+AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | Statement | StringLiteral | IfElse | MutVar | While | Seq
 
 Value = Fraction
 Val = bool
@@ -102,11 +115,37 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
                     return eval(b)
                 case False: 
                     return eval(e)
+            
+        case Seq(s1, s2):
+            s1 = eval(s1)
+            s2 = eval(s2)
+            return 
 
         case MutVar(name):
             if program.value != None:
                 return program.get()
+                # if name in environment:
+                #     return program.get() | environment[name]
+                # raise InvalidProgram()
             return
+        # case MutVar(name, value):
+            
+        #     e = eval(value, environment)
+        #     program.put(e)
+        #     # environment[name] = e
+        #     return 
+
+        case While(c, b):
+            if eval_bool(c):
+                eval(b)
+                eval(While(c, b))
+            return 
+
+        case BinOp("=", MutVar(name), val):
+            program.get_left().put(eval(val))
+            return
+
+
 
         case NumLiteral(val):
             return val
@@ -118,7 +157,9 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
         case Let(Variable(name), e1, e2):
             v1 = eval(e1, environment)
             return eval(e2, environment | { name: v1})
-        
+        case Let(MutVar(name), e1, e2):
+            v1 = eval(e1, environment)
+            return eval(e2, environment | { name: v1})
         case BinOp("+", left, right):
             return eval(left, environment) + eval(right, environment)
         case BinOp("-", left, right):
@@ -265,6 +306,24 @@ def test_IfElse():
     x3 = Let(c,BinOp("*", a, b),c)
     e1 = IfElse(x1, x2, x3)
     print(eval(e1))
+    # print(eval(c))
 
-test_IfElse()
+# test_IfElse()
 
+def test_While():
+    p = MutVar('p')
+    p_g = BinOp("=", p, NumLiteral(1))
+    i = MutVar('i')
+    i_g = BinOp("=", i, NumLiteral(1))
+    
+    # print(p.get(), i.get())
+    cond = BinOp("<=", i, NumLiteral(10))
+    x1 = BinOp("*", p, i)
+    x2 = BinOp("+", i, NumLiteral(1))
+    x3 = BinOp("=", p, x1)
+    x4 = BinOp("=", i, x2)
+    e = Seq(Seq(p_g, i_g),While(cond, Seq(x3, x4)))
+    eval(e)
+    print(p.get(), i.get())
+
+test_While()
