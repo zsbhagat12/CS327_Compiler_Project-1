@@ -11,11 +11,6 @@ class BoolLiteral:
     # type: SimType = BoolType()
 
 @dataclass
-class Statement:
-    command: str
-    statement : "AST"
-
-@dataclass
 class NumLiteral:
     value: Fraction
     # type: SimType = NumType()
@@ -50,9 +45,33 @@ class UnOp:
     operator: str
     mid: 'AST'
 
+@dataclass
+class Statement:
+    command: str
+    statement : "AST"
+
+@dataclass
+class IfElse:
+    condition: 'AST'
+    then_body: 'AST'
+    else_body: 'AST' 
 
 
-AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | StringLiteral
+@dataclass
+class MutVar:
+    name: str
+    value: 'AST'
+    def __init__(self, name) -> None:
+        self.value = None
+        self.name = name
+    def get(self):
+        return self.value
+    def put(self, val):
+        self.value = val
+
+
+
+AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | Statement | StringLiteral | IfElse | MutVar 
 
 Value = Fraction
 Val = bool
@@ -67,20 +86,35 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
     if environment is None:
         environment = {}
     match program:
-        case Statement(command, statement):
+        
+        case Statement(command , statement):
             match command:
                 case "print":
                     if isinstance(statement,StringLiteral) :
                         print(eval_string(statement))
                     else:
-                        print(eval(statement))
+                        print(eval(statement)) 
+            return 
+
+        case IfElse(c, b, e):
+            match eval_bool(c):
+                case True: 
+                    return eval(b)
+                case False: 
+                    return eval(e)
+
+        case MutVar(name):
+            if program.value != None:
+                return program.get()
             return
+
         case NumLiteral(val):
             return val
         case Variable(name):
             if name in environment:
                 return environment[name]
             raise InvalidProgram()
+        
         case Let(Variable(name), e1, e2):
             v1 = eval(e1, environment)
             return eval(e2, environment | { name: v1})
@@ -126,6 +160,7 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
 
 def eval_string(program: AST) -> str:
     match program:
+        
         case StringLiteral(val):
             return val
         case BinOp("+", left, right):
@@ -138,6 +173,8 @@ def eval_bool(program: AST) -> Val:
     match program:
         case BoolLiteral(value):
             return value
+        case BinOp("==", left, right):
+            return (eval(left)==eval(right))
         case BinOp(">", left, right):
             return (eval(left)>eval(right))
         case BinOp("<", left, right):
@@ -153,7 +190,7 @@ def eval_bool(program: AST) -> Val:
         case BinOp("&&", left, right):
             return eval_bool(left) and eval_bool(right)
         case BinOp("||", left, right):
-            return eval_bool(left) or eval_bool(right)
+            return eval_bool(left) or eval_bool(right)    
     raise InvalidProgram()  
 
 
@@ -169,6 +206,7 @@ def test_eval():
 
 def test_let_eval():
     a  = Variable("a")
+
     e1 = NumLiteral(5)
     e2 = BinOp("+", a, a)
     e  = Let(a, e1, e2)
@@ -178,11 +216,12 @@ def test_let_eval():
     e  = Let(a, e1, BinOp("+", a, Let(a, e2, e2)))
     assert eval(e) == 25
     e  = Let(a, e1, BinOp("+", Let(a, e2, e2), a))
-    assert eval(e) == 25
+    assert eval(e) == 25    
     e3 = NumLiteral(6)
     e  = BinOp("+", Let(a, e1, e2), Let(a, e3, e2))
     assert eval(e) == 22
 
+# test_let_eval()
 
 def test_Logic():
     x1 = NumLiteral(5)
@@ -206,7 +245,6 @@ def test_Logic():
     # assert eval_bool(e) == False
     # e = UnOp("!", False)
     # assert eval_bool(e) == True
-
     e = Statement("print", x5)
     eval(e)
 
@@ -216,6 +254,17 @@ def test_Logic():
     # print("print(\"karthikeya\")".split())
     # print("")
 
+# test_Logic()
 
-test_Logic()
+def test_IfElse():
+    a = NumLiteral(2)
+    b = NumLiteral(5)
+    c = Variable('c')
+    x1 = BinOp("==", a, b)
+    x2 = Let(c,BinOp("+", a, b),c)
+    x3 = Let(c,BinOp("*", a, b),c)
+    e1 = IfElse(x1, x2, x3)
+    print(eval(e1))
+
+test_IfElse()
 
