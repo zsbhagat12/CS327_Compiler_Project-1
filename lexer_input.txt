@@ -1,0 +1,24 @@
+PROGRAM lexercheck;
+VAR
+   a : INTEGER;
+   b : INTEGER;
+   c : INTEGER;
+   x : REAL;
+   y : REAL;
+
+BEGIN
+   IF (x = y)
+   THEN
+   a:= 5
+
+{ this is a comment}
+BEGIN
+   BEGIN
+      a := 4;
+      b := 5 * a
+      c := b DIV 4
+   END;
+   x := 1.1;
+   y := x / 4
+END.
+{ program is over}
