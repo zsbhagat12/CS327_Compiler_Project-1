@@ -93,16 +93,131 @@ class Lexer(object):
 
     def peek(self):                             
         # returns the lookahead character
-        pass
+        if self.pos + 1 > len(self.text) - 1:
+            return None
+        else:
+            return self.text[self.pos + 1]
 
     def number(self):                           
         # Consume all the consecutive digits and decimal if present.
-        pass
+        result = ''
+        while self.curChar is not None and self.curChar.isdigit():
+            result += self.curChar
+            self.nextChar()
+
+        if self.curChar == '.':
+            result += self.curChar
+            self.nextChar()
+
+            while (
+                self.curChar is not None and
+                self.curChar.isdigit()
+            ):
+                result += self.curChar
+                self.nextChar()
+
+            token = Token('REAL_CONST', float(result))
+        else:
+            token = Token('INTEGER_CONST', int(result))
+
+        return token
 
     def _id(self):
         # Handles identifiers and reserved keywords
-        pass
+        result = ''
+        while self.curChar is not None and self.curChar.isalnum():
+            result += self.curChar
+            self.nextChar()
+
+        token = KEYWORDS.get(result, Token(ID, result))
+        return token
 
     def get_token(self):
         # returns the token and token type
-        pass
+        while self.curChar is not None:
+
+            if self.curChar.isspace():
+                self.skipSpaces()
+                continue
+
+            if self.curChar == '{':
+                self.nextChar()
+                self.skipComments()
+                continue
+
+            if self.curChar.isalpha():
+                return self._id()
+
+            if self.curChar.isdigit():
+                return self.number()
+        
+            if self.curChar == ':':
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(ASSIGN, ':=')
+                else:
+                    self.nextChar()
+                    return Token(COLON, ':')
+
+            if self.curChar == '>':
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(GTEQ, '>=')
+                else:
+                    self.nextChar()
+                    return Token(GT, '>')
+
+            if self.curChar == '<':
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(GTEQ, '<=')
+                else:
+                    self.nextChar()
+                    return Token(GT, '<')
+
+            if self.curChar == '=':
+                self.nextChar()
+                return Token(EQEQ, '=')
+
+            if self.curChar == '+':
+                self.nextChar()
+                return Token(PLUS, '+')
+
+            if self.curChar == '-':
+                self.nextChar()
+                return Token(MINUS, '-')
+
+            if self.curChar == '*':
+                self.nextChar()
+                return Token(MUL, '*')
+
+            if self.curChar == '/':
+                self.nextChar()
+                return Token(FLOAT_DIV, '/')
+
+            if self.curChar == '(':
+                self.nextChar()
+                return Token(LPAREN, '(')
+
+            if self.curChar == ')':
+                self.nextChar()
+                return Token(RPAREN, ')')
+
+            if self.curChar == ';':
+                self.nextChar()
+                return Token(SEMI, ';')
+
+            if self.curChar == '.':
+                self.nextChar()
+                return Token(DOT, '.')
+
+            if self.curChar == ',':
+                self.nextChar()
+                return Token(COMMA, ',')
+
+            self.error()
+
+        return Token(EOF, None)
