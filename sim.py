@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Union, Mapping, Optional, NewType
+from typing import Union, Mapping, Optional, NewType, List
 
 
 @dataclass
@@ -83,8 +83,49 @@ class While:
     condition: 'AST'
     body: 'AST'
 
+@dataclass
+class Function:
+    name: str
+    body: 'AST'
+    params: dict
 
-AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | Statement | StringLiteral | IfElse | MutVar | While | Seq
+@dataclass
+class CallStack:
+    clstk: List
+
+    
+
+class Environment:
+    envs: List
+
+    def __init__(self):
+        self.envs = [{}]
+
+    def enter_scope(self):
+        self.envs.append({})
+
+    def exit_scope(self):
+        assert self.envs
+        self.envs.pop()
+
+    def add(self, name, value):
+        assert name not in self.envs[-1]
+        self.envs[-1][name] = value
+
+    def get(self, name):
+        for env in reversed(self.envs):
+            if name in env:
+                return env[name]
+        raise KeyError()
+
+    def update(self, name, value):
+        for env in reversed(self.envs):
+            if name in env:
+                env[name] = value
+                return
+        raise KeyError()
+
+AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | Statement | StringLiteral | IfElse | MutVar | While | Seq | Function
 
 Value = Fraction
 Val = bool
@@ -124,16 +165,9 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
         case MutVar(name):
             if program.value != None:
                 return program.get()
-                # if name in environment:
-                #     return program.get() | environment[name]
-                # raise InvalidProgram()
+                
             return
-        # case MutVar(name, value):
-            
-        #     e = eval(value, environment)
-        #     program.put(e)
-        #     # environment[name] = e
-        #     return 
+        
 
         case While(c, b):
             if eval_bool(c):
@@ -145,7 +179,10 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             program.get_left().put(eval(val))
             return
 
+        case Function(name, b, params):
 
+            
+            return eval(b)
 
         case NumLiteral(val):
             return val
@@ -326,4 +363,15 @@ def test_While():
     eval(e)
     print(p.get(), i.get())
 
-test_While()
+# test_While()
+
+def test_Function():
+    e1 = BinOp("+", NumLiteral(2), NumLiteral(1))
+    f1 = Function('add', e1, [])
+    e2 = BinOp("-", NumLiteral(2), NumLiteral(1))
+    f2 = Function('sub', e2, [])
+    eval(f1)
+    eval(f2)
+    e = Seq(f1,Seq(f2,Seq()))
+
+test_Function()
