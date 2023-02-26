@@ -31,6 +31,44 @@ class Num(AST):
         self.token = token
         self.val = token.val
 
+
+@dataclass
+class Compound:
+    # Set of statements enclosed within a BEGIN and END
+    children: list
+    def __init__(self, children):
+        self.children = children
+
+
+@dataclass
+class Assign:
+    # Assigns right to left
+    token: tuple[str,object]
+    left: 'AST'
+    right: 'AST'
+    def __init__(self, token, left, right):        
+        self.token = token
+        self.left = left
+        self.right = right
+
+
+@dataclass
+class Var:
+    token: tuple[str,object]
+    value: 'AST'
+    # Var node consists of ID token
+    def __init__(self, token, value):
+        self.token = token
+        self.value = value
+
+
+@dataclass
+class NoOp:
+    # Empty generation
+    pass
+
+
+
 @dataclass
 class Parser(object):
     def __init__(self, lexer):
