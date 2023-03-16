@@ -3,13 +3,6 @@ from fractions import Fraction
 from typing import Union, Mapping, Optional, NewType, List
 
 
-currentID = 0
-
-def fresh(): 
-    global currentID
-    currentID = currentID + 1
-    return currentID
-
 @dataclass
 class BoolLiteral:
     value: bool
@@ -51,9 +44,6 @@ class UnOp:
 @dataclass
 class Variable:
     name: str
-    id: int
-    def make(name):
-        return Variable(name, fresh())
 
 @dataclass
 class Let:
@@ -108,17 +98,9 @@ class Seq:
 class MutVar:
     name: str
     value: 'AST'
-
-    # id: int #comment this when not running resolver
-
-    def make(name):
-        return MutVar(name, id=fresh())
-    
     def __init__(self, name) -> None:
         self.value = None
         self.name = name
-        # self.id = fresh() #comment this when not running resolver
-
     def get(self):
         return self.value
     def put(self, val):
@@ -130,7 +112,7 @@ class ForLoop:
     end : 'AST'
     increment : 'AST'
     body : 'AST'
-
+    
 @dataclass
 class While:
     condition: 'AST'
@@ -142,7 +124,6 @@ class Function:
     params: List['AST']
     body: 'AST'
     
-    
 
 @dataclass
 class CallStack:
@@ -152,7 +133,7 @@ class CallStack:
 
 class Environment:
     envs: List
-    program: 'AST'
+
     def __init__(self):
         self.envs = [{}]
 
@@ -171,8 +152,6 @@ class Environment:
         for env in reversed(self.envs):
             if name in env:
                 return env[name]
-        print("Current Environment", self.envs)
-        print("Current AST", self.program)
         raise KeyError()
 
     def update(self, name, value):
@@ -180,8 +159,6 @@ class Environment:
             if name in env:
                 env[name] = value
                 return
-        print("Current AST", self.program)
-        print("Current Environment", self.envs)
         raise KeyError()
     
     def check(self, name):
@@ -192,10 +169,6 @@ class Environment:
         else:
             return False
         # raise KeyError()
-    def addWithOther(self, n1, n2, v2):
-        for env in reversed(self.envs):
-            if n1 in env:
-                env[n2] = v2
 
 AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | StringLiteral | IfElse | MutVar | While | Seq | Function | LetFun | FunCall
 
@@ -203,14 +176,34 @@ AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | StringLiteral |
 class FnObject:
     params: List['AST']
     body: 'AST'
-    def get(self):
-        return self
 
 Value = Fraction
 Val = bool
+
+@dataclass
+class Increment:
+    var_literal : 'AST'
+
+@dataclass
+class Decrement:
+    var_literal : 'AST'
+
+
+@dataclass
+class Slicing:
+    name : 'AST'
+    start : 'AST'
+    end : 'AST'
+    jump : 'AST'
+
+@dataclass
+class Str_len:
+    name: 'AST'
 
 # Val_string = string
 
 @dataclass
 class InvalidProgram(Exception):
     pass
+
+
