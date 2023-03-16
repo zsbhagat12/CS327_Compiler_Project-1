@@ -52,6 +52,23 @@ class Parser(object):
         else:
             sys.exit('Invalid character')
             
+    def parse_print(self):
+        self.check_type(PRINT)
+        # node = self.logical()
+        # if self.curr_token.type == LPAREN:
+        #     if isinstance(node, f):
+        #         node = node.var
+        #     e = self.parse_func_call(node)
+        # else:
+        #     e = self.logical(node)
+        if self.curr_token.type != END:
+            e = self.logical()
+        else:
+            e = None
+        # print(e)
+        self.check_type(END)
+        return Statement("print", e)
+       
    
     def precedence3(self):
         token = self.curr_token
