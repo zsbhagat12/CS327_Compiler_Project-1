@@ -68,6 +68,21 @@ class Parser(object):
         self.check_type(END)
         node = IfElse(condition, true, false)
         return node 
+   
+    def parse_inc(self):
+        self.check_type(INC)
+        self.check_type(LPAREN)
+        c = self.parse()
+        self.check_type(RPAREN)
+        return Increment(c)
+
+    def parse_dec(self):
+        self.check_type(DEC)
+        self.check_type(LPAREN)
+        c = self.parse()
+
+        self.check_type(RPAREN)
+        return Decrement(c)
     
     def parse_return(self):
         self.check_type(RETURN)
@@ -151,6 +166,10 @@ class Parser(object):
            case 'BREAK':
                 self.check_type(BREAK)
                 return Statement("break",NumLiteral(0))
+           case 'INC':
+                return self.parse_inc()
+           case 'DEC':
+                return self.parse_dec()
            case _:
                self.precedence1()
     
