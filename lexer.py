@@ -12,6 +12,8 @@ SEMI          = 'SEMI'
 DOT           = 'DOT'
 COLON         = 'COLON'
 COMMA         = 'COMMA'
+LSPAREN       = "LSPAREN"
+RSPAREN       = "RSPAREN"
 
 # operators
 ASSIGN        = 'ASSIGN'
@@ -59,6 +61,11 @@ RANGE         = "RANGE"
 BY            = "BY"
 TO            = "TO"
 BREAK         = "BREAK"
+INC           = "INC"
+DEC           = "DEC"
+LEN           = "LEN"
+
+
 # literals
 TRUE          = "TRUE"
 FALSE         = "FALSE"
@@ -101,6 +108,9 @@ KEYWORDS = {
     'BY': Token('BY', 'BY'),
     'TO': Token("TO", "TO"),
     'BREAK': Token("BREAK", "BREAK"),
+     "INC" : Token("INC", "INC"),
+    "DEC" : Token("DEC","DEC"),
+    "LEN" : Token("LEN", "LEN")
     # 'PRINT': Token('PRINT', ';'),
     
 }

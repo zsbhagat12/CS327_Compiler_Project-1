@@ -9,7 +9,6 @@ pp = pprint.PrettyPrinter()
 def type_error():
         sys.exit('Dynamic type check error')
 
-# Combining lexer parser
 @dataclass
 class Interpreter:
     parser: prs.Parser
@@ -155,6 +154,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     argv.append(eval_env(arg))
             environment.enter_scope()
             
+
             for param, arg in zip(fn.params, argv):
                 if isinstance(param, MutVar):
                     if isinstance(arg, FnObject):
@@ -171,6 +171,35 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             environment.exit_scope()
             return v
         
+        case Seq(s1, s2):
+            s1 = eval(s1)
+            s2 = eval(s2)
+            return 
+        case Str_len(MutVar(name)):
+            temp = environment.get(name)
+            e = eval_env(temp)
+            return len(e)
+        
+        case Slicing(name, start, end, jump):       
+            e1 = eval_env(name)
+            e2 = eval_env(start)
+            e2 = int(e2)
+            if end!=None:
+                e3 = eval_env(end)
+                e3  = int(e3)
+
+            if jump!=None:
+                e4 = eval_env(jump)
+                e4  = int(e4)
+    
+            if end == None and jump!=None:
+                e = e1[e2::e4]
+            elif jump==None:
+                e = e1[e2]
+            else:
+                e = e1[e2:e3:e4]
+            return e
+
         case MutVar(name):
             # if program.value != None:
             #     return program.get()
