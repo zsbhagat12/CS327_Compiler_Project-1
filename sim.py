@@ -93,8 +93,18 @@ class Function:
 class CallStack:
     clstk: List
 
+@dataclass
+class Slicing:
+    name : 'AST'
+    start : 'AST'
+    end : 'AST'
+    jump : 'AST'
     
-
+@dataclass
+class Str_len:
+    name: 'AST'
+        
+        
 class Environment:
     envs: List
 
