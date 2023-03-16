@@ -125,6 +125,13 @@ class Parser(object):
 
         self.check_type(RPAREN)
         return Decrement(c)
+   
+    def parse_Strlen(self):
+        
+        self.check_type(LPAREN)
+        c = self.parse()
+        self.check_type(RPAREN)
+        return Str_len(c)
         
     def parse_slice(self, c):
      
