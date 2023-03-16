@@ -52,6 +52,23 @@ class Parser(object):
         else:
             sys.exit('Invalid character')
             
+    def parse_print(self):
+        self.check_type(PRINT)
+        # node = self.logical()
+        # if self.curr_token.type == LPAREN:
+        #     if isinstance(node, f):
+        #         node = node.var
+        #     e = self.parse_func_call(node)
+        # else:
+        #     e = self.logical(node)
+        if self.curr_token.type != END:
+            e = self.logical()
+        else:
+            e = None
+        # print(e)
+        self.check_type(END)
+        return Statement("print", e)
+       
    
     def precedence3(self):
         token = self.curr_token
@@ -91,56 +108,52 @@ class Parser(object):
             node = BinOp(left=node, op=token, right=self.precedence2())
             Type = self.curr_token.type
         return node
-
+   
+   def relational(self, n=None):
+        """relational : precedence1 | precedence1 relationalOperator precedence1"""
+        if n == None:
+            node = self.precedence1()
+        else:
+            node = n
+        Type = self.curr_token.type
+        # print(Type)
+        # while(Type == GT or Type == GTEQ or Type == LT or Type == LTEQ):
+        if(Type == GT or Type == GTEQ or Type == LT or Type == LTEQ or Type == EQEQ or Type == NOTEQ):
+            token = self.curr_token
+            if token.type == GT:
+                self.check_type(GT)
+            elif token.type == GTEQ:
+                self.check_type(GTEQ)
+            elif token.type == LT:
+                self.check_type(LT)
+            elif token.type == LTEQ:
+                self.check_type(LTEQ)
+            elif token.type == EQEQ:
+                self.check_type(EQEQ)
+            elif token.type == NOTEQ:
+                self.check_type(NOTEQ)
+            node = BinOp(left=node, operator=token.value, right=self.precedence1())
+        # Type = self.curr_token.type
+        return node
+      
+    def logical(self, n=None):
+        """logical : relational | relational logicalOperator relational"""
+        if n == None:
+            node = self.relational()
+        else:
+            node = n
+        # node = self.relational()
+        Type = self.curr_token.type
+        if(Type == OR or Type == AND):
+            token = self.curr_token
+            if token.type == AND:
+                self.check_type(AND)
+            elif token.type == OR:
+                self.check_type(OR)
+            node = BinOp(left=node, operator= token.value, right=self.relational())
+        return node
+   
+   
     def parse(self):
         return self.precedence1()
     
-@dataclass 
-class Traversal (object):
-    def __init__(self, parser):
-        self.parser = parser
-        
-    def travel_node(self, node):
-        return (getattr(self, 'Type_operation', self.error))(node)
-
-@dataclass
-class Evaluator (Traversal):  
-    def Type_operation(self, node):
-        if type(node).__name__ == "BinOp":
-            if node.op.type == PLUS:
-                value = self.travel_node(node.left) + self.travel_node(node.right)
-            elif node.op.type == MINUS:
-                value = self.travel_node(node.left) - self.travel_node(node.right)
-            elif node.op.type == MUL:
-                value = self.travel_node(node.left) * self.travel_node(node.right)
-            elif node.op.type == DIV:
-                value = self.travel_node(node.left) / self.travel_node(node.right)
-        
-        elif type(node).__name__ == "UnOp":
-            if node.op.type == PLUS:
-                value = self.visit(node.mid)
-            elif node.op.type == MINUS:
-                value = -1*self.visit(node.mid)
-            
-        elif type(node).__name__ == "Num":
-            value = node.val
-            
-        return value
-        
-  
-    
-    def error(self):
-        sys.exit("Invalid visit")
-
-    def AST_evaluation(self):
-        tree = self.parser.parse()
-        return self.travel_node(tree)
-
-    
-    
-    
-    
-    
-    
-        
-        
