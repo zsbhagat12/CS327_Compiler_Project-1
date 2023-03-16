@@ -18,15 +18,22 @@ PLUS          = 'PLUS'
 MINUS         = 'MINUS'
 MUL           = 'MUL'
 FLOAT_DIV     = 'FLOAT_DIV'
+MODULO        = 'MODULO'
+POWER         = 'POWER'
 EQEQ          = 'EQEQ'
+NOTEQ         = 'NOTEQ'
 GT            = 'GT'
 LT            = 'LT'
 GTEQ          = 'GTEQ'
 LTEQ          = 'LTEQ'
+AND           = 'AND'
+OR            = 'OR'
 PLUSEQ        = 'PLUSEQ'
 MINUSEQ       = 'MINUSEQ'
 MULEQ         = 'MULEQ'
-FLOAT_DIVEQ   = "FLOAT_DIVEQ"
+FLOAT_DIVEQ   = 'FLOAT_DIVEQ'
+MODULOEQ      = 'MODULOEQ'
+POWEREQ       = 'POWEREQ'
 
 # keywords
 PROGRAM       = 'PROGRAM'
@@ -43,7 +50,19 @@ THEN          = 'THEN'
 ELSE          = 'ELSE'
 WHILE         = 'WHILE'
 DO            = 'DO'
+STRING        = 'STRING'
+PRINT         = 'PRINT'
+FUNCTION      = 'FUNCTION'
+RETURN        = 'RETURN'
+FOR           = 'FOR'
+RANGE         = 'RANGE'
+BY            = 'BY'
+TO            = 'TO'
+BREAK         = 'BREAK'
 
+# literals
+TRUE          = "TRUE"
+FALSE         = "FALSE"
 
 @dataclass
 class Token:
@@ -66,7 +85,23 @@ KEYWORDS = {
     'REAL': Token('REAL', 'REAL'),
     'DIV': Token('INTEGER_DIV', 'DIV'),
     'BEGIN': Token('BEGIN', 'BEGIN'),
-    'END': Token('END', 'END')
+    'END': Token('END', 'END'),
+    'TRUE': Token('TRUE', True),
+    'FALSE': Token('FALSE', False),
+    'STRING': Token('STRING', 'STRING'),
+    'FOR': Token('FOR', 'FOR'),
+    'IF': Token('IF', 'IF'),
+    'THEN': Token('THEN', 'THEN'),
+    'ELSE': Token('ELSE', 'ELSE'),
+    'PRINT': Token('PRINT', 'PRINT'),
+    'WHILE': Token('WHILE', 'WHILE'),
+    'DO': Token('DO', 'DO'),
+    'STRING': Token('STRING', 'STRING'),
+    'FUNCTION': Token('FUNCTION', 'FUNCTION'),
+    'RETURN': Token('RETURN', 'RETURN'),
+    'BY': Token('BY', 'BY'),
+    'TO': Token("TO", "TO"),
+    'BREAK': Token("BREAK", "BREAK")
 }
 
 
@@ -74,7 +109,15 @@ class Lexer(object):
     def __init__(self, text):
         self.text = text                        # stream of input
         self.pos = 0                            # current position in the stream
-        self.curChar = self.text[self.pos]      # current character in the stream
+        self.lineNum = 1                        # line number in code
+        self.curLinePos = 0                     # current position in current line of program
+        if text == "":
+            print("Empty Program")
+            self.curChar = None
+            
+        else:
+            self.curChar = self.text[self.pos]      # current character in the stream
+        self.curLine = self.curChar             # current line of program read till now
 
     def error(self):
         sys.exit('Invalid character')
@@ -88,12 +131,25 @@ class Lexer(object):
 
     def skipSpaces(self):                       # to skip white spacses
         while self.curChar is not None and self.curChar.isspace():
+            if self.curChar == '\n':
+                self.lineNum+=1
+                self.curLine=""
+                self.curLinePos=0
             self.nextChar()
 
     def skipComments(self):
-        while self.curChar != '}':
+        #while self.curChar != '}':
+        #    self.nextChar()
+        #self.nextChar()                         # to skip the closing curly brace as well
+        noOfstartBraces = 1
+        while noOfstartBraces != 0 :
             self.nextChar()
-        self.nextChar()                         # to skip the closing curly brace as well
+            if self.curChar == '{':
+                noOfstartBraces+=1
+            elif self.curChar == '}':
+                noOfstartBraces-=1
+        self.nextChar()         
+        
 
     def peek(self):                             
         # returns the lookahead character
@@ -135,6 +191,17 @@ class Lexer(object):
 
         token = KEYWORDS.get(result, Token(ID, result))
         return token
+    
+    def Stringlex(self):
+        # Handles strings
+        result = ''
+        while self.curChar != '"':
+            result += self.curChar
+            self.nextChar()
+        
+        self.nextChar()
+        token = Token('STRING', result)
+        return token
 
     def get_token(self):
         # returns the token and token type
@@ -163,7 +230,20 @@ class Lexer(object):
                 else:
                     self.nextChar()
                     return Token(COLON, ':')
+                
+            if self.curChar == "|":
+                if self.peek() == "|":
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(OR, "||")
+            
 
+            if self.curChar == "&":
+                if self.peek() == "&":
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(AND, "&&")
+                
             if self.curChar == '>':
                 if self.peek() == '=':
                     self.nextChar()
@@ -177,11 +257,33 @@ class Lexer(object):
                 if self.peek() == '=':
                     self.nextChar()
                     self.nextChar()
-                    return Token(GTEQ, '<=')
+                    return Token(LTEQ, '<=')
+                elif self.peek() == '>':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(NOTEQ, '!=') # <>
                 else:
                     self.nextChar()
-                    return Token(GT, '<')
+                    return Token(LT, '<')
 
+            if self.curChar == '@':
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(POWEREQ, '**=')
+                else:
+                    self.nextChar()
+                    return Token(POWER, '**')
+                    
+            if self.curChar == '%':
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(MODULOEQ, '%=')
+                else:
+                    self.nextChar()
+                    return Token(MODULO, '%')                    
+                    
             if self.curChar == '=':
                 self.nextChar()
                 return Token(EQEQ, '=')
@@ -241,6 +343,10 @@ class Lexer(object):
             if self.curChar == ',':
                 self.nextChar()
                 return Token(COMMA, ',')
+  
+            if self.curChar == '"':
+                self.nextChar()
+                return self.Stringlex()  
 
             self.error()
 

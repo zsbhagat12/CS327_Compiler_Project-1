@@ -57,6 +57,7 @@ class Parser(object):
             print(" "*(self.lexer.curLinePos-1),"^")
             sys.exit('Invalid character')
             
+
     def parse_if(self):
         
         self.check_type(IF)
@@ -68,6 +69,24 @@ class Parser(object):
         self.check_type(END)
         node = IfElse(condition, true, false)
         return node 
+
+    def parse_print(self):
+        self.check_type(PRINT)
+        # node = self.logical()
+        # if self.curr_token.type == LPAREN:
+        #     if isinstance(node, f):
+        #         node = node.var
+        #     e = self.parse_func_call(node)
+        # else:
+        #     e = self.logical(node)
+        if self.curr_token.type != END:
+            e = self.logical()
+        else:
+            e = None
+        # print(e)
+        self.check_type(END)
+        return Statement("print", e)
+       
    
     def parse_inc(self):
         self.check_type(INC)
@@ -154,7 +173,52 @@ class Parser(object):
             node = BinOp(left=node, op=token, right=self.precedence2())
             Type = self.curr_token.type
         return node
-
+   
+   def relational(self, n=None):
+        """relational : precedence1 | precedence1 relationalOperator precedence1"""
+        if n == None:
+            node = self.precedence1()
+        else:
+            node = n
+        Type = self.curr_token.type
+        # print(Type)
+        # while(Type == GT or Type == GTEQ or Type == LT or Type == LTEQ):
+        if(Type == GT or Type == GTEQ or Type == LT or Type == LTEQ or Type == EQEQ or Type == NOTEQ):
+            token = self.curr_token
+            if token.type == GT:
+                self.check_type(GT)
+            elif token.type == GTEQ:
+                self.check_type(GTEQ)
+            elif token.type == LT:
+                self.check_type(LT)
+            elif token.type == LTEQ:
+                self.check_type(LTEQ)
+            elif token.type == EQEQ:
+                self.check_type(EQEQ)
+            elif token.type == NOTEQ:
+                self.check_type(NOTEQ)
+            node = BinOp(left=node, operator=token.value, right=self.precedence1())
+        # Type = self.curr_token.type
+        return node
+      
+    def logical(self, n=None):
+        """logical : relational | relational logicalOperator relational"""
+        if n == None:
+            node = self.relational()
+        else:
+            node = n
+        # node = self.relational()
+        Type = self.curr_token.type
+        if(Type == OR or Type == AND):
+            token = self.curr_token
+            if token.type == AND:
+                self.check_type(AND)
+            elif token.type == OR:
+                self.check_type(OR)
+            node = BinOp(left=node, operator= token.value, right=self.relational())
+        return node
+   
+ 
     def parse(self):
         match self.curr_token.type:
            case 'IF':
@@ -173,12 +237,3 @@ class Parser(object):
            case _:
                self.precedence1()
     
-
-    
-    
-    
-    
-    
-    
-        
-        
