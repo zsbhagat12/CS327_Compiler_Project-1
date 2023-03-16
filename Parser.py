@@ -1,34 +1,9 @@
 from dataclasses import dataclass
 import sys
 
-@dataclass
-class AST(object):
-   pass
-
-@dataclass
-class BinOp(AST):
-    op: str
-    mid : 'AST'
-    def __init__(self, left, op, right):
-        self.left = left
-        self.op = op
-        self.right = right
-        
-
-@dataclass
-class UnOp:
-    op: str
-    mid: 'AST'
-    def __init__(self, mid, op):
-        #self.left = left
-        self.op = op
-        self.mid = mid
-
-@dataclass
-class Num(AST):
-    def __init__(self, token):
-        self.token = token
-        self.val = token.val
+from lexer import *
+# import sim 
+from dataclasses_sim import *
 
 @dataclass
 class Parser(object):
