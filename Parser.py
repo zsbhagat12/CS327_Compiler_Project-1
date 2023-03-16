@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import sys
 
-
 @dataclass
 class AST(object):
    pass
@@ -30,44 +29,6 @@ class Num(AST):
     def __init__(self, token):
         self.token = token
         self.val = token.val
-
-
-@dataclass
-class Compound:
-    # Set of statements enclosed within a BEGIN and END
-    children: list
-    def __init__(self, children):
-        self.children = children
-
-
-@dataclass
-class Assign:
-    # Assigns right to left
-    token: tuple[str,object]
-    left: 'AST'
-    right: 'AST'
-    def __init__(self, token, left, right):        
-        self.token = token
-        self.left = left
-        self.right = right
-
-
-@dataclass
-class Var:
-    token: tuple[str,object]
-    value: 'AST'
-    # Var node consists of ID token
-    def __init__(self, token, value):
-        self.token = token
-        self.value = value
-
-
-@dataclass
-class NoOp:
-    # Empty generation
-    pass
-
-
 
 @dataclass
 class Parser(object):
@@ -133,13 +94,53 @@ class Parser(object):
 
     def parse(self):
         return self.precedence1()
-@dataclass
-
+    
+@dataclass 
 class Traversal (object):
-    def error(self):
-        sys.exit("Invalid visit")
+    def __init__(self, parser):
+        self.parser = parser
         
     def travel_node(self, node):
-        return (getattr(self, 'Type'+type(node).__name__, self.error))(node)
+        return (getattr(self, 'Type_operation', self.error))(node)
+
+@dataclass
+class Evaluator (Traversal):  
+    def Type_operation(self, node):
+        if type(node).__name__ == "BinOp":
+            if node.op.type == PLUS:
+                value = self.travel_node(node.left) + self.travel_node(node.right)
+            elif node.op.type == MINUS:
+                value = self.travel_node(node.left) - self.travel_node(node.right)
+            elif node.op.type == MUL:
+                value = self.travel_node(node.left) * self.travel_node(node.right)
+            elif node.op.type == DIV:
+                value = self.travel_node(node.left) / self.travel_node(node.right)
+        
+        elif type(node).__name__ == "UnOp":
+            if node.op.type == PLUS:
+                value = self.visit(node.mid)
+            elif node.op.type == MINUS:
+                value = -1*self.visit(node.mid)
+            
+        elif type(node).__name__ == "Num":
+            value = node.val
+            
+        return value
+        
+  
+    
+    def error(self):
+        sys.exit("Invalid visit")
+
+    def AST_evaluation(self):
+        tree = self.parser.parse()
+        return self.travel_node(tree)
+
     
     
+    
+    
+    
+    
+        
+        
