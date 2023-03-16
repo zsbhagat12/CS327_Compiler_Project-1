@@ -43,6 +43,7 @@ THEN          = 'THEN'
 ELSE          = 'ELSE'
 WHILE         = 'WHILE'
 DO            = 'DO'
+STRING        = 'STRING'
 
 
 @dataclass
@@ -66,7 +67,8 @@ KEYWORDS = {
     'REAL': Token('REAL', 'REAL'),
     'DIV': Token('INTEGER_DIV', 'DIV'),
     'BEGIN': Token('BEGIN', 'BEGIN'),
-    'END': Token('END', 'END')
+    'END': Token('END', 'END'),
+    'STRING': Token('STRING', 'STRING')
 }
 
 
@@ -134,6 +136,17 @@ class Lexer(object):
             self.nextChar()
 
         token = KEYWORDS.get(result, Token(ID, result))
+        return token
+    
+    def Stringlex(self):
+        # Handles strings
+        result = ''
+        while self.curChar != '"':
+            result += self.curChar
+            self.nextChar()
+        
+        self.nextChar()
+        token = Token('STRING', result)
         return token
 
     def get_token(self):
@@ -241,6 +254,10 @@ class Lexer(object):
             if self.curChar == ',':
                 self.nextChar()
                 return Token(COMMA, ',')
+  
+            if self.curChar == '"':
+                self.nextChar()
+                return self.Stringlex()  
 
             self.error()
 
