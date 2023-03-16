@@ -51,6 +51,14 @@ ELSE          = 'ELSE'
 WHILE         = 'WHILE'
 DO            = 'DO'
 STRING        = 'STRING'
+PRINT         = 'PRINT'
+FUNCTION      = 'FUNCTION'
+RETURN        = 'RETURN'
+FOR           = 'FOR'
+RANGE         = 'RANGE'
+BY            = 'BY'
+TO            = 'TO'
+BREAK         = 'BREAK'
 
 # literals
 TRUE          = "TRUE"
@@ -80,7 +88,20 @@ KEYWORDS = {
     'END': Token('END', 'END'),
     'TRUE': Token('TRUE', True),
     'FALSE': Token('FALSE', False),
-    'STRING': Token('STRING', 'STRING')
+    'STRING': Token('STRING', 'STRING'),
+    'FOR': Token('FOR', 'FOR'),
+    'IF': Token('IF', 'IF'),
+    'THEN': Token('THEN', 'THEN'),
+    'ELSE': Token('ELSE', 'ELSE'),
+    'PRINT': Token('PRINT', 'PRINT'),
+    'WHILE': Token('WHILE', 'WHILE'),
+    'DO': Token('DO', 'DO'),
+    'STRING': Token('STRING', 'STRING'),
+    'FUNCTION': Token('FUNCTION', 'FUNCTION'),
+    'RETURN': Token('RETURN', 'RETURN'),
+    'BY': Token('BY', 'BY'),
+    'TO': Token("TO", "TO"),
+    'BREAK': Token("BREAK", "BREAK")
 }
 
 
