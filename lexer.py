@@ -23,6 +23,10 @@ GT            = 'GT'
 LT            = 'LT'
 GTEQ          = 'GTEQ'
 LTEQ          = 'LTEQ'
+PLUSEQ        = 'PLUSEQ'
+MINUSEQ       = 'MINUSEQ'
+MULEQ         = 'MULEQ'
+FLOAT_DIVEQ   = "FLOAT_DIVEQ"
 
 # keywords
 PROGRAM       = 'PROGRAM'
@@ -183,19 +187,39 @@ class Lexer(object):
                 return Token(EQEQ, '=')
 
             if self.curChar == '+':
-                self.nextChar()
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(PLUSEQ, '+=')
+                else:
+                    self.nextChar()
                 return Token(PLUS, '+')
 
             if self.curChar == '-':
-                self.nextChar()
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(MINUSEQ, '-=')
+                else:
+                    self.nextChar()
                 return Token(MINUS, '-')
 
             if self.curChar == '*':
-                self.nextChar()
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(MULEQ, '*=')
+                else:
+                    self.nextChar()
                 return Token(MUL, '*')
 
             if self.curChar == '/':
-                self.nextChar()
+                if self.peek() == "=":
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(FLOAT_DIVEQ, '/=')
+                else:
+                    self.nextChar()
                 return Token(FLOAT_DIV, '/')
 
             if self.curChar == '(':
