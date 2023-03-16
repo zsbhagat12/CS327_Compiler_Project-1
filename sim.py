@@ -1,14 +1,12 @@
 from dataclasses_sim import *
 import Parser as prs
 from type_checking import *
-from resolver import *
 import sys
-import pprint
-pp = pprint.PrettyPrinter()
 
 def type_error():
         sys.exit('Dynamic type check error')
 
+# Combining lexer parser
 @dataclass
 class Interpreter:
     parser: prs.Parser
@@ -16,7 +14,7 @@ class Interpreter:
 def eval(program: AST, environment: Environment() = None) -> Value:
     if environment is None:
         environment = Environment()
-    environment.program = program
+
     def eval_env(program):
         return eval(program, environment)
     
@@ -26,59 +24,30 @@ def eval(program: AST, environment: Environment() = None) -> Value:
     def eval_string_env(program):
         return eval_string(program, environment)
 
-    def for_loop_helper(en, jump):
-        # print(jump)
-        flag = eval_env(jump)
-        # if(flag < en):
-        #     eval_env(body)
-        #     return for_loop_helper(en, jump)
-        while(flag != en):
-            eval_env(body)
-            flag = eval_env(jump)
-        return
-
     match program:
         case Interpreter(p):
             tree = p.parse()
-            sys.stdout = open('unresolved_tree', 'w')
-            pp = pprint.PrettyPrinter(stream=sys.stdout)
-            print("Unresolved Tree:")
-            pp.pprint(tree)
-            
-            # tree = resolve(tree)
-            # sys.stdout = open('resolved_tree', 'w')
-            # pp = pprint.PrettyPrinter(stream=sys.stdout)
-            # pp.stream = sys.stdout
-            # print("Resolved Tree:")
-            # pp.pprint(tree)
-
+            print(tree)
             # typecheck(tree)
-            sys.stdout = sys.__stdout__
             return eval(tree)
         
         
         case Statement(command ,statement):
-            # if statement == None:
-            #     return
             match command:
                 case "print":
                     if isinstance(statement,StringLiteral) :
                         print(eval_string_env(statement))
-
+                    elif isinstance(statement, type(None)):
+                        print()
                     else:
                         print(eval_env(statement)) 
                 case "return":
-                    e = Statement(command, statement)
-
                     if isinstance(statement,StringLiteral) :
-                        
-                        e.statement = eval_string_env(statement)
-                        
+                        return eval_string_env(statement)
                     else:
-                        e.statement = eval_env(statement)
-                    return e
+                        return eval_env(statement)
                 case "break":
-                    return program   
+                    return "break"    
                 
             return 
 
@@ -103,19 +72,15 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return MutVar(name).get()
         
         case Get(MutVar(name)):
-            e = environment.get(name)
-            return e.get()
+            return environment.get(name).get()
         
         case Seq(things):
             environment.enter_scope()
             v = None
             for thing in things:
                 v = eval_env(thing)
-                if isinstance(v,Statement):
-                    if v.command=="break":
-                        break
-                    if v.command=="return":
-                         return v.statement
+                if v=="break":
+                    break
             environment.exit_scope()
             return v
         
@@ -128,7 +93,6 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         
         case FunCall(Variable(name), args):
             fn = environment.get(name)
-            print(name, fn)
             argv = []
             for arg in args:
                 argv.append(eval_env(arg))
@@ -140,41 +104,45 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return v
         
         case FunCall(MutVar(name), args):
-            if not environment.check(name):
-                environment.add(name, MutVar(name))
-                environment.get(name).put(FnObject([],None))
-            fn = environment.get(name).get()
+            fn = environment.get(name)
             argv = []
-            mtfo = []
             for arg in args:
-                if arg != None:
-                    mtfo.append(arg)
-                    #if isinstance(arg, MutVar) and isinstance(arg.value, FnObject):
-                        # mtfo[arg.value] = arg
-                    argv.append(eval_env(arg))
+                argv.append(eval_env(arg))
             environment.enter_scope()
-            
-
             for param, arg in zip(fn.params, argv):
                 if isinstance(param, MutVar):
-                    if isinstance(arg, FnObject):
-                        e = mtfo[argv.index(arg)]
-                        if environment.check(e.name):
-                            environment.addWithOther(e.name, param.name, arg)
-                    else:
-                        environment.add(param.name, param)
-                        param.put(arg)
+                    environment.add(param.name, param)
+                    param.put(arg)
                 else:
                     environment.add(param.name, arg)
             v = eval_env(fn.body)
-            
             environment.exit_scope()
             return v
         
-        case Seq(s1, s2):
-            s1 = eval(s1)
-            s2 = eval(s2)
+        case MutVar(name):
+            # if program.value != None:
+            #     return program.get()
+            # return
+            return environment.get(name).get()
+
+        case Increment(MutVar(name)):
+            #print('Hi')
+            temp = environment.get(name)
+            e = eval_env(temp)
+            #print('Hi')
+            e = e + eval_env(NumLiteral(1))
+            temp.put(e)
+            environment.update(name, temp)
             return 
+        
+        case Decrement(MutVar(name)):
+            temp = environment.get(name)
+            e = eval_env(temp)
+            e = e - eval_env(NumLiteral(1))
+            temp.put(e)
+            environment.update(name, temp)
+            return 
+        
         case Str_len(MutVar(name)):
             temp = environment.get(name)
             e = eval_env(temp)
@@ -199,30 +167,42 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             else:
                 e = e1[e2:e3:e4]
             return e
-
-        case MutVar(name):
-            # if program.value != None:
-            #     return program.get()
-                
-            # return
-            if not environment.check(name):
-                print(f"Mutable Variable '{name}' not defined")
-                sys.exit()
-                environment.add(name, MutVar(name))
-            
-            e = environment.get(name)
-            return e.get()
         
-           
-
         
-        case ForLoop(start, end, jump, body):
+        case ForLoop(start, condition, increment, body):
+            # print("Zeeshan", condition)
+
             eval_env(start)
-            eval_env(body)
-            en = eval_env(end)
-            eval_env(jump)
-            for_loop_helper(en, jump)
-            return
+            if(condition == None):
+                while True:
+                    e = eval_env(body)
+                    if e == "break":
+                        break
+                    else:
+                        eval_env()
+            else:
+                while(eval_env(condition)):
+                    e = eval_env(body)
+                    if e == "break":
+                        break
+                    else:
+                        eval_env(increment)
+                return
+        
+
+        # def for_loop_helper(en, condition):
+        # # print(jump)
+        # flag = eval_env(condition)
+        # # if(flag < en):
+        # #     eval_env(body)
+        # #     return for_loop_helper(en, jump)
+        # # while(flag != en):
+        # #     eval_env(body)
+        # #     flag = eval_env(condition)
+        # while(eval_env(condition)):
+        #     eval_env(body)
+        #     eval_env(en)
+        # return
 
         case While(c, b):
             # if eval_bool_env(c):
@@ -230,11 +210,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             #     eval_env(While(c, b))
             while (eval_env(c)): # avoid recursion depth
                 e = eval_env(b)
-                if isinstance(v,Statement):
-                    if v.command=="break":
-                        break
-                    if v.command=="return":
-                        return v.statement
+                if e == "break":
+                    break
             return 
 
         case BinOp("=", MutVar(name), val):
@@ -267,6 +244,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 mutvar.put(e)
             return mutvar.get() #Assignment as expression
         
+
         case BinOp("-=", MutVar(name), val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
@@ -283,21 +261,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 mutvar.put(e)
             return mutvar.get() #Assignment as expression
         
-        case BinOp("*=", MutVar(name), val):
-            e = eval_env(val) 
-            # program.get_left().put(eval(val))
-            if not environment.check(name):
-                environment.add(name, MutVar(name))
-                mutvar = environment.get(name)
-                e *= mutvar.get()
-                mutvar.put(e)
 
-            else:
-                mutvar = environment.get(name)
-                e *= mutvar.get()
-                # environment.update(name, MutVar(name))
-                mutvar.put(e)
-            return mutvar.get() #Assignment as expression
     
         case BinOp("/=", MutVar(name), val):
             e = eval_env(val) 
@@ -333,23 +297,16 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return mutvar.get() #Assignment as expression
         
 
+    
         case Function(MutVar(name), params , body) | Function(Variable(name), params , body):
             # environment.enter_scope()
-            # environment.add(name, FnObject(params, body))
-            if not environment.check(name):
-                environment.add(name, MutVar(name))
-            else:
-                environment.update(name, MutVar(name))
-            mutvar = environment.get(name)
-            e = FnObject(params, body)
-            mutvar.put(e)
-            
+            environment.add(name, FnObject(params, body))
             # if isinstance(program.name, MutVar):
             #     program.name.put(FnObject(params, body))
             # environment.exit_scope()
 
             
-            return e
+            return 
 
         case NumLiteral(val):
             return val
@@ -379,6 +336,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             v2 = eval_env(e2)
             environment.exit_scope()
             return v2
+        
+        
         case BinOp("+", left, right):
             # if (isinstance(right, NumLiteral) == False):
             #     type_error()
@@ -433,11 +392,13 @@ def eval_string(program: AST, environment: Environment() = None) -> str:
 
     def eval_env(program):
         return eval(program, environment)
+    
     def eval_bool_env(program):
         return eval_bool(program, environment)
     
     def eval_string_env(program):
         return eval_string(program, environment)
+
     match program:
         case Interpreter(p):
             tree = p.parse()
@@ -504,13 +465,9 @@ def eval_bool(program: AST, environment: Environment() = None) -> Val:
             return eval_env(left) and eval_env(right)
         case BinOp("||", left, right):
             return eval_env(left) or eval_env(right) 
-
-    sys.stdout = open('error_in_sim', 'w')    
+        
     print("Current AST", program)   
-    pp = pprint.PrettyPrinter(stream=sys.stdout)
-    print("Current Environment:")
-    
-    pp.pprint( environment.envs)
+    print("Current Environment", environment.envs)
     raise InvalidProgram()  
 
 
@@ -667,23 +624,8 @@ def test_letfun2():
                 e1)
     print(eval(e))
 
+
+
+
+
 # test_letfun2()
-def test_resolve():
-    import pprint
-    pp = pprint.PrettyPrinter(indent=4)
-    e = Let(Variable.make("a"), NumLiteral(0), Variable.make("a"))
-    # pp.pprint(e)
-    re = resolve(e)
-    # pp.pprint(re)
-
-    e = LetFun(Variable.make("foo"), [Variable.make("a")], FunCall(Variable.make("foo"), [Variable.make("a")]),
-               Let(Variable.make("g"), Variable.make("foo"),
-                   LetFun(Variable.make("foo"), [Variable.make("a")], NumLiteral(0),
-                          FunCall(Variable.make("g"), [NumLiteral(0)]))))
-    pp.pprint(e)
-    pp.pprint(r := resolve(e))
-    print(eval(r))
-
-# test_resolve()
-
-
