@@ -68,8 +68,12 @@ class Parser(object):
         self.check_type(END)
         node = IfElse(condition, true, false)
         return node 
+    
+    def parse_return(self):
+        self.check_type(RETURN)
+        e = self.logical()
+        return Statement("return", e)
             
-   
     def precedence3(self):
         token = self.curr_token
         Type = token.type
@@ -113,6 +117,11 @@ class Parser(object):
         match self.curr_token.type:
            case 'IF':
                return self.parse_if()
+           case 'RETURN':
+                return self.parse_return()
+           case 'BREAK':
+                self.check_type(BREAK)
+                return Statement("break",NumLiteral(0))
            case _:
                self.precedence1()
     
