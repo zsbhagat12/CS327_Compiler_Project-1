@@ -135,7 +135,25 @@ class Parser(object):
             node = BinOp(left=node, operator=token.value, right=self.precedence1())
         # Type = self.curr_token.type
         return node
-
+      
+    def logical(self, n=None):
+        """logical : relational | relational logicalOperator relational"""
+        if n == None:
+            node = self.relational()
+        else:
+            node = n
+        # node = self.relational()
+        Type = self.curr_token.type
+        if(Type == OR or Type == AND):
+            token = self.curr_token
+            if token.type == AND:
+                self.check_type(AND)
+            elif token.type == OR:
+                self.check_type(OR)
+            node = BinOp(left=node, operator= token.value, right=self.relational())
+        return node
+   
+   
     def parse(self):
         return self.precedence1()
     
