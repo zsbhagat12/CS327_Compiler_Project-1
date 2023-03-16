@@ -168,11 +168,36 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
                 
             return
         
+        case ForLoop(start, condition, increment, body):
+#             print("Zeeshan", condition)
+
+            eval_env(start)
+            if(condition == None):
+                while True:
+                    e = eval_env(body)
+                    if e == "break":
+                        break
+                    else:
+                        eval_env()
+            else:
+                while(eval_env(condition)):
+                    e = eval_env(body)
+                    if e == "break":
+                        break
+                    else:
+                        eval_env(increment)
+                return
+        
+
 
         case While(c, b):
-            if eval_bool(c):
-                eval(b)
-                eval(While(c, b))
+            # if eval_bool_env(c):
+            #     eval_env(b)
+            #     eval_env(While(c, b))
+            while (eval_env(c)): # avoid recursion depth
+                e = eval_env(b)
+                if e == "break":
+                    break
             return 
 
         case BinOp("=", MutVar(name), val):
