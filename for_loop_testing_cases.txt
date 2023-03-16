@@ -1,0 +1,55 @@
+{case 1}
+{BEGIN 
+    p:=1;
+    q:=1;
+    FOR i:= 1 ; i < 126 ; i := i + 1 
+    DO 
+        BEGIN 
+        q:=q*p;
+        p:=p+1;   
+        {PRINT p END;}          
+        PRINT q END;
+        PRINT i END;
+        END 
+    END; 
+END
+}
+
+{case 2}
+{BEGIN 
+    p:=1;
+    q:=1;
+    FOR i:= 125 ; i > 0 ; i := i - 1 
+    DO 
+        BEGIN 
+        q:=q*p;
+        p:=p+1;   
+        {PRINT p END;}          
+        PRINT q END;
+        PRINT i END;
+        END 
+    END; 
+END}
+
+{case 3}
+BEGIN 
+    p:=1;
+    q:=1;
+    FOR i:= 10 ;  ; i := i - 1 
+    DO 
+        BEGIN 
+        q:=q*p;
+        p:=p+1;   
+        {PRINT p END;}          
+        PRINT q END;
+        PRINT i END;
+        IF i <= 0 
+            THEN
+                BEGIN 
+                BREAK;
+                END
+            ELSE
+                END   
+        END 
+    END; 
+END
