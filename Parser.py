@@ -109,6 +109,7 @@ class Parser(object):
         # print(e)
         self.check_type(END)
         return Statement("print", e)
+   
        
    
     def parse_inc(self):
@@ -131,6 +132,55 @@ class Parser(object):
         e = self.logical()
         return Statement("return", e)
       
+    def parse_func(self):
+        self.check_type(FUNCTION)
+        # name = self.variable("Variable")
+        name = self.variable()
+        self.check_type(LPAREN)
+        # var = self.variable("Variable")
+        var = self.variable()
+        token = self.curr_token
+        Type = token.type
+        params = [var]
+        
+        while Type != RPAREN:
+            self.check_type(COMMA)
+            if self.curr_token.type == RPAREN:
+                break
+            # var = self.variable("Variable")
+            var = self.variable()
+            
+            params.append(var)
+            token = self.curr_token
+            Type = token.type
+        
+        self.check_type(RPAREN)
+        body = self.parse()
+
+        return Function(name, params, body)
+
+    def parse_func_call(self, n):
+        node = n
+        self.check_type(LPAREN)
+        var = self.logical()
+        token = self.curr_token
+        Type = token.type
+        params = [var]
+        
+        while Type != RPAREN:
+            self.check_type(COMMA)
+            if self.curr_token.type == RPAREN:
+                break
+            var = self.logical()
+            
+            params.append(var)
+            token = self.curr_token
+            Type = token.type
+        
+        self.check_type(RPAREN)
+
+
+        return FunCall(node, params)
       
     def variable(self, ASTtype=None):
         token = self.curr_token
@@ -326,6 +376,8 @@ class Parser(object):
                 return self.parse_return()
            case 'BEGIN':
                 return self.parse_begin()
+           case 'FUNCTION':
+                return self.parse_func()
            case 'BREAK':
                 self.check_type(BREAK)
                 return Statement("break",NumLiteral(0))
@@ -334,5 +386,10 @@ class Parser(object):
            case 'DEC':
                 return self.parse_dec()
            case _:
-               self.precedence1()
+               node = self.variable()
+                if self.curr_token.type == LPAREN:
+                    return self.parse_func_call(node)
+                
+                # node = MutVar(node.name)
+                return self.assignment(node)
    
