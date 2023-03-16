@@ -109,7 +109,15 @@ class Lexer(object):
     def __init__(self, text):
         self.text = text                        # stream of input
         self.pos = 0                            # current position in the stream
-        self.curChar = self.text[self.pos]      # current character in the stream
+        self.lineNum = 1                        # line number in code
+        self.curLinePos = 0                     # current position in current line of program
+        if text == "":
+            print("Empty Program")
+            self.curChar = None
+            
+        else:
+            self.curChar = self.text[self.pos]      # current character in the stream
+        self.curLine = self.curChar             # current line of program read till now
 
     def error(self):
         sys.exit('Invalid character')
@@ -123,12 +131,25 @@ class Lexer(object):
 
     def skipSpaces(self):                       # to skip white spacses
         while self.curChar is not None and self.curChar.isspace():
+            if self.curChar == '\n':
+                self.lineNum+=1
+                self.curLine=""
+                self.curLinePos=0
             self.nextChar()
 
     def skipComments(self):
-        while self.curChar != '}':
+        #while self.curChar != '}':
+        #    self.nextChar()
+        #self.nextChar()                         # to skip the closing curly brace as well
+        noOfstartBraces = 1
+        while noOfstartBraces != 0 :
             self.nextChar()
-        self.nextChar()                         # to skip the closing curly brace as well
+            if self.curChar == '{':
+                noOfstartBraces+=1
+            elif self.curChar == '}':
+                noOfstartBraces-=1
+        self.nextChar()         
+        
 
     def peek(self):                             
         # returns the lookahead character
