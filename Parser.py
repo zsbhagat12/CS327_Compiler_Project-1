@@ -52,6 +52,18 @@ class Parser(object):
         else:
             sys.exit('Invalid character')
             
+    def parse_if(self):
+        
+        self.check_type(IF)
+        condition = self.logical()
+        self.check_type(THEN)
+        true = self.parse()
+        self.check_type(ELSE)
+        false = self.parse()
+        self.check_type(END)
+        node = IfElse(condition, true, false)
+        return node 
+            
    
     def precedence3(self):
         token = self.curr_token
@@ -93,48 +105,12 @@ class Parser(object):
         return node
 
     def parse(self):
-        return self.precedence1()
+        match self.curr_token.type:
+           case 'IF':
+               return self.parse_if()
+           case _:
+               self.precedence1()
     
-@dataclass 
-class Traversal (object):
-    def __init__(self, parser):
-        self.parser = parser
-        
-    def travel_node(self, node):
-        return (getattr(self, 'Type_operation', self.error))(node)
-
-@dataclass
-class Evaluator (Traversal):  
-    def Type_operation(self, node):
-        if type(node).__name__ == "BinOp":
-            if node.op.type == PLUS:
-                value = self.travel_node(node.left) + self.travel_node(node.right)
-            elif node.op.type == MINUS:
-                value = self.travel_node(node.left) - self.travel_node(node.right)
-            elif node.op.type == MUL:
-                value = self.travel_node(node.left) * self.travel_node(node.right)
-            elif node.op.type == DIV:
-                value = self.travel_node(node.left) / self.travel_node(node.right)
-        
-        elif type(node).__name__ == "UnOp":
-            if node.op.type == PLUS:
-                value = self.visit(node.mid)
-            elif node.op.type == MINUS:
-                value = -1*self.visit(node.mid)
-            
-        elif type(node).__name__ == "Num":
-            value = node.val
-            
-        return value
-        
-  
-    
-    def error(self):
-        sys.exit("Invalid visit")
-
-    def AST_evaluation(self):
-        tree = self.parser.parse()
-        return self.travel_node(tree)
 
     
     
