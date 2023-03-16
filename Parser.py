@@ -81,16 +81,16 @@ class Parser(object):
             self.check_type(FOR)
             start = self.parse()
             # print("Hi", start)
-            self.check_type(TO)
-            end = self.parse()
+            self.check_type(SEMI)
+            condition = self.logical()
             # print("Hi2", end)
-            self.check_type(BY)
-            jump = self.parse()
+            self.check_type(SEMI)
+            increment = self.parse()
             # print("Hi3",jump)
             self.check_type(DO)
             body = self.parse()
             self.check_type(END)
-            return ForLoop(start, end, jump, body)
+            return ForLoop(start, condition, increment, body)
     
     def parse_while(self):
         self.check_type(WHILE)
@@ -100,16 +100,80 @@ class Parser(object):
         self.check_type(END)
         return While(c, b)
     
+
+    def parse_inc(self):
+        self.check_type(INC)
+        self.check_type(LPAREN)
+        c = self.parse()
+        self.check_type(RPAREN)
+        return Increment(c)
+
+    def parse_dec(self):
+        self.check_type(DEC)
+        self.check_type(LPAREN)
+        c = self.parse()
+
+        self.check_type(RPAREN)
+        return Decrement(c)
+    
+    def parse_Strlen(self):
+        
+        self.check_type(LPAREN)
+        c = self.parse()
+        self.check_type(RPAREN)
+        return Str_len(c)
+    
+    def parse_slice(self, c):
+     
+        self.check_type(LSPAREN)
+        if self.curr_token.type==COMMA:
+            start = NumLiteral(0)
+        else:
+            start = self.parse()
+        
+        if self.curr_token.type==RSPAREN:
+            index_type = True
+            self.check_type(RSPAREN)
+
+        elif self.curr_token.type==COMMA:
+            index_type = False
+            self.check_type(COMMA)
+            end = self.parse()
+        else:
+            index_type = False
+            end = self.parse()
+        
+    
+        if index_type==False:
+            if self.curr_token.type==COMMA:
+                self.check_type(COMMA)
+                if self.curr_token.type!=RSPAREN:
+                    jump = self.parse()   
+                else:
+                    jump = NumLiteral(1)
+
+            else:
+                jump = NumLiteral(1)
+            self.check_type(RSPAREN)
+        else:
+            end = None
+            jump = None
+        return Slicing(c, start, end, jump)
+    
+   
     def parse_print(self):
         self.check_type(PRINT)
         # node = self.logical()
         # if self.curr_token.type == LPAREN:
-        #     if isinstance(node, Get):
+        #     if isinstance(node, f):
         #         node = node.var
         #     e = self.parse_func_call(node)
         # else:
         #     e = self.logical(node)
-        e = self.logical()
+        if self.curr_token.type != END:
+            e = self.logical()
+        else:
+            e = None
         # print(e)
         self.check_type(END)
         return Statement("print", e)
@@ -153,7 +217,6 @@ class Parser(object):
         
         self.check_type(RPAREN)
         body = self.parse()
-
         return Function(name, params, body)
 
     def parse_func_call(self, n):
@@ -175,73 +238,9 @@ class Parser(object):
             Type = token.type
         
         self.check_type(RPAREN)
+
+
         return FunCall(node, params)
-
-
-    def parse_inc(self):
-        self.check_type(INC)
-        self.check_type(LPAREN)
-        c = self.parse()
-        self.check_type(RPAREN)
-        return Increment(c)
-
-    def parse_dec(self):
-        self.check_type(DEC)
-        self.check_type(LPAREN)
-        c = self.parse()
-
-        self.check_type(RPAREN)
-        return Decrement(c)
-   
-    def parse_Strlen(self):
-        
-        self.check_type(LPAREN)
-        c = self.parse()
-        self.check_type(RPAREN)
-        return Str_len(c)
-        
-    def parse_slice(self, c):
-     
-        self.check_type(LSPAREN)
-        if self.curr_token.type==COMMA:
-            start = NumLiteral(0)
-        else:
-            start = self.parse()
-        
-        if self.curr_token.type==RSPAREN:
-            index_type = True
-            self.check_type(RSPAREN)
-
-        elif self.curr_token.type==COMMA:
-            index_type = False
-            self.check_type(COMMA)
-            end = self.parse()
-        else:
-            index_type = False
-            end = self.parse()
-        
-    
-        if index_type==False:
-            if self.curr_token.type==COMMA:
-                self.check_type(COMMA)
-                if self.curr_token.type!=RSPAREN:
-                    jump = self.parse()   
-                else:
-                    jump = NumLiteral(1)
-
-            else:
-                jump = NumLiteral(1)
-            self.check_type(RSPAREN)
-        else:
-            end = None
-            jump = None
-        return Slicing(c, start, end, jump)
-    
-    def parse_return(self):
-        self.check_type(RETURN)
-        e = self.logical()
-        return Statement("return", e)
-      
 
     def variable(self, ASTtype=None):
         token = self.curr_token
@@ -249,9 +248,14 @@ class Parser(object):
         if Type == ID:
             self.check_type(ID)
             if ASTtype=="Variable":
+                token = self.curr_token
+                Type = token.type
+                #self.parse_slice(Variable(token.value), Type)
                 return Variable(token.value)
+                
             else:
                 return MutVar(token.value)
+            
         
     
     def precedence3(self):
@@ -268,7 +272,7 @@ class Parser(object):
             return node
         elif Type == LPAREN:
             self.check_type(LPAREN)
-            # node = self.precedence1()
+            # node = self.precedence1() 
             node = self.logical()
             self.check_type(RPAREN)
             return node
@@ -278,47 +282,54 @@ class Parser(object):
         elif Type == TRUE or Type == FALSE:
             self.check_type(Type)
             return BoolLiteral(token.value)
+        elif Type == LEN:
+            self.check_type(LEN)
+            return self.parse_Strlen()
         elif Type == ID:
             self.check_type(ID)
             if self.curr_token.type == LPAREN:
                 return self.parse_func_call(MutVar(token.value))
-            # return Get(MutVar(token.value))
-            return MutVar(token.value)
+            elif self.curr_token.type == LSPAREN:
+                return self.parse_slice(MutVar(token.value))
+            return (MutVar(token.value))
         elif Type == STRING:
             # Nothing new here, just eat the STRING token and return the String() AST.
             self.check_type(STRING)
             return StringLiteral(token.value)
         
+
+
     def exponential(self):
         """exponential : precedence3 | precedence3 POWER precedence3"""
         node = self.precedence3()
         token = self.curr_token
         Type = token.type
-        l = [node]
-        if Type == POWER:
-            while (Type == POWER):
-                token = self.curr_token
-                if token.type == POWER:
-                    self.check_type(POWER)
-                e = self.precedence3()
-                # print(e)
-                l.append(e)
-                Type = self.curr_token.type
-                # e = self.precedence3()
-            # print(l)
-            
-            i = 1
-            while len(l) > 0 :
-                e = l.pop()
-                if i==1:
-                    
-                    node = BinOp(left=l.pop(), operator=token.value, right=e)
-                else:
-                    node = BinOp(left=e, operator=token.value, right=node)
-                i+=1
-            
-        return node   
+        # l = [node]
+        while (Type == POWER):
+            token = self.curr_token
+            if token.type == POWER:
+                self.check_type(POWER)
+            # l.append(self.precedence3())
+            Type = self.curr_token.type
+            # e = self.precedence3()
+        # print(l)
+        # n = len(l)
+        # i = 1
+        # while len(l) > 0 :
+        #     e = l.pop()
+        #     if i==1:  
+        #         g = l.pop()
+        #         f = BinOp(left=g, operator=token.value, right=e)
+        #         i+=1
+        #     elif i==n-1:
+        #         node = BinOp(left=e, operator=token.value, right=f)
+        #     else:
+        #         f = BinOp(left=e, operator=token.value, right=f)
+        #         i+=1
 
+        return node
+        
+        
     def precedence2(self):
         """precedence2 : precedence3 | precedence3 MUL/DIV precedence3"""
         node = self.exponential()
@@ -417,7 +428,7 @@ class Parser(object):
         #     else:
         #         node = self.logical()  
         
-        if(Type == ASSIGN or Type == PLUSEQ):
+        if(Type == ASSIGN or Type == PLUSEQ or Type == MINUSEQ or Type == FLOAT_DIVEQ or Type == MULEQ or Type == POWEREQ):
             token = self.curr_token
             if Type == ASSIGN:
                 self.check_type(ASSIGN)
@@ -444,7 +455,6 @@ class Parser(object):
                 node = BinOp(left=node, operator= token.value, right=self.logical())
         else:
             if isinstance(node,MutVar):
-                # node = self.logical(Get(node))  
                 node = self.logical(node)  
             else:
                 node = self.logical()  
@@ -472,7 +482,10 @@ class Parser(object):
             case 'BREAK':
                 self.check_type(BREAK)
                 return Statement("break",NumLiteral(0))
-            
+            case 'INC':
+                return self.parse_inc()
+            case 'DEC':
+                return self.parse_dec()
             # case 'SEMI':
             #     return
                 # return self.parse()
@@ -483,5 +496,6 @@ class Parser(object):
                 
                 # node = MutVar(node.name)
                 return self.assignment(node)
+            
 
 
