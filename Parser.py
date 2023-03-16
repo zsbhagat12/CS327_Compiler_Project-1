@@ -263,4 +263,4 @@ class Parser(object):
                 return self.parse_dec()
            case _:
                self.precedence1()
-    
+   
