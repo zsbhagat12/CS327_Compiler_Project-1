@@ -85,9 +85,36 @@ class Parser(object):
         elif Type == INTEGER:
             self.check_type(INTEGER)
             return Num(token)
+    
+    def exponential(self):
+        """exponential : precedence3 | precedence3 POWER precedence3"""
+        node = self.precedence3()
+        token = self.curr_token
+        Type = token.type
+        l = [node]
+        if Type == POWER:
+            while (Type == POWER):
+                token = self.curr_token
+                if token.type == POWER:
+                    self.check_type(POWER)
+                e = self.precedence3()
+                l.append(e)
+                Type = self.curr_token.type
+            
+            i = 1
+            while len(l) > 0 :
+                e = l.pop()
+                if i==1:
+                    
+                    node = BinOp(left=l.pop(), operator=token.value, right=e)
+                else:
+                    node = BinOp(left=e, operator=token.value, right=node)
+                i+=1
+            
+        return node
 
     def precedence2(self):
-        node = self.precedence3()
+        node = self.exponential()
         token = self.curr_token
         Type = token.type
         while (Type == MUL or  Type ==DIV):
@@ -96,7 +123,7 @@ class Parser(object):
                 self.check_type(MUL)
             elif token.type == DIV:
                 self.check_type(DIV)
-            node = BinOp(left=node, op=token, right=self.precedence3())
+            node = BinOp(left=node, op=token, right=self.exponential())
             Type = self.curr_token.type
         return node
 
@@ -119,6 +146,8 @@ class Parser(object):
                return self.parse_if()
            case 'RETURN':
                 return self.parse_return()
+           case 'BEGIN':
+                return self.parse_begin()
            case 'BREAK':
                 self.check_type(BREAK)
                 return Statement("break",NumLiteral(0))
