@@ -19,10 +19,13 @@ MINUS         = 'MINUS'
 MUL           = 'MUL'
 FLOAT_DIV     = 'FLOAT_DIV'
 EQEQ          = 'EQEQ'
+NOTEQ         = 'NOTEQ'
 GT            = 'GT'
 LT            = 'LT'
 GTEQ          = 'GTEQ'
 LTEQ          = 'LTEQ'
+AND           = "AND"
+OR            = "OR"
 PLUSEQ        = 'PLUSEQ'
 MINUSEQ       = 'MINUSEQ'
 MULEQ         = 'MULEQ'
@@ -45,6 +48,9 @@ WHILE         = 'WHILE'
 DO            = 'DO'
 STRING        = 'STRING'
 
+# literals
+TRUE          = "TRUE"
+FALSE         = "FALSE"
 
 @dataclass
 class Token:
@@ -68,6 +74,8 @@ KEYWORDS = {
     'DIV': Token('INTEGER_DIV', 'DIV'),
     'BEGIN': Token('BEGIN', 'BEGIN'),
     'END': Token('END', 'END'),
+    'TRUE': Token('TRUE', True),
+    'FALSE': Token('FALSE', False),
     'STRING': Token('STRING', 'STRING')
 }
 
@@ -176,7 +184,20 @@ class Lexer(object):
                 else:
                     self.nextChar()
                     return Token(COLON, ':')
+                
+            if self.curChar == "|":
+                if self.peek() == "|":
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(OR, "||")
+            
 
+            if self.curChar == "&":
+                if self.peek() == "&":
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(AND, "&&")
+                
             if self.curChar == '>':
                 if self.peek() == '=':
                     self.nextChar()
@@ -190,10 +211,14 @@ class Lexer(object):
                 if self.peek() == '=':
                     self.nextChar()
                     self.nextChar()
-                    return Token(GTEQ, '<=')
+                    return Token(LTEQ, '<=')
+                elif self.peek() == '>':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(NOTEQ, '!=') # <>
                 else:
                     self.nextChar()
-                    return Token(GT, '<')
+                    return Token(LT, '<')
 
             if self.curChar == '=':
                 self.nextChar()
