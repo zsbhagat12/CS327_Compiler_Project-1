@@ -139,6 +139,14 @@ class InvalidProgram(Exception):
 def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
     if environment is None:
         environment = {}
+        
+    def eval_env(program):
+        return eval(program, environment)
+    def eval_bool_env(program):
+        return eval_bool(program, environment)
+    
+    def eval_string_env(program):
+        return eval_string(program, environment)
     match program:
         
         case Statement(command , statement):
@@ -163,10 +171,10 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             return 
 
         case MutVar(name):
-            if program.value != None:
-                return program.get()
-                
-            return
+            # if program.value != None:
+            #     return program.get()
+            # return
+            return environment.get(name).get()
         
         case ForLoop(start, condition, increment, body):
 #             print("Zeeshan", condition)
@@ -301,78 +309,118 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
         case Let(MutVar(name), e1, e2):
             v1 = eval(e1, environment)
             return eval(e2, environment | { name: v1})
-        case BinOp("+", left, right):
-            return eval(left, environment) + eval(right, environment)
+                case BinOp("+", left, right):
+            # if (isinstance(right, NumLiteral) == False):
+            #     type_error()
+            return eval_env(left) + eval_env(right)
+        
         case BinOp("-", left, right):
-            return eval(left, environment) - eval(right, environment)
+            return eval_env(left) - eval_env(right)
         case BinOp("*", left, right):
-            return eval(left, environment) * eval(right, environment)
+            return eval_env(left) * eval_env(right)
         case BinOp("/", left, right):
-            return eval(left, environment) / eval(right, environment)
+            return eval_env(left) / eval_env(right)
+        case BinOp("%", left, right):
+            return eval_env(left) % eval_env(right)
         case UnOp("-", mid):
             return Fraction(-1)*eval(mid)
+        case UnOp("+", mid):
+            return eval(mid)
         case UnOp("++", mid):
-            return eval(mid)+Fraction(1)
+            return eval_env(mid)+Fraction(1)
         case UnOp("--", mid):
-            return eval(mid)-Fraction(1)
+            return eval_env(mid)-Fraction(1)
         case BinOp("<<", left, right):
             try:
-                if(eval(right) < 0):
+                if(eval_env(right) < 0):
                     raise InvalidProgram(Exception)
             except InvalidProgram:
                 print("Shift operator must be non negative") 
-            return int(eval(left, environment)) << int(eval(right, environment))
+            return int(eval_env(left)) << int(eval_env(right))
         case BinOp(">>", left, right):
             try:
-                if(eval(right) < 0):
+                if(eval_env(right) < 0):
                     raise InvalidProgram(Exception)
             except InvalidProgram:
                 print("Shift operator must be non negative") 
-            return int(eval(left, environment)) >> int(eval(right, environment))
+            return int(eval_env(left)) >> int(eval_env(right))
         case BinOp("|", left, right):
-            return eval(left, environment) | eval(right, environment)
+            return eval_env(left) | eval_env(right)
         case BinOp("&", left, right):
-            return eval(left, environment) & eval(right, environment)
+            return eval_env(left) & eval_env(right)
         case BinOp("^", left, right):
-            return eval(left, environment) ^ eval(right, environment)
+            return eval_env(left) ^ eval_env(right)
+        case BinOp("**", left, right):
+            return eval_env(left) ** eval_env(right)
+        case _:
+            return eval_string_env(program)
         
     
     raise InvalidProgram()
 
 
 def eval_string(program: AST) -> str:
+    
+    def eval_env(program):
+        return eval(program, environment)
+    def eval_bool_env(program):
+        return eval_bool(program, environment)
+    
+    def eval_string_env(program):
+        return eval_string(program, environment)
+    
     match program:
-        
         case StringLiteral(val):
             return val
         case BinOp("+", left, right):
             return left + right
+        
+        case _:
+            return eval_bool_env(program)
+
         # case BinOp("")
     raise InvalidProgram()
     
 
-def eval_bool(program: AST) -> Val:
+def eval_bool(program: AST, environment: Environment() = None) -> Val:
+    if environment is None:
+        environment = Environment()
+
+    def eval_env(program):
+        return eval(program, environment)
+    def eval_bool_env(program):
+        return eval_bool(program, environment)
+    
+    def eval_string_env(program):
+        return eval_string(program, environment)
     match program:
+        case Interpreter(p):
+            tree = p.parse()
+            # print(tree)
+            return eval_bool(tree)
         case BoolLiteral(value):
             return value
         case BinOp("==", left, right):
-            return (eval(left)==eval(right))
+            return (eval_env(left)==eval_env(right))
         case BinOp(">", left, right):
-            return (eval(left)>eval(right))
+            return (eval_env(left)>eval_env(right))
         case BinOp("<", left, right):
-            return (eval(left)<eval(right))
+            return (eval_env(left)<eval_env(right))
         case BinOp(">=", left, right):
-            return (eval(left)>=eval(right))  
+            return (eval_env(left)>=eval_env(right))  
         case BinOp("<=", left, right):
-            return (eval(left)<=eval(right))  
+            return (eval_env(left)<=eval_env(right))  
         case BinOp("!=", left, right):
-            return (eval(left)!=eval(right))
+            return (eval_env(left)!=eval_env(right))
         case UnOp("!", mid):
-            return (not eval_bool(mid))
+            return (not eval_env(mid))
         case BinOp("&&", left, right):
-            return eval_bool(left) and eval_bool(right)
+            return eval_env(left) and eval_env(right)
         case BinOp("||", left, right):
-            return eval_bool(left) or eval_bool(right)    
+            return eval_env(left) or eval_env(right) 
+        
+    print("Current AST", program)   
+    print("Current Environment", environment.envs)
     raise InvalidProgram()  
 
 
