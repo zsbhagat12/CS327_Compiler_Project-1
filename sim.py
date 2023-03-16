@@ -169,7 +169,37 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             s1 = eval(s1)
             s2 = eval(s2)
             return 
-
+		
+		case FunCall(MutVar(name), args):
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+                environment.get(name).put(FnObject([],None))
+            fn = environment.get(name).get()
+            argv = []
+            mtfo = []
+            for arg in args:
+                if arg != None:
+                    mtfo.append(arg)
+                    #if isinstance(arg, MutVar) and isinstance(arg.value, FnObject):
+                        # mtfo[arg.value] = arg
+                    argv.append(eval_env(arg))
+            environment.enter_scope()
+            
+            for param, arg in zip(fn.params, argv):
+                if isinstance(param, MutVar):
+                    if isinstance(arg, FnObject):
+                        e = mtfo[argv.index(arg)]
+                        if environment.check(e.name):
+                            environment.addWithOther(e.name, param.name, arg)
+                    else:
+                        environment.add(param.name, param)
+                        param.put(arg)
+                else:
+                    environment.add(param.name, arg)
+            v = eval_env(fn.body)
+            
+            environment.exit_scope()
+            return v
         case MutVar(name):
             # if program.value != None:
             #     return program.get()
@@ -291,10 +321,23 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             return mutvar.get() #Assignment as expression
         
 
-        case Function(name, b, params):
+        case Function(MutVar(name), params , body) | Function(Variable(name), params , body):
+            # environment.enter_scope()
+            # environment.add(name, FnObject(params, body))
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+            else:
+                environment.update(name, MutVar(name))
+            mutvar = environment.get(name)
+            e = FnObject(params, body)
+            mutvar.put(e)
+            
+            # if isinstance(program.name, MutVar):
+            #     program.name.put(FnObject(params, body))
+            # environment.exit_scope()
 
             
-            return eval(b)
+            return e
 
         case NumLiteral(val):
             return val
