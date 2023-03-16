@@ -1,55 +1,146 @@
 from dataclasses_sim import *
 import Parser as prs
-
+from type_checking import *
+from resolver import *
 import sys
+import pprint
+pp = pprint.PrettyPrinter()
 
+def type_error():
+        sys.exit('Dynamic type check error')
 
-AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | Statement | StringLiteral | IfElse | MutVar | While | Seq | Function
-
-Value = Fraction
-Val = bool
-
-# Val_string = string
-
+# Combining lexer parser
 @dataclass
-class InvalidProgram(Exception):
-    pass
+class Interpreter:
+    parser: prs.Parser
 
-def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
+def eval(program: AST, environment: Environment() = None) -> Value:
     if environment is None:
-        environment = {}
-        
+        environment = Environment()
+    environment.program = program
     def eval_env(program):
         return eval(program, environment)
+    
     def eval_bool_env(program):
         return eval_bool(program, environment)
     
     def eval_string_env(program):
         return eval_string(program, environment)
+
+    def for_loop_helper(en, jump):
+        # print(jump)
+        flag = eval_env(jump)
+        # if(flag < en):
+        #     eval_env(body)
+        #     return for_loop_helper(en, jump)
+        while(flag != en):
+            eval_env(body)
+            flag = eval_env(jump)
+        return
+
     match program:
+        case Interpreter(p):
+            tree = p.parse()
+            sys.stdout = open('unresolved_tree', 'w')
+            pp = pprint.PrettyPrinter(stream=sys.stdout)
+            print("Unresolved Tree:")
+            pp.pprint(tree)
+            
+            # tree = resolve(tree)
+            # sys.stdout = open('resolved_tree', 'w')
+            # pp = pprint.PrettyPrinter(stream=sys.stdout)
+            # pp.stream = sys.stdout
+            # print("Resolved Tree:")
+            # pp.pprint(tree)
+
+            # typecheck(tree)
+            sys.stdout = sys.__stdout__
+            return eval(tree)
         
-        case Statement(command , statement):
+        
+        case Statement(command ,statement):
+            # if statement == None:
+            #     return
             match command:
                 case "print":
                     if isinstance(statement,StringLiteral) :
-                        print(eval_string(statement))
+                        print(eval_string_env(statement))
+
                     else:
-                        print(eval(statement)) 
+                        print(eval_env(statement)) 
+                case "return":
+                    e = Statement(command, statement)
+
+                    if isinstance(statement,StringLiteral) :
+                        
+                        e.statement = eval_string_env(statement)
+                        
+                    else:
+                        e.statement = eval_env(statement)
+                    return e
+                case "break":
+                    return program   
+                
             return 
 
         case IfElse(c, b, e):
-            match eval_bool(c):
+            match eval_env(c):
                 case True: 
-                    return eval(b)
+                    return eval_env(b)
                 case False: 
-                    return eval(e)
-            
-        case Seq(s1, s2):
-            s1 = eval(s1)
-            s2 = eval(s2)
-            return 
-		
-		case FunCall(MutVar(name), args):
+                    if e == None:
+                        return
+                    return eval_env(e)
+
+        case Put(Variable(name), e):
+            environment.update(name, eval_env(e))
+            return environment.get(name)
+        case Get(Variable(name)):
+            return environment.get(name)
+        
+        case Put(MutVar(name), e):
+            MutVar(name).put(eval(e))
+            environment.update(name,MutVar(name))
+            return MutVar(name).get()
+        
+        case Get(MutVar(name)):
+            e = environment.get(name)
+            return e.get()
+        
+        case Seq(things):
+            environment.enter_scope()
+            v = None
+            for thing in things:
+                v = eval_env(thing)
+                if isinstance(v,Statement):
+                    if v.command=="break":
+                        break
+                    if v.command=="return":
+                         return v.statement
+            environment.exit_scope()
+            return v
+        
+        case LetFun(Variable(name), params, body, expr):
+            environment.enter_scope()
+            environment.add(name, FnObject(params, body))
+            v = eval_env(expr)
+            environment.exit_scope()
+            return v
+        
+        case FunCall(Variable(name), args):
+            fn = environment.get(name)
+            print(name, fn)
+            argv = []
+            for arg in args:
+                argv.append(eval_env(arg))
+            environment.enter_scope()
+            for param, arg in zip(fn.params, argv):
+                environment.add(param.name, arg)
+            v = eval_env(fn.body)
+            environment.exit_scope()
+            return v
+        
+        case FunCall(MutVar(name), args):
             if not environment.check(name):
                 environment.add(name, MutVar(name))
                 environment.get(name).put(FnObject([],None))
@@ -79,33 +170,30 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             
             environment.exit_scope()
             return v
+        
         case MutVar(name):
             # if program.value != None:
             #     return program.get()
+                
             # return
-            return environment.get(name).get()
+            if not environment.check(name):
+                print(f"Mutable Variable '{name}' not defined")
+                sys.exit()
+                environment.add(name, MutVar(name))
+            
+            e = environment.get(name)
+            return e.get()
         
-        case ForLoop(start, condition, increment, body):
-#             print("Zeeshan", condition)
+           
 
+        
+        case ForLoop(start, end, jump, body):
             eval_env(start)
-            if(condition == None):
-                while True:
-                    e = eval_env(body)
-                    if e == "break":
-                        break
-                    else:
-                        eval_env()
-            else:
-                while(eval_env(condition)):
-                    e = eval_env(body)
-                    if e == "break":
-                        break
-                    else:
-                        eval_env(increment)
-                return
-        
-
+            eval_env(body)
+            en = eval_env(end)
+            eval_env(jump)
+            for_loop_helper(en, jump)
+            return
 
         case While(c, b):
             # if eval_bool_env(c):
@@ -113,8 +201,11 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             #     eval_env(While(c, b))
             while (eval_env(c)): # avoid recursion depth
                 e = eval_env(b)
-                if e == "break":
-                    break
+                if isinstance(v,Statement):
+                    if v.command=="break":
+                        break
+                    if v.command=="return":
+                        return v.statement
             return 
 
         case BinOp("=", MutVar(name), val):
@@ -147,7 +238,6 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
                 mutvar.put(e)
             return mutvar.get() #Assignment as expression
         
-
         case BinOp("-=", MutVar(name), val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
@@ -164,7 +254,21 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
                 mutvar.put(e)
             return mutvar.get() #Assignment as expression
         
+        case BinOp("*=", MutVar(name), val):
+            e = eval_env(val) 
+            # program.get_left().put(eval(val))
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+                mutvar = environment.get(name)
+                e *= mutvar.get()
+                mutvar.put(e)
 
+            else:
+                mutvar = environment.get(name)
+                e *= mutvar.get()
+                # environment.update(name, MutVar(name))
+                mutvar.put(e)
+            return mutvar.get() #Assignment as expression
     
         case BinOp("/=", MutVar(name), val):
             e = eval_env(val) 
@@ -220,22 +324,36 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
 
         case NumLiteral(val):
             return val
-        case Variable(name):
-            if name in environment:
-                return environment[name]
-            raise InvalidProgram()
+        case BoolLiteral(val):
+            return eval_bool_env(program)
+        case StringLiteral(val):
+            return eval_string_env(program)
         
-        case Let(Variable(name), e1, e2):
-            v1 = eval(e1, environment)
-            return eval(e2, environment | { name: v1})
-        case Let(MutVar(name), e1, e2):
-            v1 = eval(e1, environment)
-            return eval(e2, environment | { name: v1})
-                case BinOp("+", left, right):
+        
+        case Variable(name):
+            # print(environment)
+            # if name in environment:
+            #     return environment[name]
+            # raise InvalidProgram()
+            return environment.get(name)
+        
+        # case Let(Variable(name), e1, e2):
+        #     v1 = eval_env(e1)
+        #     return eval(e2, environment | { name: v1})
+
+        case Let(Variable(name), e1, e2) | LetMut(Variable(name), e1, e2) | Let(MutVar(name), e1, e2):
+            # v1 = eval_env(e1)
+            # return eval(e2, environment | { name: v1})
+            v1 = eval_env(e1)
+            environment.enter_scope()
+            environment.add(name, v1)
+            v2 = eval_env(e2)
+            environment.exit_scope()
+            return v2
+        case BinOp("+", left, right):
             # if (isinstance(right, NumLiteral) == False):
             #     type_error()
             return eval_env(left) + eval_env(right)
-        
         case BinOp("-", left, right):
             return eval_env(left) - eval_env(right)
         case BinOp("*", left, right):
@@ -276,13 +394,14 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             return eval_env(left) ** eval_env(right)
         case _:
             return eval_string_env(program)
-        
-    
+
     raise InvalidProgram()
 
 
-def eval_string(program: AST) -> str:
-    
+def eval_string(program: AST, environment: Environment() = None) -> str:
+    if environment is None:
+        environment = Environment()
+
     def eval_env(program):
         return eval(program, environment)
     def eval_bool_env(program):
@@ -290,17 +409,33 @@ def eval_string(program: AST) -> str:
     
     def eval_string_env(program):
         return eval_string(program, environment)
-    
     match program:
+        case Interpreter(p):
+            tree = p.parse()
+            # print(tree)
+            return eval_string(tree)
         case StringLiteral(val):
             return val
+        case BinOp("=", MutVar(name), val):
+            e = eval_string_env(val)
+            # program.get_left().put(eval(val))
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+                mutvar = environment.get(name)
+                mutvar.put(e)
+
+            else:
+                mutvar = environment.get(name)
+                # environment.update(name, MutVar(name))
+                mutvar.put(e)
+            return
+        
         case BinOp("+", left, right):
             return left + right
-        
+        # case BinOp("")
         case _:
             return eval_bool_env(program)
 
-        # case BinOp("")
     raise InvalidProgram()
     
 
@@ -340,9 +475,13 @@ def eval_bool(program: AST, environment: Environment() = None) -> Val:
             return eval_env(left) and eval_env(right)
         case BinOp("||", left, right):
             return eval_env(left) or eval_env(right) 
-        
+
+    sys.stdout = open('error_in_sim', 'w')    
     print("Current AST", program)   
-    print("Current Environment", environment.envs)
+    pp = pprint.PrettyPrinter(stream=sys.stdout)
+    print("Current Environment:")
+    
+    pp.pprint( environment.envs)
     raise InvalidProgram()  
 
 
@@ -374,6 +513,15 @@ def test_let_eval():
     assert eval(e) == 22
 
 # test_let_eval()
+
+def test_letmut():
+    a = Variable("a")
+    b = Variable("b")
+    e1 = LetMut(b, NumLiteral(2), Put(a, BinOp("+", Get(a), Get(b))))
+    e2 = LetMut(a, NumLiteral(1), Seq([e1, Get(a)]))
+    assert eval(e2) == 3
+
+# test_letmut()
 
 def test_Logic():
     x1 = NumLiteral(5)
@@ -433,11 +581,19 @@ def test_While():
     x2 = BinOp("+", i, NumLiteral(1))
     x3 = BinOp("=", p, x1)
     x4 = BinOp("=", i, x2)
-    e = Seq(Seq(p_g, i_g),While(cond, Seq(x3, x4)))
+    e = Seq([p_g, i_g,While(cond, Seq([x3, x4]))])
     eval(e)
     print(p.get(), i.get())
 
 # test_While()
+
+def test_MutVar_Get_Put():
+    p = MutVar('p')
+    p_g = BinOp("=", p, NumLiteral(1))
+    i = MutVar('i')
+    i_g = BinOp("=", i, NumLiteral(1))
+    e = Seq([p_g, i_g, Statement('print',Get('i')), Statement('print',Get('p')) ])
+# test_MutVar_Get_Put()
 
 def test_Function():
     e1 = BinOp("+", NumLiteral(2), NumLiteral(1))
@@ -446,6 +602,59 @@ def test_Function():
     f2 = Function('sub', e2, [])
     eval(f1)
     eval(f2)
-    e = Seq(f1,Seq(f2,Seq()))
+    e = Seq([f1,f2,])
 
-test_Function()
+
+# test_Function()
+
+def test_letfun():
+    a = Variable("a")
+    b = Variable("b")
+    f = Variable("f")
+    g = BinOp (
+        "*",
+        FunCall(f, [NumLiteral(15), NumLiteral(2)]),
+        FunCall(f, [NumLiteral(12), NumLiteral(3)])
+    )
+    e = LetFun(
+        f, [a, b], BinOp("+", a, b),
+        g
+    )
+    assert eval(e) == (15+2)*(12+3)
+    print(eval(e))
+
+# test_letfun()
+
+def test_letfun2():
+    fact = Variable("fact")
+    g = Variable("g")
+    n = Variable("n")
+    e2 = LetFun(fact, [n], NumLiteral(0), FunCall(g, [NumLiteral(3)] ))
+    e1 = LetFun(g, [n], FunCall(fact, [n]), e2)
+    e = LetFun(fact, [n], 
+               IfElse(BinOp("==",n,NumLiteral(0)),
+                      NumLiteral(1),
+                      FunCall(fact, [BinOp("-",n, NumLiteral(1))])), 
+                e1)
+    print(eval(e))
+
+# test_letfun2()
+def test_resolve():
+    import pprint
+    pp = pprint.PrettyPrinter(indent=4)
+    e = Let(Variable.make("a"), NumLiteral(0), Variable.make("a"))
+    # pp.pprint(e)
+    re = resolve(e)
+    # pp.pprint(re)
+
+    e = LetFun(Variable.make("foo"), [Variable.make("a")], FunCall(Variable.make("foo"), [Variable.make("a")]),
+               Let(Variable.make("g"), Variable.make("foo"),
+                   LetFun(Variable.make("foo"), [Variable.make("a")], NumLiteral(0),
+                          FunCall(Variable.make("g"), [NumLiteral(0)]))))
+    pp.pprint(e)
+    pp.pprint(r := resolve(e))
+    print(eval(r))
+
+# test_resolve()
+
+

@@ -287,6 +287,9 @@ class Lexer(object):
                 self.nextChar()
                 return Token(EQEQ, '==') # =
 
+            # if self.curChar == '+':
+            #     self.nextChar()
+            #     return Token(PLUS, '+')
             if self.curChar == '+':
                 if self.peek() == '=':
                     self.nextChar()
@@ -295,6 +298,18 @@ class Lexer(object):
                 else:
                     self.nextChar()
                 return Token(PLUS, '+')
+
+            # if self.curChar == '-':
+            #     self.nextChar()
+            #     return Token(MINUS, '-')
+
+            # if self.curChar == '*':
+            #     self.nextChar()
+            #     return Token(MUL, '*')
+
+            # if self.curChar == '/':
+            #     self.nextChar()
+            #     return Token(FLOAT_DIV, '/')
 
             if self.curChar == '-':
                 if self.peek() == '=':

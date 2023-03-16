@@ -10,11 +10,12 @@ BEGIN
    IF (x = y)
    THEN
    a:= 5
+   z:= "happy"
 
 { this is a comment}
 BEGIN
    BEGIN
-      a := 4;
+      a := 4------3;
       b := 5 * a
       c := b DIV 4
    END;
