@@ -201,8 +201,87 @@ def eval(program: AST, environment: Mapping[str, Value] = None) -> Value:
             return 
 
         case BinOp("=", MutVar(name), val):
-            program.get_left().put(eval(val))
-            return
+            e = eval_env(val)
+            # program.get_left().put(eval(val))
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+                mutvar = environment.get(name)
+                mutvar.put(e)
+
+            else:
+                mutvar = environment.get(name)
+                # environment.update(name, MutVar(name))
+                mutvar.put(e)
+            return mutvar.get() #Assignment as expression
+        
+        case BinOp("+=", MutVar(name), val):
+            e = eval_env(val) 
+            # program.get_left().put(eval(val))
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+                mutvar = environment.get(name)
+                e += mutvar.get()
+                mutvar.put(e)
+
+            else:
+                mutvar = environment.get(name)
+                e += mutvar.get()
+                # environment.update(name, MutVar(name))
+                mutvar.put(e)
+            return mutvar.get() #Assignment as expression
+        
+
+        case BinOp("-=", MutVar(name), val):
+            e = eval_env(val) 
+            # program.get_left().put(eval(val))
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+                mutvar = environment.get(name)
+                e -= mutvar.get()
+                mutvar.put(e)
+
+            else:
+                mutvar = environment.get(name)
+                e -= mutvar.get()
+                # environment.update(name, MutVar(name))
+                mutvar.put(e)
+            return mutvar.get() #Assignment as expression
+        
+
+    
+        case BinOp("/=", MutVar(name), val):
+            e = eval_env(val) 
+            # program.get_left().put(eval(val))
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+                mutvar = environment.get(name)
+                e /= mutvar.get()
+                mutvar.put(e)
+
+            else:
+                mutvar = environment.get(name)
+                e /= mutvar.get()
+                # environment.update(name, MutVar(name))
+                mutvar.put(e)
+            return mutvar.get() #Assignment as expression
+        
+
+        case BinOp("**=", MutVar(name), val):
+            e = eval_env(val) 
+            # program.get_left().put(eval(val))
+            if not environment.check(name):
+                environment.add(name, MutVar(name))
+                mutvar = environment.get(name)
+                e **= mutvar.get()
+                mutvar.put(e)
+
+            else:
+                mutvar = environment.get(name)
+                e **= mutvar.get()
+                # environment.update(name, MutVar(name))
+                mutvar.put(e)
+            return mutvar.get() #Assignment as expression
+        
 
         case Function(name, b, params):
 
