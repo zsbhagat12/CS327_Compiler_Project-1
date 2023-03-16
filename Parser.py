@@ -48,10 +48,28 @@ class Parser(object):
 
     def check_type(self, Type):
         if self.curr_token.type == Type:
-            self.curr_token = self.lexer.get_next_token()
+            self.curr_token = self.lexer.get_token()
         else:
+            print("Expected Token Type: ", Type)
+            print("Got Token: ", self.curr_token)
+            print("At line number:", self.lexer.lineNum)
+            print(self.lexer.curLine)
+            print(" "*(self.lexer.curLinePos-1),"^")
             sys.exit('Invalid character')
             
+
+    def parse_if(self):
+        
+        self.check_type(IF)
+        condition = self.logical()
+        self.check_type(THEN)
+        true = self.parse()
+        self.check_type(ELSE)
+        false = self.parse()
+        self.check_type(END)
+        node = IfElse(condition, true, false)
+        return node 
+
     def parse_print(self):
         self.check_type(PRINT)
         # node = self.logical()
@@ -70,6 +88,26 @@ class Parser(object):
         return Statement("print", e)
        
    
+    def parse_inc(self):
+        self.check_type(INC)
+        self.check_type(LPAREN)
+        c = self.parse()
+        self.check_type(RPAREN)
+        return Increment(c)
+
+    def parse_dec(self):
+        self.check_type(DEC)
+        self.check_type(LPAREN)
+        c = self.parse()
+
+        self.check_type(RPAREN)
+        return Decrement(c)
+    
+    def parse_return(self):
+        self.check_type(RETURN)
+        e = self.logical()
+        return Statement("return", e)
+            
     def precedence3(self):
         token = self.curr_token
         Type = token.type
@@ -81,9 +119,36 @@ class Parser(object):
         elif Type == INTEGER:
             self.check_type(INTEGER)
             return Num(token)
+    
+    def exponential(self):
+        """exponential : precedence3 | precedence3 POWER precedence3"""
+        node = self.precedence3()
+        token = self.curr_token
+        Type = token.type
+        l = [node]
+        if Type == POWER:
+            while (Type == POWER):
+                token = self.curr_token
+                if token.type == POWER:
+                    self.check_type(POWER)
+                e = self.precedence3()
+                l.append(e)
+                Type = self.curr_token.type
+            
+            i = 1
+            while len(l) > 0 :
+                e = l.pop()
+                if i==1:
+                    
+                    node = BinOp(left=l.pop(), operator=token.value, right=e)
+                else:
+                    node = BinOp(left=e, operator=token.value, right=node)
+                i+=1
+            
+        return node
 
     def precedence2(self):
-        node = self.precedence3()
+        node = self.exponential()
         token = self.curr_token
         Type = token.type
         while (Type == MUL or  Type ==DIV):
@@ -92,7 +157,7 @@ class Parser(object):
                 self.check_type(MUL)
             elif token.type == DIV:
                 self.check_type(DIV)
-            node = BinOp(left=node, op=token, right=self.precedence3())
+            node = BinOp(left=node, op=token, right=self.exponential())
             Type = self.curr_token.type
         return node
 
@@ -153,7 +218,22 @@ class Parser(object):
             node = BinOp(left=node, operator= token.value, right=self.relational())
         return node
    
-   
+ 
     def parse(self):
-        return self.precedence1()
+        match self.curr_token.type:
+           case 'IF':
+               return self.parse_if()
+           case 'RETURN':
+                return self.parse_return()
+           case 'BEGIN':
+                return self.parse_begin()
+           case 'BREAK':
+                self.check_type(BREAK)
+                return Statement("break",NumLiteral(0))
+           case 'INC':
+                return self.parse_inc()
+           case 'DEC':
+                return self.parse_dec()
+           case _:
+               self.precedence1()
     
