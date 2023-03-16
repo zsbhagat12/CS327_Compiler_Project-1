@@ -125,6 +125,43 @@ class Parser(object):
 
         self.check_type(RPAREN)
         return Decrement(c)
+        
+    def parse_slice(self, c):
+     
+        self.check_type(LSPAREN)
+        if self.curr_token.type==COMMA:
+            start = NumLiteral(0)
+        else:
+            start = self.parse()
+        
+        if self.curr_token.type==RSPAREN:
+            index_type = True
+            self.check_type(RSPAREN)
+
+        elif self.curr_token.type==COMMA:
+            index_type = False
+            self.check_type(COMMA)
+            end = self.parse()
+        else:
+            index_type = False
+            end = self.parse()
+        
+    
+        if index_type==False:
+            if self.curr_token.type==COMMA:
+                self.check_type(COMMA)
+                if self.curr_token.type!=RSPAREN:
+                    jump = self.parse()   
+                else:
+                    jump = NumLiteral(1)
+
+            else:
+                jump = NumLiteral(1)
+            self.check_type(RSPAREN)
+        else:
+            end = None
+            jump = None
+        return Slicing(c, start, end, jump)
     
     def parse_return(self):
         self.check_type(RETURN)
