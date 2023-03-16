@@ -69,6 +69,29 @@ class Parser(object):
         self.check_type(END)
         node = IfElse(condition, true, false)
         return node 
+       
+     def parse_for(self):
+        self.check_type(FOR)
+        start = self.parse()
+        # print("Hi", start)
+        self.check_type(SEMI)
+        condition = self.logical()
+        # print("Hi2", end)
+        self.check_type(SEMI)
+        increment = self.parse()
+        # print("Hi3",jump)
+        self.check_type(DO)
+        body = self.parse()
+        self.check_type(END)
+        return ForLoop(start, condition, increment, body)
+    
+    def parse_while(self):
+        self.check_type(WHILE)
+        c = self.logical()
+        self.check_type(DO)
+        b = self.parse()
+        self.check_type(END)
+        return While(c, b)
 
     def parse_print(self):
         self.check_type(PRINT)
@@ -147,6 +170,7 @@ class Parser(object):
             
         return node
 
+
     def precedence2(self):
         node = self.exponential()
         token = self.curr_token
@@ -217,12 +241,15 @@ class Parser(object):
                 self.check_type(OR)
             node = BinOp(left=node, operator= token.value, right=self.relational())
         return node
-   
  
     def parse(self):
         match self.curr_token.type:
            case 'IF':
                return self.parse_if()
+           case 'WHILE':
+                return self.parse_while()
+           case 'FOR':
+                return self.parse_for()
            case 'RETURN':
                 return self.parse_return()
            case 'BEGIN':
