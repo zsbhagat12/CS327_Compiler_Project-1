@@ -1,0 +1,440 @@
+{Factorial of n}{
+BEGIN 
+    i:=1;
+    p:=1;
+    n:=1559; {when while used python ifelse, max limit=494 }
+    WHILE i<n
+    DO
+        BEGIN
+        p:=p*i;
+        i:=i+1;{
+        PRINT i END;
+        PRINT p END;}
+        END
+    END;
+
+    PRINT i END;
+    PRINT p END;
+END}
+{Fibonacci upto n numbers}{
+BEGIN
+    n:=20577; {when while used python ifelse, max limit=495; 10000 time taken 29.94s, 15000->60.9s, 20577(max limit)->118.23s print takes time }
+    f:=0;
+    s:=1;
+    PRINT f END;
+    PRINT s END;
+    i:=2;
+    WHILE i<n
+    DO
+        BEGIN
+        t:=s;
+        s:=s+f;
+        f:=t;
+        PRINT s END;
+        PRINT i END;
+        i:=i+1;
+        END
+    END;
+END}
+{Function Testing}{
+BEGIN
+    PRINT 2+3 END;
+    FUNCTION add(a,b)
+    BEGIN
+        c:=a+b;
+        RETURN c;
+    END;
+    PRINT add(2,5) END;
+END}
+{Recursive Function Testing (Factorial)}{
+BEGIN   
+    FUNCTION fact(n)
+    BEGIN
+        IF n<=1 
+        THEN RETURN 1
+        ELSE RETURN n*fact(n-1)
+        END;
+    END;
+    PRINT fact(99) END;
+END}
+{Recursive Fibonacci}{
+BEGIN
+    f:=0;
+    s:=1;
+    FUNCTION fibo(n)
+    BEGIN
+        IF n<=1
+        THEN RETURN f
+        ELSE 
+            BEGIN
+            t:=s;
+            s:=s+f;
+            f:=t;
+            fibo(n-1);
+            END
+        END;
+        
+    END;
+    PRINT fibo(123) END;
+END}
+{Project Euler Problem 1	Multiples of 3 or 5}{
+BEGIN
+    sum:=0;
+    n:=1000;
+    i:=1;
+    WHILE i<n
+    DO
+        BEGIN
+            IF i%3=0 || i%5=0
+            THEN 
+                BEGIN
+                    sum:=sum+i;
+                    PRINT i END;
+                END
+            ELSE 
+            END;
+            i:=i+1;
+        END
+    END;
+    PRINT "SUM=" END;
+    PRINT sum END;
+
+END}
+{Project Euler Problem 2	Even Fibonacci numbers}{
+BEGIN
+    sum:=0;
+    n:=4000000;
+    f:=1;
+    s:=2;
+    WHILE f<=n
+    DO
+        BEGIN
+            t:=s;
+            s:=s+f;
+            f:=t;
+            IF f%2=0
+            THEN 
+                BEGIN
+                sum+=f;
+                PRINT f END;
+                END
+            ELSE
+            END;
+        END
+    END;
+    PRINT "SUM=" END;
+    PRINT sum END;
+END}
+{Project Euler Problem 3	Largest prime factor}{
+BEGIN
+    n:=600851475143; {13195->5,7,13,29->0.38s, after optimize/actual better soln->0.014s; 600851475143->71,839,1471,6857->0.23s}
+    i:=2;
+    maxPrimeFactor:=0;
+    FUNCTION findFirstPrimeFactor(num, ini)
+    BEGIN 
+        j:=ini;
+        flag:=0;
+        WHILE j<=num/2
+        DO
+            BEGIN
+                IF num%j=0
+                THEN 
+                    BEGIN
+                        flag:=1;
+                        {i:=j;
+                        PRINT j END;}
+                        BREAK;
+                    END
+                ELSE END;
+                j+=1;
+            END
+        END;
+        
+        IF flag=0
+        THEN RETURN num
+        ELSE RETURN j
+        END;
+    END;
+
+    {IF isPrime(n)=FALSE
+    THEN 
+        BEGIN}
+            WHILE i<n
+            DO
+                BEGIN
+                    i:=findFirstPrimeFactor(n, i);
+                    {IF isPrime(i)
+                    THEN 
+                        BEGIN}
+                            prevN:=n;
+                            WHILE n%i=0
+                            DO 
+                                BEGIN
+                                    
+                                    n:=n/i;
+                                    
+                                END
+                            END;
+                            IF prevN<>n
+                            THEN 
+                                BEGIN
+                                maxPrimeFactor:=i;
+                                PRINT i END; 
+                                END
+                            ELSE END;
+                            
+                            
+                       { END
+                    ELSE END;
+                    i+=1;}
+                END
+            END;
+            
+        {END
+    ELSE
+        
+        
+        
+    END;}
+    {maxPrimeFactor:=n;}
+    PRINT "Max Prime Factor of n:" END;
+    PRINT maxPrimeFactor END;
+END}
+{Project Euler Problem 4	Largest palindrome product}{
+BEGIN
+    FUNCTION isPalin(num)
+    BEGIN
+        
+        pnum:=num;
+        sum:=0;
+        WHILE num>0
+        DO
+            BEGIN
+            sum := sum*10+num%10;
+            num:=num/10;
+            END
+        END;
+        RETURN pnum=num;
+
+    END;
+
+    i:=999;
+    max:=0;
+    first:=0;second:=0;
+    WHILE i>=100
+    DO  
+        BEGIN
+            j:=i;
+            WHILE j>=100
+            DO
+                BEGIN
+                    IF isPalin(i*j) && max<i*j
+                    THEN 
+                        BEGIN
+                            max:=i*j;
+                            first:=i;
+                            second:=j;
+                            PRINT max END;
+                        END
+                    ELSE END;
+                    j:=j-1;
+                END
+            END;
+            i:=i-1;
+        END
+    END;
+    PRINT "Max Palindrome:" END;
+    PRINT max END;
+    PRINT "Constituent Numbers:" END;
+    PRINT first END; PRINT second END;
+    
+END}
+{Project Euler Problem 5	Smallest multiple}{
+BEGIN
+    FUNCTION HCF(first,second)
+    BEGIN
+        IF first<second {first should be kept bigger}
+        THEN 
+            BEGIN
+            t:=second;
+            second:=first;
+            first:=t;
+            END
+        ELSE END;
+        WHILE first%second<>0
+        DO
+            BEGIN
+            t:=second;
+            second:=first%second;
+            first:=t;
+            END
+        END;
+        RETURN second;
+        
+    END;
+    FUNCTION LCM(f,s)
+    BEGIN
+        RETURN f*s/HCF(f,s);
+    END;
+    i:=2;
+    n:=20; {10->2520; 20->232792560}
+    lcm:=i;
+    WHILE i<n
+    DO
+        BEGIN
+        i+=1;
+        lcm:=LCM(lcm, i);
+        END
+    END;
+    PRINT "Required Smallest Product:" END;
+    PRINT lcm END;
+
+END}
+{Project Euler Problem 6	Sum square difference}{
+BEGIN
+    n:=100; {10->2640; 100->25164150}
+    squareOfSum:=n*(n+1)*n*(n+1)/4;
+    sumOfSquare:=n*(n+1)*(2*n+1)/6;
+    PRINT "Resultant Difference" END;
+    PRINT squareOfSum-sumOfSquare END;
+END}
+{Project Euler Problem 9	Special Pythagorean triplet}{
+BEGIN
+    a:=1;b:=0;c:=0;
+    WHILE a<1000
+    DO 
+        BEGIN
+            IF a*a%(1000-a)=0
+            THEN 
+                BEGIN
+                b:=((1000-a)-a*a/(1000-a))/2;
+                c:=((1000-a)+a*a/(1000-a))/2;
+                BREAK;
+                END
+            ELSE END;
+            a+=1;
+        END
+    END;
+    PRINT "a,b,c are:" END;
+    PRINT a END;
+    PRINT b END;
+    PRINT c END;
+END}
+{Function Testing: Define function within another function, return, use it; almost first class}{
+BEGIN
+    FUNCTION f2(n)
+    BEGIN
+        RETURN n*n;
+    END;
+    FUNCTION f4(n)
+    BEGIN
+        RETURN n**n;
+    END;
+    FUNCTION f1(f3)
+    BEGIN
+        FUNCTION f11(m)
+        BEGIN
+            RETURN f3(m)*(m-1);
+            {PRINT "f11" END;}
+        END;
+        {PRINT "f1" END;}
+        RETURN f11;
+    END;
+    rf11:=f1(f2);
+    rf12:=f1(f4);
+    PRINT rf11(5) END;
+    PRINT rf12(3) END;
+
+END}
+{Resolver test; inspired from sir's class }{
+BEGIN
+    FUNCTION foo(a)
+    BEGIN
+        IF FALSE
+        THEN RETURN foo(a) {infinite loop}
+        ELSE RETURN a-2
+        END;
+    END;
+    g:=foo;
+    FUNCTION foo(a)
+    BEGIN
+        RETURN a+5;
+    END;
+    h:=foo;
+    PRINT g(0) END;
+    PRINT h(1) END;
+
+END}
+{resolver test 2}{
+BEGIN 
+    i:=1;
+    s:=i; {1}
+    a:=2;
+    i:=a; {2}
+    s:=a@i@a; {16}
+    n:=s;   {16}
+    IF i< n 
+    THEN BEGIN
+            b:=n;
+            PRINT n END;
+            WHILE i+b-25 < 10
+            DO
+                BEGIN
+                    n:=i*b/a-n%i;
+                    PRINT n END;
+                    i+=i;
+                END
+            END;
+        END
+    ELSE 
+            {n:=a;}
+            PRINT n END
+        
+    END;
+    PRINT i END;
+    PRINT a END;
+    PRINT s END;
+END}
+{First Class Function Testing}
+BEGIN
+    FUNCTION even(n)
+    BEGIN
+        IF n = 0
+        THEN RETURN TRUE
+        ELSE END;
+        IF n = 1
+        THEN RETURN FALSE
+        ELSE END;
+        RETURN odd(n-1);
+    END;
+    FUNCTION odd(m)
+    BEGIN
+        IF m = 0
+        THEN RETURN FALSE
+        ELSE END;
+        IF m = 1
+        THEN RETURN TRUE
+        ELSE END;
+        RETURN even(m-1);
+    END;
+    PRINT even(5) END;
+    PRINT odd(4) END;
+END
+{Function binding Testing}{
+BEGIN
+    FUNCTION add(a,b)
+    BEGIN
+        c:=a+b;
+        RETURN dummy(c);
+    END;
+    FUNCTION dummy(a)
+    BEGIN
+        RETURN a;
+    END;
+    PRINT add(7,5) END;
+END}
+{print test}{
+BEGIN 
+    a:=1;
+    PRINT a END;
+END}
