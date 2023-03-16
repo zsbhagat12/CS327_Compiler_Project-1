@@ -7,6 +7,8 @@ INTEGER_CONST = 'INTEGER_CONST'
 REAL_CONST    = 'REAL_CONST'
 LPAREN        = 'LPAREN'
 RPAREN        = 'RPAREN'
+
+#punctuators
 SEMI          = 'SEMI'
 DOT           = 'DOT'
 COLON         = 'COLON'
@@ -65,6 +67,7 @@ TRUE          = "TRUE"
 FALSE         = "FALSE"
 
 @dataclass
+# class to store the token types and values
 class Token:
     type: str
     value: object
@@ -96,7 +99,6 @@ KEYWORDS = {
     'PRINT': Token('PRINT', 'PRINT'),
     'WHILE': Token('WHILE', 'WHILE'),
     'DO': Token('DO', 'DO'),
-    'STRING': Token('STRING', 'STRING'),
     'FUNCTION': Token('FUNCTION', 'FUNCTION'),
     'RETURN': Token('RETURN', 'RETURN'),
     'BY': Token('BY', 'BY'),
@@ -124,12 +126,15 @@ class Lexer(object):
 
     def nextChar(self):                         # advances the pos pointer
         self.pos += 1
+        self.curLinePos += 1
+        
         if self.pos > len(self.text) - 1:       # end of input stream
             self.curChar = None                 
         else:
             self.curChar = self.text[self.pos]
+            self.curLine += self.curChar
 
-    def skipSpaces(self):                       # to skip white spacses
+    def skipSpaces(self):                        # to skip white spacses
         while self.curChar is not None and self.curChar.isspace():
             if self.curChar == '\n':
                 self.lineNum+=1
@@ -151,8 +156,7 @@ class Lexer(object):
         self.nextChar()         
         
 
-    def peek(self):                             
-        # returns the lookahead character
+    def peek(self):                              # returns the lookahead character
         if self.pos + 1 > len(self.text) - 1:
             return None
         else:
@@ -237,7 +241,6 @@ class Lexer(object):
                     self.nextChar()
                     return Token(OR, "||")
             
-
             if self.curChar == "&":
                 if self.peek() == "&":
                     self.nextChar()
