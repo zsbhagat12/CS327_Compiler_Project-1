@@ -130,6 +130,22 @@ class Parser(object):
         self.check_type(RETURN)
         e = self.logical()
         return Statement("return", e)
+      
+      
+    def variable(self, ASTtype=None):
+        token = self.curr_token
+        Type = token.type
+        if Type == ID:
+            self.check_type(ID)
+            if ASTtype=="Variable":
+                token = self.curr_token
+                Type = token.type
+                #self.parse_slice(Variable(token.value), Type)
+                return Variable(token.value)
+                
+            else:
+                return MutVar(token.value)
+            
             
     def precedence3(self):
         token = self.curr_token
@@ -240,6 +256,62 @@ class Parser(object):
             elif token.type == OR:
                 self.check_type(OR)
             node = BinOp(left=node, operator= token.value, right=self.relational())
+        return node
+   
+    
+   
+    def assignment(self, n=None):
+        """assignment : variable ASSIGN relational"""
+        if n == None:
+            node = self.variable()
+        else:
+            node = n
+        Type = self.curr_token.type
+        # token = self.curr_token
+        # print(Type)
+
+        
+        # if Type == ASSIGN:
+        #     self.check_type(ASSIGN)
+        #     token = self.curr_token
+        #     node = BinOp(left=node, operator=token.value, right=self.logical())
+        # else:
+        #     if isinstance(node,MutVar):
+        #         node = self.logical(Get(node))  
+        #     else:
+        #         node = self.logical()  
+        
+        if(Type == ASSIGN or Type == PLUSEQ or Type == MINUSEQ or Type == FLOAT_DIVEQ or Type == MULEQ or Type == POWEREQ):
+            token = self.curr_token
+            if Type == ASSIGN:
+                self.check_type(ASSIGN)
+                node = BinOp(left=node, operator= token.value, right=self.logical())
+            elif Type == MULEQ:
+                self.check_type(MULEQ)
+                # print(self.curr_token)
+                node = BinOp(left=node, operator= token.value, right=self.logical())
+            elif Type == MINUSEQ:
+                self.check_type(MINUSEQ)
+                # print(self.curr_token)
+                node = BinOp(left=node, operator= token.value, right=self.logical())
+            elif Type == FLOAT_DIVEQ:
+                self.check_type(FLOAT_DIVEQ)
+                # print(self.curr_token)
+                node = BinOp(left=node, operator= token.value, right=self.logical())
+            elif Type == PLUSEQ:
+                self.check_type(PLUSEQ)
+                # print(self.curr_token)
+                node = BinOp(left=node, operator= token.value, right=self.logical())
+            elif Type == POWEREQ:
+                self.check_type(POWEREQ)
+                # print(self.curr_token)
+                node = BinOp(left=node, operator= token.value, right=self.logical())
+        else:
+            if isinstance(node,MutVar):
+                node = self.logical(node)  
+            else:
+                node = self.logical()  
+
         return node
  
     def parse(self):
