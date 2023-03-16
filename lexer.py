@@ -18,18 +18,22 @@ PLUS          = 'PLUS'
 MINUS         = 'MINUS'
 MUL           = 'MUL'
 FLOAT_DIV     = 'FLOAT_DIV'
+MODULO        = 'MODULO'
+POWER         = 'POWER'
 EQEQ          = 'EQEQ'
 NOTEQ         = 'NOTEQ'
 GT            = 'GT'
 LT            = 'LT'
 GTEQ          = 'GTEQ'
 LTEQ          = 'LTEQ'
-AND           = "AND"
-OR            = "OR"
+AND           = 'AND'
+OR            = 'OR'
 PLUSEQ        = 'PLUSEQ'
 MINUSEQ       = 'MINUSEQ'
 MULEQ         = 'MULEQ'
-FLOAT_DIVEQ   = "FLOAT_DIVEQ"
+FLOAT_DIVEQ   = 'FLOAT_DIVEQ'
+MODULOEQ      = 'MODULOEQ'
+POWEREQ       = 'POWEREQ'
 
 # keywords
 PROGRAM       = 'PROGRAM'
@@ -220,6 +224,24 @@ class Lexer(object):
                     self.nextChar()
                     return Token(LT, '<')
 
+            if self.curChar == '@':
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(POWEREQ, '**=')
+                else:
+                    self.nextChar()
+                    return Token(POWER, '**')
+                    
+            if self.curChar == '%':
+                if self.peek() == '=':
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(MODULOEQ, '%=')
+                else:
+                    self.nextChar()
+                    return Token(MODULO, '%')                    
+                    
             if self.curChar == '=':
                 self.nextChar()
                 return Token(EQEQ, '=')
