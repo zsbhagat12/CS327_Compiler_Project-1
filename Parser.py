@@ -48,8 +48,13 @@ class Parser(object):
 
     def check_type(self, Type):
         if self.curr_token.type == Type:
-            self.curr_token = self.lexer.get_next_token()
+            self.curr_token = self.lexer.get_token()
         else:
+            print("Expected Token Type: ", Type)
+            print("Got Token: ", self.curr_token)
+            print("At line number:", self.lexer.lineNum)
+            print(self.lexer.curLine)
+            print(" "*(self.lexer.curLinePos-1),"^")
             sys.exit('Invalid character')
             
     def parse_if(self):
