@@ -442,7 +442,7 @@ END}
 {multiple ifelse testing}{
 BEGIN
     n:=0;
-    a:=0
+    a:=0;
     IF n = 0
         THEN a:=1
         ELSE END;
@@ -453,7 +453,7 @@ BEGIN
         THEN a:=2
         ELSE END;    
     PRINT a END;
-END}{giving expected output 1}
+END}
 
 {multiple ifelse to test return working}{
 BEGIN
@@ -470,5 +470,4 @@ BEGIN
             ELSE END;      
         END;
     PRINT add(0) END;
-END}{output: None}
-{If condition is true for last if-statement the expected answer is returned, i.e, add(2) returns 2}
+END}
