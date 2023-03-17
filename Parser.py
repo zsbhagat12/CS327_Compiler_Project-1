@@ -335,12 +335,14 @@ class Parser(object):
         node = self.exponential()
         token = self.curr_token
         Type = token.type
-        while (Type == MUL or  Type ==FLOAT_DIV  or Type == MODULO):
+        while (Type == MUL or  Type ==FLOAT_DIV  or Type == MODULO or Type == INT_DIV):
             token = self.curr_token
             if token.type == MUL:
                 self.check_type(MUL)
             elif token.type == FLOAT_DIV:
                 self.check_type(FLOAT_DIV)
+            elif token.type == INT_DIV:
+                self.check_type(INT_DIV)                
             elif token.type == MODULO:
                 self.check_type(MODULO)
             node = BinOp(left=node, operator=token.value, right=self.exponential())
