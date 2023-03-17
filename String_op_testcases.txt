@@ -11,6 +11,6 @@ PRINT str[x,y,z] END;
 PRINT str[14] END;
 PRINT str[1,5] END;
 PRINT str[,,] END;
-PRINT "bisbciwi"[4] END;
+{PRINT "bisbciwi"[4] END;}
 
 END

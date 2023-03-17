@@ -304,28 +304,28 @@ class Parser(object):
         node = self.precedence3()
         token = self.curr_token
         Type = token.type
-        # l = [node]
-        while (Type == POWER):
-            token = self.curr_token
-            if token.type == POWER:
-                self.check_type(POWER)
-            # l.append(self.precedence3())
-            Type = self.curr_token.type
-            # e = self.precedence3()
-        # print(l)
-        # n = len(l)
-        # i = 1
-        # while len(l) > 0 :
-        #     e = l.pop()
-        #     if i==1:  
-        #         g = l.pop()
-        #         f = BinOp(left=g, operator=token.value, right=e)
-        #         i+=1
-        #     elif i==n-1:
-        #         node = BinOp(left=e, operator=token.value, right=f)
-        #     else:
-        #         f = BinOp(left=e, operator=token.value, right=f)
-        #         i+=1
+        l = [node]
+        if Type == POWER:
+            while (Type == POWER):
+                token = self.curr_token
+                if token.type == POWER:
+                    self.check_type(POWER)
+                e = self.precedence3()
+                # print(e)
+                l.append(e)
+                Type = self.curr_token.type
+                # e = self.precedence3()
+            # print(l)
+            
+            i = 1
+            while len(l) > 0 :
+                e = l.pop()
+                if i==1:
+                    
+                    node = BinOp(left=l.pop(), operator=token.value, right=e)
+                else:
+                    node = BinOp(left=e, operator=token.value, right=node)
+                i+=1
 
         return node
         
