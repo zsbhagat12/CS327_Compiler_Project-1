@@ -438,3 +438,37 @@ BEGIN
     a:=1;
     PRINT a END;
 END}
+
+{multiple ifelse testing}{
+BEGIN
+    n:=0;
+    a:=0
+    IF n = 0
+        THEN a:=1
+        ELSE END;
+    IF n = 1
+        THEN a:=0
+        ELSE END; 
+    IF n = 2
+        THEN a:=2
+        ELSE END;    
+    PRINT a END;
+END}{giving expected output 1}
+
+{multiple ifelse to test return working}{
+BEGIN
+    FUNCTION add(n)
+        BEGIN
+        IF n = 0
+            THEN RETURN 1
+            ELSE END;
+        IF n = 1
+            THEN RETURN 0
+            ELSE END;
+        IF n = 2
+            THEN RETURN 2
+            ELSE END;      
+        END;
+    PRINT add(0) END;
+END}{output: None}
+{If condition is true for last if-statement the expected answer is returned, i.e, add(2) returns 2}
