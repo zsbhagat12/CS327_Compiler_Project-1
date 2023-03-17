@@ -201,31 +201,32 @@ BEGIN
     PRINT maxPrimeFactor END;
 END}
 {Project Euler Problem 4	Largest palindrome product}{
+{7 second execution time}
 BEGIN
     FUNCTION isPalin(num)
     BEGIN
         
         pnum:=num;
         sum:=0;
-        WHILE num>0
+        WHILE pnum>0
         DO
             BEGIN
-            sum := sum*10+num%10;
-            num:=num//10;
+            sum := sum*10+pnum%10;
+            pnum:=pnum//10;
             END
         END;
-        RETURN pnum=num;
+        RETURN sum=num;
 
     END;
 
     i:=999;
     max:=0;
     first:=0;second:=0;
-    WHILE i>=100
+    WHILE i>=900
     DO  
         BEGIN
             j:=i;
-            WHILE j>=100
+            WHILE j>=900
             DO
                 BEGIN
                     IF isPalin(i*j) && max<i*j
@@ -234,7 +235,7 @@ BEGIN
                             max:=i*j;
                             first:=i;
                             second:=j;
-                            PRINT max END;
+                            {PRINT max END;}
                         END
                     ELSE END;
                     j:=j-1;
@@ -246,8 +247,8 @@ BEGIN
     PRINT "Max Palindrome:" END;
     PRINT max END;
     PRINT "Constituent Numbers:" END;
-    PRINT first END; PRINT second END;
-    
+    PRINT first END; 
+    PRINT second END;   
 END}
 {Project Euler Problem 5	Smallest multiple}{
 BEGIN
@@ -437,4 +438,37 @@ END}
 BEGIN 
     a:=1;
     PRINT a END;
+END}
+
+{multiple ifelse testing}{
+BEGIN
+    n:=0;
+    a:=0;
+    IF n = 0
+        THEN a:=1
+        ELSE END;
+    IF n = 1
+        THEN a:=0
+        ELSE END; 
+    IF n = 2
+        THEN a:=2
+        ELSE END;    
+    PRINT a END;
+END}
+
+{multiple ifelse to test return working}{
+BEGIN
+    FUNCTION add(n)
+        BEGIN
+        IF n = 0
+            THEN RETURN 1
+            ELSE END;
+        IF n = 1
+            THEN RETURN 0
+            ELSE END;
+        IF n = 2
+            THEN RETURN 2
+            ELSE END;      
+        END;
+    PRINT add(0) END;
 END}

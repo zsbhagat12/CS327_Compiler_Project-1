@@ -21,6 +21,7 @@ PLUS          = 'PLUS'
 MINUS         = 'MINUS'
 MUL           = 'MUL'
 FLOAT_DIV     = 'FLOAT_DIV'
+INT_DIV       = 'INT_DIV'
 EQEQ          = 'EQEQ'
 NOTEQ         = 'NOTEQ'
 GT            = 'GT'
@@ -330,6 +331,10 @@ class Lexer(object):
                     self.nextChar()
                     self.nextChar()
                     return Token(FLOAT_DIVEQ, '/=')
+                if self.peek() == "/":
+                    self.nextChar()
+                    self.nextChar()
+                    return Token(INT_DIV, '//')                
                 else:
                     self.nextChar()
                 return Token(FLOAT_DIV, '/')
