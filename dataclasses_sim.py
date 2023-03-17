@@ -129,7 +129,25 @@ class Function:
 class CallStack:
     clstk: List
 
-    
+@dataclass
+class Increment:
+    var_literal : 'AST'
+
+@dataclass
+class Decrement:
+    var_literal : 'AST'
+
+
+@dataclass
+class Slicing:
+    name : 'AST'
+    start : 'AST'
+    end : 'AST'
+    jump : 'AST'
+
+@dataclass
+class Str_len:
+    name: 'AST'   
 
 class Environment:
     envs: List
@@ -170,7 +188,7 @@ class Environment:
             return False
         # raise KeyError()
 
-AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | StringLiteral | IfElse | MutVar | While | Seq | Function | LetFun | FunCall
+AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | StringLiteral | IfElse | MutVar | While | Seq | Function | LetFun | FunCall | Slicing
 
 @dataclass
 class FnObject:
@@ -180,25 +198,7 @@ class FnObject:
 Value = Fraction
 Val = bool
 
-@dataclass
-class Increment:
-    var_literal : 'AST'
 
-@dataclass
-class Decrement:
-    var_literal : 'AST'
-
-
-@dataclass
-class Slicing:
-    name : 'AST'
-    start : 'AST'
-    end : 'AST'
-    jump : 'AST'
-
-@dataclass
-class Str_len:
-    name: 'AST'
 
 # Val_string = string
 

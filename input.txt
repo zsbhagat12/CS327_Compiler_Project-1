@@ -55,7 +55,7 @@ BEGIN
         ELSE RETURN n*fact(n-1)
         END;
     END;
-    PRINT fact(99) END;
+    PRINT fact(98) END;
 END}
 {Recursive Fibonacci}{
 BEGIN
@@ -80,7 +80,7 @@ END}
 {Project Euler Problem 1	Multiples of 3 or 5}{
 BEGIN
     sum:=0;
-    n:=1000;
+    n:=1000; {233168}
     i:=1;
     WHILE i<n
     DO
@@ -103,7 +103,7 @@ END}
 {Project Euler Problem 2	Even Fibonacci numbers}{
 BEGIN
     sum:=0;
-    n:=4000000;
+    n:=4000000; {4613732}
     f:=1;
     s:=2;
     WHILE f<=n
@@ -211,7 +211,7 @@ BEGIN
         DO
             BEGIN
             sum := sum*10+num%10;
-            num:=num/10;
+            num:=num//10;
             END
         END;
         RETURN pnum=num;
@@ -315,7 +315,7 @@ BEGIN
             a+=1;
         END
     END;
-    PRINT "a,b,c are:" END;
+    PRINT "a,b,c are:" END; {200, 375, 425}
     PRINT a END;
     PRINT b END;
     PRINT c END;
@@ -395,7 +395,7 @@ BEGIN
     PRINT a END;
     PRINT s END;
 END}
-{First Class Function Testing}
+{First Class Function Testing}{
 BEGIN
     FUNCTION even(n)
     BEGIN
@@ -419,7 +419,7 @@ BEGIN
     END;
     PRINT even(5) END;
     PRINT odd(4) END;
-END
+END}
 {Function binding Testing}{
 BEGIN
     FUNCTION add(a,b)

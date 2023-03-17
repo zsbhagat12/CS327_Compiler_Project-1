@@ -133,6 +133,7 @@ class Lexer(object):
         
 
     def error(self):
+        print("Current Character", self.curChar)
         sys.exit('Invalid character')
 
     def nextChar(self):                         # advances the pos pointer
@@ -297,9 +298,6 @@ class Lexer(object):
                 self.nextChar()
                 return Token(EQEQ, '==') # =
 
-            # if self.curChar == '+':
-            #     self.nextChar()
-            #     return Token(PLUS, '+')
             if self.curChar == '+':
                 if self.peek() == '=':
                     self.nextChar()
@@ -308,18 +306,6 @@ class Lexer(object):
                 else:
                     self.nextChar()
                 return Token(PLUS, '+')
-
-            # if self.curChar == '-':
-            #     self.nextChar()
-            #     return Token(MINUS, '-')
-
-            # if self.curChar == '*':
-            #     self.nextChar()
-            #     return Token(MUL, '*')
-
-            # if self.curChar == '/':
-            #     self.nextChar()
-            #     return Token(FLOAT_DIV, '/')
 
             if self.curChar == '-':
                 if self.peek() == '=':
@@ -370,8 +356,15 @@ class Lexer(object):
             
             if self.curChar == '"':
                 self.nextChar()
-                return self.Stringlex()          
-
+                return self.Stringlex()  
+                    
+            if self.curChar == '[':
+                self.nextChar()
+                return Token(LSPAREN, '[')   
+            
+            if self.curChar == ']':
+                self.nextChar()
+                return Token(RSPAREN, ']')
             self.error()
 
         return Token(EOF, None)
