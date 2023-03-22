@@ -472,3 +472,108 @@ BEGIN
         END;
     PRINT add(0) END;
 END}
+{case 3}{
+BEGIN 
+    p:=1;
+    q:=1;
+    FOR i:= 10 ;  ; i := i - 1 
+    DO 
+        BEGIN 
+        q:=q*p;
+        p:=p+1;   
+        {PRINT p END;}          
+        PRINT q END;
+        PRINT i END;
+        IF i <= 0 
+            THEN
+                BEGIN 
+                BREAK;
+                END
+            ELSE
+                END   
+        END 
+    END; 
+END}
+{Project Euler Problem 12	Highly divisible triangular number}
+BEGIN
+    
+    n:=500;  {5->28,6, time: 0.018s  ; 500->}
+    sum:=0;
+    max:=sum;
+    i:=1;
+    num:=1;
+    WHILE sum<=n
+    DO
+        BEGIN
+            sum:=1;
+            num:=i*(i+1)/2;
+            j:=1;
+            WHILE {j<num@(1/2)} j<=num/2
+            DO
+                BEGIN
+                    IF num%j = 0
+                    THEN 
+                        BEGIN
+                        sum+=1;
+                        END
+                    ELSE END;
+                    j+=1;
+                END
+            END;
+            
+            {IF num = num@(1/2) * num@(1/2)
+            THEN 
+                BEGIN
+                sum+=1;
+                END
+            ELSE END;}
+
+            IF max<sum
+            THEN 
+                BEGIN
+                    max:=sum;
+                    PRINT i END;
+                    PRINT sum END;
+                END
+            ELSE END;
+            i+=1; 
+            
+        END
+    END;
+    PRINT "Required Number:" END;
+    PRINT num END;
+    PRINT "No of factors of above number:" END;
+    PRINT sum END;
+    PRINT "No of factors to be exceeded:" END;
+    PRINT n END;
+END
+{Project Euler Problem 30	Digit fifth powers}{
+BEGIN
+    sum := 0;
+    FOR i := 0; i <= 7*9*9*9*9*9*9; i := i + 1
+    DO
+    BEGIN
+        newsum := 0;
+        reduce := i;
+        WHILE reduce > 0
+        DO
+        BEGIN
+            digit := reduce % 10;
+            reduce := reduce // 10;
+            power := 1;
+            FOR j := 1; j <= 5; j+=1
+            DO
+                BEGIN
+                power := power * digit;
+                END
+            END;
+            newsum := newsum + power;
+        END
+        END;
+        IF newsum = i
+        THEN sum := sum + i
+        ELSE END;
+        END
+    END;
+    PRINT sum END;
+END}

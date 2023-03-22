@@ -69,13 +69,14 @@ import time
 start = time.time()
 
 text = open("input.txt","r").read()
+# text = "PRINT 3@(1/2) END"
 # text = "3 > 4"
 # text = "-2*(1---2)"
 # text = "PRINT 2-+ +3 END"
 l = lex.Lexer(text)   
 p = prs.Parser(l)
 i = Interpreter(p)
-# print(eval(i))7
+# print(eval(i))
 
 eval(i)
 print("Time taken", time.time()-start)
