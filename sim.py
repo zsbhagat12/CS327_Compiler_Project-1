@@ -227,7 +227,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                         if v.command=="return":
                             return v.statement
                     else:
-                        eval_env()
+                        eval_env(increment)
             else:
                 while(eval_env(condition)):
                     v = eval_env(body)
@@ -238,7 +238,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                             return v.statement
                     else:
                         eval_env(increment)
-                return
+            return
         
 
         # def for_loop_helper(en, condition):
