@@ -472,6 +472,7 @@ BEGIN
         END;
     PRINT add(0) END;
 END}
+
 {case 3}{
 BEGIN 
     p:=1;
@@ -577,3 +578,26 @@ BEGIN
     END;
     PRINT sum END;
 END}
+=======
+
+{test1}{
+BEGIN
+    a:=0;
+    BEGIN
+        a:=1;
+        PRINT a END;
+    END;
+    PRINT a END;
+END}
+{output: 1,1}
+
+{test2}{
+BEGIN
+    FUNCTION foo()
+        BEGIN
+            PRINT a END;
+        END;
+    a:=1;
+    PRINT foo() END;
+END}
+{output: 1}
