@@ -1,0 +1,30 @@
+BEGIN
+    sum := 0;
+    FOR i := 2; i <= 3720087; i := i + 1
+    DO
+        BEGIN
+            newsum := 0;
+            reduce := i;
+            WHILE reduce > 0
+            DO
+                BEGIN
+                    digit := reduce%10;
+                    reduce := reduce/10;
+                    PRINT reduce END;
+                    power := 1;
+                    FOR j := 1; j <= 5; j := j + 1
+                    DO
+                        BEGIN
+                            power := power * digit;
+                        END
+                    END;
+                    newsum := newsum + power;
+                END
+            END;
+            IF newsum = i
+                THEN sum := sum + i
+                ELSE END;
+        END
+    END;
+PRINT sum END;
+END
