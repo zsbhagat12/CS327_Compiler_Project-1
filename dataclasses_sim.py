@@ -146,6 +146,26 @@ class Slicing:
     jump : 'AST'
 
 @dataclass
+class list_Slicing:
+    name : 'AST'
+    start : 'AST'
+    end : 'AST'
+    jump : 'AST'
+
+
+@dataclass
+class Listing:
+    value : List['AST']
+    datatype : 'AST'
+
+@dataclass
+class list_append:
+    var : 'AST'
+    item : 'AST'
+
+
+
+@dataclass
 class Str_len:
     name: 'AST'   
 
