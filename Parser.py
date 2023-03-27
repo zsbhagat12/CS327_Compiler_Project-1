@@ -23,6 +23,8 @@ class Parser(object):
             print(" "*(self.lexer.curLinePos-1),"^")
             sys.exit('Invalid character')
 
+
+
     def parse_if(self):
         
         self.check_type(IF)
@@ -100,6 +102,63 @@ class Parser(object):
         self.check_type(END)
         return While(c, b)
     
+    def parse_list_append(self):
+        self.check_type(APPEND)
+        self.check_type(LPAREN)
+        var = self.variable()
+        self.check_type(COMMA)
+        item = self.parse()
+        self.check_type(RPAREN)
+        return list_append(var, item)
+    
+    def parse_list_append(self):
+        self.check_type(APPEND)
+        self.check_type(LPAREN)
+        var = self.variable()
+        self.check_type(COMMA)
+        item = self.parse()
+        self.check_type(RPAREN)
+        return list_append(var, item)
+    
+    
+    def parse_list_slice(self, c):
+     
+        self.check_type(LSPAREN)
+        if self.curr_token.type==COMMA:
+            start = NumLiteral(0)
+        else:
+            start = self.parse()
+        
+        if self.curr_token.type==RSPAREN:
+            index_type = True
+            self.check_type(RSPAREN)
+
+        elif self.curr_token.type==COMMA:
+            index_type = False
+            self.check_type(COMMA)
+            end = self.parse()
+        else:
+            index_type = False
+            end = self.parse()
+        
+    
+        if index_type==False:
+            if self.curr_token.type==COMMA:
+                self.check_type(COMMA)
+                if self.curr_token.type!=RSPAREN:
+                    jump = self.parse()   
+                else:
+                    jump = NumLiteral(1)
+
+            else:
+                jump = NumLiteral(1)
+            self.check_type(RSPAREN)
+        else:
+            end = None
+            jump = None
+        return list_Slicing(c, start, end, jump)
+
+
 
     def parse_inc(self):
         self.check_type(INC)
@@ -122,6 +181,7 @@ class Parser(object):
         c = self.parse()
         self.check_type(RPAREN)
         return Str_len(c)
+         
     
     def parse_slice(self, c):
      
@@ -192,6 +252,45 @@ class Parser(object):
         #     e = self.logical(node)
         e = self.logical()
         return Statement("return", e)
+    
+    def parse_list(self, Type):
+        if Type != LSPAREN:
+            # print("ENTER")
+            self.check_type(COLON)
+            
+            token = self.curr_token
+            self.check_type(INTEGER)
+            Type = token.type
+            datatype = Type
+
+            # print(datatype)
+
+        else:
+            datatype = NONE
+
+
+        self.check_type(LSPAREN)
+        ele = self.parse()
+        value =[ele]
+        token = self.curr_token
+        Type = token.type
+
+        while Type!= RSPAREN:
+            self.check_type(COMMA)
+            ele = self.parse()
+            value.append(ele)
+            token = self.curr_token
+            # print(token)
+            Type = token.type
+        self.check_type(RSPAREN)
+        # print(type(datatype))
+
+        # print("done and dusted")
+
+        return Listing(value, datatype)
+            
+
+
 
     def parse_func(self):
         self.check_type(FUNCTION)
@@ -285,6 +384,13 @@ class Parser(object):
         elif Type == LEN:
             self.check_type(LEN)
             return self.parse_Strlen()
+
+        elif Type == LIST:
+            self.check_type(LIST)
+            if self.curr_token.type == COLON:
+                return self.parse_list(self.curr_token.type)
+            return self.parse_list(self.curr_token.type)
+
         elif Type == ID:
             self.check_type(ID)
             if self.curr_token.type == LPAREN:
@@ -488,6 +594,8 @@ class Parser(object):
                 return self.parse_inc()
             case 'DEC':
                 return self.parse_dec()
+            case 'APPEND':
+                return self.parse_list_append()
             # case 'SEMI':
             #     return
                 # return self.parse()
