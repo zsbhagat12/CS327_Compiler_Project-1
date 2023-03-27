@@ -18,6 +18,21 @@ class NumLiteral:
         self.value = Fraction(*args)
 
 @dataclass
+class IntLiteral:
+    value: Fraction
+    # type: SimType = NumType()
+    def __init__(self, *args):
+        self.value = int(*args)
+        
+
+@dataclass
+class FloatLiteral:
+    value: Fraction
+    # type: SimType = NumType()
+    def __init__(self, *args):
+        self.value = float(*args)
+
+@dataclass
 class StringLiteral:
     value : str
     def __init__(self, *args):
@@ -166,7 +181,7 @@ class list_append:
 
 
 @dataclass
-class Str_len:
+class length:
     name: 'AST'   
 
 class Environment:
@@ -225,5 +240,3 @@ Val = bool
 @dataclass
 class InvalidProgram(Exception):
     pass
-
-
