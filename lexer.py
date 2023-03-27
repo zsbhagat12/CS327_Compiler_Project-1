@@ -44,6 +44,7 @@ VAR           = 'VAR'
 INTEGER       = 'INTEGER'
 REAL          = 'REAL'
 INTEGER_DIV   = 'INTEGER_DIV'
+NONE          = 'NONE'
 READ          = 'READ'
 WRITE         = 'WRITE'
 BEGIN         = 'BEGIN'
@@ -65,6 +66,9 @@ BREAK         = "BREAK"
 INC           = "INC"
 DEC           = "DEC"
 LEN           = "LEN"
+LIST          = "LIST"
+APPEND        = "APPEND"
+POP           = "POP"
 
 
 # literals
@@ -111,7 +115,11 @@ KEYWORDS = {
     'BREAK': Token("BREAK", "BREAK"),
      "INC" : Token("INC", "INC"),
     "DEC" : Token("DEC","DEC"),
-    "LEN" : Token("LEN", "LEN")
+    "LEN" : Token("LEN", "LEN"),
+    "LIST" : Token("LIST", "LIST"),
+    "NONE" : Token("NONE", "NONE"),
+    "APPEND" : Token("APPEND", "APPEND"),
+    "POP" : Token("POP", "POP")
     # 'PRINT': Token('PRINT', ';'),
     
 }

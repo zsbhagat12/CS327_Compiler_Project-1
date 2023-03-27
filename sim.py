@@ -193,6 +193,35 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             e = eval_env(temp)
             return len(e)
         
+        case list_append(MutVar(var), item):
+         
+            if not environment.check(var):
+                print(f"list '{var}' not defined")
+                sys.exit()
+            temp = environment.get(var)
+            e1 = eval_env(temp)
+            e1.append(item)
+            return e1
+
+
+        
+        case Listing(value, datatype):
+            if datatype != "NONE":
+                if datatype == "INTEGER":
+                    temp = NumLiteral
+                elif datatype == "STRING":
+                    temp = StringLiteral
+                elif datatype == "NONE":
+                    temp = None
+                for i in value:
+                    if isinstance(i, temp):
+                        continue
+                    else:
+                        raise InvalidProgram()
+
+            return program.value
+
+
         case Slicing(name, start, end, jump):       
             e1 = eval_env(name)
             e2 = eval_env(start)
@@ -213,7 +242,27 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 e = e1[e2:e3:e4]
             return e
         
+        case list_Slicing(name, start, end, jump):       
+            e1 = eval_env(name)
+            e2 = eval_env(start)
+            e2 = int(e2)
+            if end!=None:
+                e3 = eval_env(end)
+                e3  = int(e3)
+
+            if jump!=None:
+                e4 = eval_env(jump)
+                e4  = int(e4)
+    
+            if end == None and jump!=None:
+                e = e1[e2::e4]
+            elif jump==None:
+                e = e1[e2]
+            else:
+                e = e1[e2:e3:e4]
+            return e
         
+
         case ForLoop(start, condition, increment, body):
             # print("Zeeshan", condition)
 
