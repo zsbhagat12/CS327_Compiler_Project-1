@@ -175,12 +175,12 @@ class Parser(object):
         self.check_type(RPAREN)
         return Decrement(c)
     
-    def parse_Strlen(self):
+    def parse_len(self):
         
         self.check_type(LPAREN)
         c = self.parse()
         self.check_type(RPAREN)
-        return Str_len(c)
+        return length(c)
          
     
     def parse_slice(self, c):
@@ -375,15 +375,21 @@ class Parser(object):
             node = self.logical()
             self.check_type(RPAREN)
             return node
+        elif Type == FRACTION_CONST:
+            self.check_type(FRACTION_CONST)
+            return NumLiteral(token.value)
+        elif Type == REAL_CONST:
+            self.check_type(REAL_CONST)
+            return FloatLiteral(token.value)
         elif Type == INTEGER_CONST:
             self.check_type(INTEGER_CONST)
-            return NumLiteral(token.value)
+            return IntLiteral(token.value)        
         elif Type == TRUE or Type == FALSE:
             self.check_type(Type)
             return BoolLiteral(token.value)
         elif Type == LEN:
             self.check_type(LEN)
-            return self.parse_Strlen()
+            return self.parse_len()
 
         elif Type == LIST:
             self.check_type(LIST)
@@ -606,6 +612,3 @@ class Parser(object):
                 
                 # node = MutVar(node.name)
                 return self.assignment(node)
-            
-
-
