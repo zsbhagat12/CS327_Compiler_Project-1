@@ -171,7 +171,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             environment.exit_scope()
             return v
         
-        case FunCall(FunCall(MutVar(name), args) as fncall, args):
+        case FunCall(FunCall(MutVar(name), params) as fncall, args):
             # not (environment.check(name) and environment.get(name) != None)
             if m.value == None and (not environment.check(name) or environment.get(name) == None):
                 print(f"Function '{name}' not defined")
