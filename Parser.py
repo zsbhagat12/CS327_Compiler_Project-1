@@ -80,19 +80,19 @@ class Parser(object):
         # return s
     
     def parse_for(self):
-            self.check_type(FOR)
-            start = self.parse()
-            # print("Hi", start)
-            self.check_type(SEMI)
-            condition = self.logical()
-            # print("Hi2", end)
-            self.check_type(SEMI)
-            increment = self.parse()
-            # print("Hi3",jump)
-            self.check_type(DO)
-            body = self.parse()
-            self.check_type(END)
-            return ForLoop(start, condition, increment, body)
+        self.check_type(FOR)
+        start = self.parse()
+        # print("Hi", start)
+        self.check_type(SEMI)
+        condition = self.logical()
+        # print("Hi2", end)
+        self.check_type(SEMI)
+        increment = self.parse()
+        # print("Hi3",jump)
+        self.check_type(DO)
+        body = self.parse()
+        self.check_type(END)
+        return ForLoop(start, condition, increment, body)
     
     def parse_while(self):
         self.check_type(WHILE)
@@ -337,7 +337,8 @@ class Parser(object):
             Type = token.type
         
         self.check_type(RPAREN)
-
+        if self.curr_token.type == LPAREN:
+            return self.parse_func_call(FunCall(node, params))
 
         return FunCall(node, params)
 
@@ -404,11 +405,13 @@ class Parser(object):
             elif self.curr_token.type == LSPAREN:
                 return self.parse_slice(MutVar(token.value))
             return (MutVar(token.value))
-        elif Type == STRING:
+        elif Type == STRING:    
             # Nothing new here, just eat the STRING token and return the String() AST.
             self.check_type(STRING)
             return StringLiteral(token.value)
-        
+        else:
+            print("None of the suggested tokens found:", INTEGER_CONST, ID, LPAREN, STRING, TRUE, FALSE, "...")
+            self.check_type(INTEGER_CONST)
 
 
     def exponential(self):

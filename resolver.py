@@ -1,6 +1,6 @@
 from dataclasses_sim import *
 
-
+lateBinding = {}
 def resolve(program: AST, environment: Environment = None) -> AST:
     if environment is None:
         environment = Environment()
@@ -76,11 +76,19 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             environment.exit_scope()
             return LetFun(v, params, rbody, rexpr)
         case Function(MutVar(name) as m, params , body) | Function(Variable(name) as m, params , body):
-            
+            new = False
             # environment.add(name, m)
             if not environment.check(name):
                 environment.add(name, m)
-            else:
+                if name in lateBinding:
+                    lateBinding[name].fn.id = m.id
+                    # lateBinding.pop(name)
+                    new = True
+            else:   
+                if name in lateBinding:
+                    lateBinding[name].fn.id = m.id
+                    lateBinding[name].fn.put(m.value)
+                    lateBinding.pop(name)
                 environment.update(name, m)
             mutvar = environment.get(name)
             
@@ -94,6 +102,9 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             environment.exit_scope()
             e = FnObject(params, rbody)
             mutvar.put(e)
+            if new:
+                lateBinding[name].fn.put(e)
+                lateBinding.pop(name)
             return Function(mutvar, params, rbody)
         case Seq(things):
             environment.enter_scope()
@@ -103,24 +114,29 @@ def resolve(program: AST, environment: Environment = None) -> AST:
                 
             environment.exit_scope()
             return Seq(v)
+        case FunCall(MutVar(name) as m, args):
+            if not environment.check(name):
+                lateBinding[name] = program
+            m = resolve_(m)
+            fn = environment.get(name).get()
+            m.put(fn)
+            argv = []
+            
+            for arg in args:
+                argv.append(resolve_(arg))
+            return FunCall(m, argv)
         case FunCall(fn, args):
             rfn = resolve_(fn)
             rargs = []
             for arg in args:
                 rargs.append(resolve_(arg))
             return FunCall(rfn, rargs)
-        case FunCall(MutVar(name) as m, args):
-            m = resolve_(m)
-            fn = environment.get(name).get()
-            argv = []
-            
-            for arg in args:
-                argv.append(resolve_(arg))
-            return FunCall(m, argv)
+        
             
         case While(c, b):
             
             return While(resolve_(c), resolve_(b))
+        
 # def eval(program: AST, environment: Environment = None) -> Value:
 #     if environment is None:
 #         environment = Environment()

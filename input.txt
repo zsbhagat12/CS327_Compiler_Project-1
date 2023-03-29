@@ -329,13 +329,13 @@ BEGIN
     END;
     FUNCTION f4(n)
     BEGIN
-        RETURN n**n;
+        RETURN n@n;
     END;
     FUNCTION f1(f3)
     BEGIN
-        FUNCTION f11(m)
+        FUNCTION f11(n)
         BEGIN
-            RETURN f3(m)*(m-1);
+            RETURN f3(n)*(n-1);
             {PRINT "f11" END;}
         END;
         {PRINT "f1" END;}
@@ -343,10 +343,37 @@ BEGIN
     END;
     rf11:=f1(f2);
     rf12:=f1(f4);
-    PRINT rf11(5) END;
-    PRINT rf12(3) END;
+    rf13:=f2(4);
+    rf14:=6;
+    PRINT rf14 END; {6}
+    PRINT rf13 END; {16}
+    PRINT rf11(5) END; {100}
+    PRINT rf12(3) END; {54}
+    {PRINT f3(3) END; {error}}
 
 END}
+{First Class Function Test 2}{
+BEGIN
+    FUNCTION f4(n)
+    BEGIN
+        RETURN n@n;
+    END;
+    FUNCTION f1(f3)
+    BEGIN
+        FUNCTION f11(n)
+        BEGIN
+            RETURN f3(n)*(n-1);
+            {PRINT "f11" END;}
+        END;
+        {PRINT "f1" END;}
+        RETURN f11;
+    END;
+    
+    rf12:=f1(f4);
+    PRINT rf12(3) END; {54}
+    PRINT f1(f4)(3) END; {54}
+    
+END}    
 {Resolver test; inspired from sir's class }{
 BEGIN
     FUNCTION foo(a)
@@ -410,6 +437,45 @@ BEGIN
     END;
     FUNCTION odd(m)
     BEGIN
+        IF m = 0
+        THEN RETURN FALSE
+        ELSE END;
+        IF m = 1
+        THEN RETURN TRUE
+        ELSE END;
+        RETURN even(m-1);
+    END;
+    PRINT even(5) END;
+    PRINT odd(4) END;
+END}
+{Mutual Recursion Testing}{
+BEGIN
+    FUNCTION even(n)
+    BEGIN
+        IF n = 0
+        THEN RETURN TRUE
+        ELSE END;
+        IF n = 1
+        THEN RETURN FALSE
+        ELSE END;
+        RETURN odd(n-1);
+    END;
+    FUNCTION odd(m)
+    BEGIN
+        PRINT "1st Odd" END;
+        IF m = 0
+        THEN RETURN FALSE
+        ELSE END;
+        IF m = 1
+        THEN RETURN TRUE
+        ELSE END;
+        RETURN even(m-1);
+    END;
+    PRINT even(5) END;
+    PRINT odd(4) END;
+    FUNCTION odd(m)
+    BEGIN
+        PRINT "2nd Odd" END;
         IF m = 0
         THEN RETURN FALSE
         ELSE END;
@@ -495,7 +561,7 @@ BEGIN
         END 
     END; 
 END}
-{Project Euler Problem 12	Highly divisible triangular number}
+{Project Euler Problem 12	Highly divisible triangular number}{
 BEGIN
     
     n:=500;  {5->28,6, time: 0.018s  ; 500->}
@@ -547,7 +613,14 @@ BEGIN
     PRINT sum END;
     PRINT "No of factors to be exceeded:" END;
     PRINT n END;
-END
+END}
+{Token/Parser Test for not accepting ** and other such operators/tokens}{
+BEGIN
+    a:=1;
+    b:=2;
+    c:=b**03;
+    PRINT c END;
+END}
 {Project Euler Problem 30	Digit fifth powers}{
 BEGIN
     sum := 0;
@@ -578,7 +651,7 @@ BEGIN
     END;
     PRINT sum END;
 END}
-=======
+
 
 {test1}{
 BEGIN
