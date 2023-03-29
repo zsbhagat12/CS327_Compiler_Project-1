@@ -1,0 +1,16 @@
+BEGIN
+ 
+    x:= " BHAVINI";
+    T := LIST:INTEGER[~1,~3,~4, ~2, ~7];
+    PRINT T END;
+
+    APPEND(T, ~8);
+
+    PRINT LEN(T) END;
+
+    y := T[0];
+
+    PRINT T END;
+    PRINT y END;
+
+END

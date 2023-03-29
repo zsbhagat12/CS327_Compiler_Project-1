@@ -4,6 +4,7 @@ import sys
 # punctuators
 EOF           = 'EOF'
 ID            = 'ID'
+FRACTION_CONST= 'FRACTION_CONST'
 INTEGER_CONST = 'INTEGER_CONST'
 REAL_CONST    = 'REAL_CONST'
 LPAREN        = 'LPAREN'
@@ -182,6 +183,16 @@ class Lexer(object):
                 noOfstartBraces-=1
         self.nextChar()                         # to skip the closing curly brace as well
 
+    def intlex(self):                           
+        # Consume all the consecutive digits and decimal if present.
+        result = ''
+        while self.curChar is not None and self.curChar.isdigit():
+            result += self.curChar
+            self.nextChar()
+
+        token = Token('INTEGER_CONST', int(result))
+        return token
+    
     def number(self):                           
         # Consume all the consecutive digits and decimal if present.
         result = ''
@@ -202,7 +213,7 @@ class Lexer(object):
 
             token = Token('REAL_CONST', float(result))
         else:
-            token = Token('INTEGER_CONST', int(result))
+            token = Token('FRACTION_CONST', int(result))
 
         return token
 
@@ -240,6 +251,11 @@ class Lexer(object):
                 self.skipComments()
                 continue
 
+            if self.curChar == '~':
+                if self.peek().isdigit():
+                    self.nextChar()                
+                    return self.intlex()
+                
             if self.curChar.isalpha():
                 return self._id()
 

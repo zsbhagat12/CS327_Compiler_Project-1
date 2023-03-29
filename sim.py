@@ -188,7 +188,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             environment.update(name, temp)
             return 
         
-        case Str_len(MutVar(name)):
+        case length(MutVar(name)):
             temp = environment.get(name)
             e = eval_env(temp)
             return len(e)
@@ -200,7 +200,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 sys.exit()
             temp = environment.get(var)
             e1 = eval_env(temp)
-            e1.append(item)
+            e1.append(eval_env(item))
             return e1
 
 
@@ -208,7 +208,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case Listing(value, datatype):
             if datatype != "NONE":
                 if datatype == "INTEGER":
-                    temp = NumLiteral
+                    temp = IntLiteral
                 elif datatype == "STRING":
                     temp = StringLiteral
                 elif datatype == "NONE":
@@ -218,8 +218,13 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                         continue
                     else:
                         raise InvalidProgram()
+       
+            temp =[]
+            for i in program.value:
+                temp.append(eval_env(i))
+       
 
-            return program.value
+            return temp
 
 
         case Slicing(name, start, end, jump):       
@@ -418,6 +423,10 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return e
 
         case NumLiteral(val):
+            return val
+        case IntLiteral(val):
+            return val
+        case FloatLiteral(val):
             return val
         case BoolLiteral(val):
             return eval_bool_env(program)
