@@ -35,12 +35,13 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             print("Unresolved Tree:")
             pp.pprint(tree)
             
-            # tree = resolve(tree)
-            # sys.stdout = open('resolved_tree', 'w')
-            # pp = pprint.PrettyPrinter(stream=sys.stdout)
-            # pp.stream = sys.stdout
-            # print("Resolved Tree:")
-            # pp.pprint(tree)
+            if resolverOn:
+                tree = resolve(tree)
+                sys.stdout = open('resolved_tree', 'w')
+                pp = pprint.PrettyPrinter(stream=sys.stdout)
+                pp.stream = sys.stdout
+                print("Resolved Tree:")
+                pp.pprint(tree)
 
             # typecheck(tree)
             sys.stdout = sys.__stdout__
@@ -126,13 +127,18 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             environment.exit_scope()
             return v
         
-        case FunCall(MutVar(name), args):
-            if not environment.check(name):
-                environment.add(name, MutVar(name))
-                environment.get(name).put(FnObject([],None))
-            fn = environment.get(name).get()
+        case FunCall(MutVar(name) as m, args):
+            # not (environment.check(name) and environment.get(name) != None)
+            if m.value == None and (not environment.check(name) or environment.get(name) == None):
+                print(f"Function '{name}' not defined")
+                sys.exit()
+                # environment.add(name, MutVar(name))
+                # environment.get(name).put(FnObject([],None))
+            m.value = copy.deepcopy(m.value)
+            fn = m.value if m.value != None else environment.get(name).get() #fn is FnObject
+            # fn = FnObject(fn.params, fn.body)
             argv = []
-            mtfo = []
+            mtfo = [] #muttable function object
             for arg in args:
                 if arg != None:
                     mtfo.append(arg)
@@ -140,18 +146,70 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                         # mtfo[arg.value] = arg
                     argv.append(eval_env(arg))
             environment.enter_scope()
-            
+            # print(name)
+            # print(argv)
+            # print(mtfo)
+            # print(fn.params)
+            # print(fn.body)
             for param, arg in zip(fn.params, argv):
                 if isinstance(param, MutVar):
                     if isinstance(arg, FnObject):
                         e = mtfo[argv.index(arg)]
                         if environment.check(e.name):
-                            environment.addWithOther(e.name, param.name, arg)
+                            environment.addWithOther(e.name, param.name, None)
+                        # param.put(FnObject(arg.params, copy.deepcopy(arg.body)))
+                        # param.put(copy.deepcopy(arg))
+                        
                     else:
                         environment.add(param.name, param)
-                        param.put(arg)
+                    param.put(arg)
                 else:
                     environment.add(param.name, arg)
+            # print(fn, id(fn.body))
+            v = eval_env(fn.body)
+            
+            environment.exit_scope()
+            return v
+        
+        case FunCall(FunCall(MutVar(name), params) as fncall, args):
+            # not (environment.check(name) and environment.get(name) != None)
+            if m.value == None and (not environment.check(name) or environment.get(name) == None):
+                print(f"Function '{name}' not defined")
+                sys.exit()
+                # environment.add(name, MutVar(name))
+                # environment.get(name).put(FnObject([],None))
+            m.value = copy.deepcopy(m.value)
+            fn = m.value if m.value != None else environment.get(name).get() #fn is FnObject
+            # fn = FnObject(fn.params, fn.body)
+            argv = []
+            mtfo = [] #muttable function object
+            for arg in args:
+                if arg != None:
+                    mtfo.append(arg)
+                    #if isinstance(arg, MutVar) and isinstance(arg.value, FnObject):
+                        # mtfo[arg.value] = arg
+                    argv.append(eval_env(arg))
+            environment.enter_scope()
+            # print(name)
+            # print(argv)
+            # print(mtfo)
+            # print(fn.params)
+            # print(fn.body)
+            for param, arg in zip(fn.params, argv):
+                if isinstance(param, MutVar):
+                    if isinstance(arg, FnObject):
+                        e = mtfo[argv.index(arg)]
+                        if environment.check(e.name):
+                            environment.addWithOther(e.name, param.name, None)
+                        # param.put(FnObject(arg.params, copy.deepcopy(arg.body)))
+                        # param.put(copy.deepcopy(arg))
+                        
+                    else:
+                        environment.add(param.name, param)
+                    param.put(arg)
+                else:
+                    environment.add(param.name, arg)
+            # print(fn, id(fn.body))
             v = eval_env(fn.body)
             
             environment.exit_scope()

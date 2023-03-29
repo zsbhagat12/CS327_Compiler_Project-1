@@ -2,7 +2,14 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import Union, Mapping, Optional, NewType, List
 
+# Resolver On/Off
+resolverOn = True #False ; Turn to False if not using resolver
+currentID = 0
 
+def fresh():
+    global currentID
+    currentID = currentID + 1
+    return currentID
 @dataclass
 class BoolLiteral:
     value: bool
@@ -113,9 +120,11 @@ class Seq:
 class MutVar:
     name: str
     value: 'AST'
+    id: int #Final[int]  #comment it if not using resolver
     def __init__(self, name) -> None:
         self.value = None
         self.name = name
+        self.id = fresh() if resolverOn else 0
     def get(self):
         return self.value
     def put(self, val):
