@@ -301,7 +301,7 @@ class Parser(object):
         var = self.variable()
         token = self.curr_token
         Type = token.type
-        params = [var]
+        params = [var] if var != None else []
         
         while Type != RPAREN:
             self.check_type(COMMA)
@@ -324,7 +324,7 @@ class Parser(object):
         var = self.logical()
         token = self.curr_token
         Type = token.type
-        params = [var]
+        params = [var] if var != None else []
         
         while Type != RPAREN:
             self.check_type(COMMA)
@@ -409,7 +409,7 @@ class Parser(object):
             # Nothing new here, just eat the STRING token and return the String() AST.
             self.check_type(STRING)
             return StringLiteral(token.value)
-        else:
+        elif Type != RPAREN:
             print("None of the suggested tokens found:", INTEGER_CONST, ID, LPAREN, STRING, TRUE, FALSE, "...")
             self.check_type(INTEGER_CONST)
 
