@@ -4,6 +4,7 @@ from type_checking import *
 from resolver import *
 import sys
 import pprint
+import copy
 pp = pprint.PrettyPrinter()
 
 def type_error():
