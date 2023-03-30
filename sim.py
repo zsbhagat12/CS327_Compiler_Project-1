@@ -173,17 +173,21 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             v = eval_env(fn.body)
             
             environment.exit_scope()
+            # print(name, v)
             return v
         
-        case FunCall(FunCall(MutVar(name), fncall_args) as fncall, args):
+        case FunCall(FunCall(_,_) as funcall, args):
+            # print(fncall)
+            fn = eval_env(funcall)
+            
             # not (environment.check(name) and environment.get(name) != None)
-            if m.value == None and (not environment.check(name) or environment.get(name) == None):
-                print(f"Function '{name}' not defined")
-                sys.exit()
-                # environment.add(name, MutVar(name))
-                # environment.get(name).put(FnObject([],None))
-            m.value = copy.deepcopy(m.value)
-            fn = m.value if m.value != None else environment.get(name).get() #fn is FnObject
+            # if m.value == None and (not environment.check(name) or environment.get(name) == None):
+            #     print(f"Function '{name}' not defined")
+            #     sys.exit()
+            #     # environment.add(name, MutVar(name))
+            #     # environment.get(name).put(FnObject([],None))
+            # m.value = copy.deepcopy(m.value)
+            # fn = m.value if m.value != None else environment.get(name).get() #fn is FnObject
             # fn = FnObject(fn.params, fn.body)
             argv = []
             mtfo = [] #muttable function object
@@ -657,8 +661,10 @@ def eval_bool(program: AST, environment: Environment() = None) -> Val:
             return eval_env(left) or eval_env(right) 
         
     sys.stdout = open('error_in_sim', 'w')    
-    print("Current AST", program)   
     pp = pprint.PrettyPrinter(stream=sys.stdout)
+    print("Current AST")   
+    pp.pprint(program)
+    
     print("Current Environment:")
     
     pp.pprint( environment.envs)
