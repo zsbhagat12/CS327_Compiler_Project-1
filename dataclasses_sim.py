@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Union, Mapping, Optional, NewType, List
+from typing import Union, Mapping, Optional, NewType, List, Final
+import copy
 
 # Resolver On/Off
-resolverOn = True #False ; Turn to False if not using resolver
+resolverOn = True
 currentID = 0
 
 def fresh():
@@ -23,21 +24,6 @@ class NumLiteral:
     # type: SimType = NumType()
     def __init__(self, *args):
         self.value = Fraction(*args)
-
-@dataclass
-class IntLiteral:
-    value: Fraction
-    # type: SimType = NumType()
-    def __init__(self, *args):
-        self.value = int(*args)
-        
-
-@dataclass
-class FloatLiteral:
-    value: Fraction
-    # type: SimType = NumType()
-    def __init__(self, *args):
-        self.value = float(*args)
 
 @dataclass
 class StringLiteral:
@@ -170,27 +156,7 @@ class Slicing:
     jump : 'AST'
 
 @dataclass
-class list_Slicing:
-    name : 'AST'
-    start : 'AST'
-    end : 'AST'
-    jump : 'AST'
-
-
-@dataclass
-class Listing:
-    value : List['AST']
-    datatype : 'AST'
-
-@dataclass
-class list_append:
-    var : 'AST'
-    item : 'AST'
-
-
-
-@dataclass
-class length:
+class Str_len:
     name: 'AST'   
 
 class Environment:
@@ -214,6 +180,8 @@ class Environment:
         for env in reversed(self.envs):
             if name in env:
                 return env[name]
+        print("Current Environment", self.envs)
+        print("Current AST", self.program)
         raise KeyError()
 
     def update(self, name, value):
@@ -221,6 +189,8 @@ class Environment:
             if name in env:
                 env[name] = value
                 return
+        print("Current AST", self.program)
+        print("Current Environment", self.envs)
         raise KeyError()
     
     def check(self, name):
@@ -231,6 +201,10 @@ class Environment:
         else:
             return False
         # raise KeyError()
+    def addWithOther(self, n1, n2, v2):
+        for env in reversed(self.envs):
+            if n1 in env:
+                env[n2] = v2
 
 AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | StringLiteral | IfElse | MutVar | While | Seq | Function | LetFun | FunCall | Slicing
 
@@ -238,7 +212,8 @@ AST = NumLiteral | BinOp | Variable | Let | BoolLiteral | UnOp | StringLiteral |
 class FnObject:
     params: List['AST']
     body: 'AST'
-
+    def get(self):
+        return self#FnObject(self.params, self.body)
 Value = Fraction
 Val = bool
 
@@ -249,3 +224,5 @@ Val = bool
 @dataclass
 class InvalidProgram(Exception):
     pass
+
+
