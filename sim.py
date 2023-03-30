@@ -137,6 +137,9 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 # environment.get(name).put(FnObject([],None))
             m.value = copy.deepcopy(m.value)
             fn = m.value if m.value != None else environment.get(name).get() #fn is FnObject
+            # pp = pprint.PrettyPrinter()
+            # pp.pprint(fn)
+            # pp.pprint(environment.envs)
             # fn = FnObject(fn.params, fn.body)
             argv = []
             mtfo = [] #muttable function object
@@ -172,7 +175,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             environment.exit_scope()
             return v
         
-        case FunCall(FunCall(MutVar(name), params) as fncall, args):
+        case FunCall(FunCall(MutVar(name), fncall_args) as fncall, args):
             # not (environment.check(name) and environment.get(name) != None)
             if m.value == None and (not environment.check(name) or environment.get(name) == None):
                 print(f"Function '{name}' not defined")
@@ -216,7 +219,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             environment.exit_scope()
             return v
         
-        case MutVar(name):
+        case MutVar(name) as m:
             # if program.value != None:
             #     return program.get()
                 
@@ -226,8 +229,9 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 sys.exit()
                 # environment.add(name, MutVar(name))
             
-            e = environment.get(name)
-            return e.get()
+            e = m if m.value != None else environment.get(name)
+            
+            return e.get()  
 
         case Increment(MutVar(name)):
             #print('Hi')
@@ -381,11 +385,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                         return v.statement
             return 
 
-        case BinOp("=", MutVar(name), val):
+        case BinOp("=", MutVar(name) as m, val):
             e = eval_env(val)
             # program.get_left().put(eval(val))
             if not environment.check(name):
-                environment.add(name, MutVar(name))
+                environment.add(name, m)
                 mutvar = environment.get(name)
                 mutvar.put(e)
 
@@ -395,11 +399,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 mutvar.put(e)
             return mutvar.get() #Assignment as expression
         
-        case BinOp("+=", MutVar(name), val):
+        case BinOp("+=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
             if not environment.check(name):
-                environment.add(name, MutVar(name))
+                environment.add(name, m)
                 mutvar = environment.get(name)
                 e += mutvar.get()
                 mutvar.put(e)
@@ -412,11 +416,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return mutvar.get() #Assignment as expression
         
 
-        case BinOp("-=", MutVar(name), val):
+        case BinOp("-=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
             if not environment.check(name):
-                environment.add(name, MutVar(name))
+                environment.add(name, m)
                 mutvar = environment.get(name)
                 e -= mutvar.get()
                 mutvar.put(e)
@@ -430,11 +434,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         
 
     
-        case BinOp("/=", MutVar(name), val):
+        case BinOp("/=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
             if not environment.check(name):
-                environment.add(name, MutVar(name))
+                environment.add(name, m)
                 mutvar = environment.get(name)
                 e /= mutvar.get()
                 mutvar.put(e)
@@ -446,12 +450,27 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 mutvar.put(e)
             return mutvar.get() #Assignment as expression
         
-
-        case BinOp("**=", MutVar(name), val):
+        case BinOp("*=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
             if not environment.check(name):
-                environment.add(name, MutVar(name))
+                environment.add(name, m)
+                mutvar = environment.get(name)
+                e *= mutvar.get()
+                mutvar.put(e)
+
+            else:
+                mutvar = environment.get(name)
+                e *= mutvar.get()
+                # environment.update(name, MutVar(name))
+                mutvar.put(e)
+            return mutvar.get() #Assignment as expression
+
+        case BinOp("**=", MutVar(name) as m, val):
+            e = eval_env(val) 
+            # program.get_left().put(eval(val))
+            if not environment.check(name):
+                environment.add(name, m)
                 mutvar = environment.get(name)
                 e **= mutvar.get()
                 mutvar.put(e)
@@ -465,13 +484,13 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         
 
     
-        case Function(MutVar(name), params , body) | Function(Variable(name), params , body):
+        case Function(MutVar(name) as m, params , body) | Function(Variable(name) as m, params , body):
             # environment.enter_scope()
             # environment.add(name, FnObject(params, body))
             if not environment.check(name):
-                environment.add(name, MutVar(name))
+                environment.add(name, m)
             else:
-                environment.update(name, MutVar(name))
+                environment.update(name, m)
             mutvar = environment.get(name)
             e = FnObject(params, body)
             mutvar.put(e)
