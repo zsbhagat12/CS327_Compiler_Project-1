@@ -374,7 +374,7 @@ BEGIN
     PRINT f1(f4)(3) END; {54}
     
 END}
-{First Class Function Test 3}{
+{First Class Function Test 3}
 BEGIN
     FUNCTION f2(n)
     BEGIN
@@ -403,11 +403,11 @@ BEGIN
     PRINT rf51(5) END; {100}
     rf11:=f5()(f4);
     rf22:=f5();
-    PRINT rf11(2) END; {768}
+    PRINT rf11(4) END; {768}
     PRINT rf22(f4)(3) END; {54}
     PRINT f5()(f2)(5) END; {100}
     
-END}
+END
 {Resolver test; inspired from sir's class }{
 BEGIN
     FUNCTION foo(a)
@@ -457,7 +457,7 @@ BEGIN
     PRINT a END;
     PRINT s END;
 END}
-{First Class Function Testing}{
+{Mutual Recursion Testing}{
 BEGIN
     FUNCTION even(n)
     BEGIN
@@ -482,7 +482,7 @@ BEGIN
     PRINT even(5) END;
     PRINT odd(4) END;
 END}
-{Mutual Recursion Testing}{
+{Mutual Recursion Testing 2}{
 BEGIN
     FUNCTION even(n)
     BEGIN
@@ -708,4 +708,31 @@ BEGIN
     PRINT foo() END;
 END}
 {output: 1}
+{Looks matter}{
+a:=1;
+PRINT (a) ;
+IF a = 1
+    THEN
+        BEGIN
+        PRINT a END;
+        END
+    ELSE
+        END
+WHILE a < 10
+    DO
+        BEGIN
+        
+        a:=a+1;
+        
+        END
+    END
+PRINT( a);
+FUNCTION foo()
+    BEGIN
+    PRINT a END;
+    END
+PRINT (foo()) ;
+
+
+}
 
