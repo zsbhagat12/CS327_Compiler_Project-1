@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Union, Mapping, Optional, NewType, List, Final
-import copy
+from typing import Union, Mapping, Optional, NewType, List
 
 # Resolver On/Off
-resolverOn = True
+resolverOn = True #False ; Turn to False if not using resolver
 currentID = 0
 
 def fresh():
@@ -24,6 +23,21 @@ class NumLiteral:
     # type: SimType = NumType()
     def __init__(self, *args):
         self.value = Fraction(*args)
+
+@dataclass
+class IntLiteral:
+    value: Fraction
+    # type: SimType = NumType()
+    def __init__(self, *args):
+        self.value = int(*args)
+        
+
+@dataclass
+class FloatLiteral:
+    value: Fraction
+    # type: SimType = NumType()
+    def __init__(self, *args):
+        self.value = float(*args)
 
 @dataclass
 class StringLiteral:
@@ -156,7 +170,27 @@ class Slicing:
     jump : 'AST'
 
 @dataclass
-class Str_len:
+class list_Slicing:
+    name : 'AST'
+    start : 'AST'
+    end : 'AST'
+    jump : 'AST'
+
+
+@dataclass
+class Listing:
+    value : List['AST']
+    datatype : 'AST'
+
+@dataclass
+class list_append:
+    var : 'AST'
+    item : 'AST'
+
+
+
+@dataclass
+class length:
     name: 'AST'   
 
 class Environment:
@@ -224,5 +258,3 @@ Val = bool
 @dataclass
 class InvalidProgram(Exception):
     pass
-
-
