@@ -181,6 +181,8 @@ class Lexer(object):
                 noOfstartBraces+=1
             elif self.curChar == '}':
                 noOfstartBraces-=1
+            # self.skipSpaces()
+
         self.nextChar()                         # to skip the closing curly brace as well
 
     def intlex(self):                           

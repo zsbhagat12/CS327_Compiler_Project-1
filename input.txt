@@ -374,7 +374,7 @@ BEGIN
     PRINT f1(f4)(3) END; {54}
     
 END}
-{First Class Function Test 3}
+{First Class Function Test 3}{
 BEGIN
     FUNCTION f2(n)
     BEGIN
@@ -407,7 +407,7 @@ BEGIN
     PRINT rf22(f4)(3) END; {54}
     PRINT f5()(f2)(5) END; {100}
     
-END
+END}
 {Resolver test; inspired from sir's class }{
 BEGIN
     FUNCTION foo(a)
@@ -710,11 +710,14 @@ END}
 {output: 1}
 {Looks matter}{
 a:=1;
+PRINT("1st");
 PRINT (a) ;
+
 IF a = 1
     THEN
         BEGIN
-        PRINT a END;
+        PRINT("2nd");
+        PRINT (a) ;
         END
     ELSE
         END
@@ -725,14 +728,51 @@ WHILE a < 10
         a:=a+1;
         
         END
+        
     END
+PRINT("3rd");
 PRINT( a);
 FUNCTION foo()
     BEGIN
-    PRINT a END;
+    PRINT (a) ;
     END
-PRINT (foo()) ;
+PRINT("4th");
+{PRINT (foo()) ;}
+foo();
+BEGIN
+    a:=4;
+    PRINT("5th");
+    PRINT (a) ;
+    
+END}
+{Looks matter 2}
+
+    a:=1;
+    PRINT("1st");
+    PRINT (a) ;
+    IF a = 1
+    THEN
+        BEGIN
+        PRINT("2nd");
+        PRINT (a) ;
+        END
+    ELSE IF a = 2
+    THEN
+    PRINT("2.5nd");
+    ELSE
+    PRINT("2.75nd");
+    
+    END
+    WHILE a < 10
+        DO
+            a:=a+1;
+        END
+    PRINT("3rd");
+    PRINT( a);
+    c:=1;
+    b:=c+1;
+    PRINT(b);
 
 
-}
+
 

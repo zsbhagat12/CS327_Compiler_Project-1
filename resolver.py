@@ -16,6 +16,7 @@ def resolve(program: AST, environment: Environment = None) -> AST:
         case StringLiteral(_) as SL:
             return SL
         case BinOp("=" as aop, MutVar(name) as m, right) :
+            r = resolve_(right)
             if not environment.check(name):
                 environment.add(name, m)
             else:
@@ -23,18 +24,19 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             # environment.enter_scope()
             m = resolve_(m)
             mutvar = environment.get(name)
-            r = resolve_(right)
+            # r = resolve_(right)
             mutvar.put(r)
             
             # environment.exit_scope()
             return BinOp(aop, m, r)
         case BinOp("+="as aop, MutVar(name)as m, right) | BinOp("-="as aop, MutVar(name)as m, right) | BinOp("/="as aop, MutVar(name)as m, right) | BinOp("*="as aop, MutVar(name)as m, right) | BinOp("**="as aop, MutVar(name)as m, right):
+            r = resolve_(right)
             if not environment.check(name):
                 environment.add(name, m)
             # environment.enter_scope()
             m = resolve_(m)
             mutvar = environment.get(name)
-            r = resolve_(right)
+            # r = resolve_(right)
             mutvar.put(r)
             
             # environment.exit_scope()

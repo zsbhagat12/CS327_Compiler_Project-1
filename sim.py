@@ -52,6 +52,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case Statement(command ,statement):
             match command:
                 case "print":
+                    # print(statement)
                     if isinstance(statement,StringLiteral) :
                         print(eval_string_env(statement))
                     elif isinstance(statement, type(None)):
@@ -234,8 +235,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 # environment.add(name, MutVar(name))
             
             e = m if m.value != None else environment.get(name)
-            
-            return e.get()  
+            v = e.get()
+            if isinstance(v, Fraction):
+                return v
+            else:
+                return eval_env(v)
 
         case Increment(MutVar(name)):
             #print('Hi')
@@ -391,6 +395,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
 
         case BinOp("=", MutVar(name) as m, val):
             e = eval_env(val)
+            # e = val
             # program.get_left().put(eval(val))
             if not environment.check(name):
                 environment.add(name, m)
