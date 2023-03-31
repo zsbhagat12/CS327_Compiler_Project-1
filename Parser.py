@@ -30,43 +30,55 @@ class Parser(object):
         self.check_type(IF)
         condition = self.logical()
         self.check_type(THEN)
-        true = self.parse()
+        if self.curr_token.type != BEGIN and self.curr_token.type != IF and self.curr_token.type != WHILE and self.curr_token.type != FOR and self.curr_token.type != FUNCTION:
+            true = self.parse()
+            self.check_type(SEMI)
+        else:    
+            true = self.parse()
         self.check_type(ELSE)
-        false = self.parse()
+        while self.curr_token.type == IF:
+            self.check_type(IF)
+            condition = self.logical()
+            self.check_type(THEN)
+            if self.curr_token.type != BEGIN and self.curr_token.type != IF and self.curr_token.type != WHILE and self.curr_token.type != FOR and self.curr_token.type != FUNCTION:
+                true = self.parse()
+                self.check_type(SEMI)
+            else:    
+                true = self.parse()
+            self.check_type(ELSE)
+        if self.curr_token.type != END:
+            if self.curr_token.type != BEGIN and self.curr_token.type != IF and self.curr_token.type != WHILE and self.curr_token.type != FOR and self.curr_token.type != FUNCTION:
+                false = self.parse()
+                self.check_type(SEMI)
+            else:
+                false = self.parse()
+        else:
+            false = None
         self.check_type(END)
         node = IfElse(condition, true, false)
         return node     
     
-    # def parse_list(self):
-        
-    #     token = self.curr_token
-    #     Type = token.type
-    #     e = self.parse()
-    #     seq = [e]
-
-    #     while Type != SEMI:
-    #         self.check_type(SEMI)
-    #         e = self.parse()
-    #         seq.append(e)
-    #         token = self.curr_token
-    #         Type = token.type
-        
-    #     return Seq(seq)
 
     def parse_begin(self):
         """parse_begin : """
         self.check_type(BEGIN)
         # s = self.parse_list()
-        
+        ignoreSEMI = False
+        if self.curr_token.type == IF or self.curr_token.type == WHILE or self.curr_token.type == FOR or self.curr_token.type == FUNCTION or self.curr_token.type == BEGIN:
+            ignoreSEMI = True
         e = self.parse()
         token = self.curr_token
         Type = token.type
         seq = [e]
         
         while Type != END:
-            self.check_type(SEMI)
+            if not ignoreSEMI:
+                self.check_type(SEMI)
+            ignoreSEMI = False
             if self.curr_token.type == END:
                 break
+            if self.curr_token.type == IF or self.curr_token.type == WHILE or self.curr_token.type == FOR or self.curr_token.type == FUNCTION or self.curr_token.type == BEGIN:
+                ignoreSEMI = True
             e = self.parse()
             
             seq.append(e)
@@ -90,6 +102,11 @@ class Parser(object):
         increment = self.parse()
         # print("Hi3",jump)
         self.check_type(DO)
+        if self.curr_token.type != BEGIN and self.curr_token.type != IF and self.curr_token.type != WHILE and self.curr_token.type != FOR and self.curr_token.type != FUNCTION:
+            body = self.parse()
+            self.check_type(SEMI)
+            self.check_type(END)
+            return ForLoop(start, condition, increment, body)
         body = self.parse()
         self.check_type(END)
         return ForLoop(start, condition, increment, body)
@@ -98,6 +115,11 @@ class Parser(object):
         self.check_type(WHILE)
         c = self.logical()
         self.check_type(DO)
+        if self.curr_token.type != BEGIN and self.curr_token.type != IF and self.curr_token.type != WHILE and self.curr_token.type != FOR and self.curr_token.type != FUNCTION:
+            b = self.parse()
+            self.check_type(SEMI)
+            self.check_type(END)
+            return While(c, b)
         b = self.parse()
         self.check_type(END)
         return While(c, b)
@@ -223,33 +245,24 @@ class Parser(object):
    
     def parse_print(self):
         self.check_type(PRINT)
-        # node = self.logical()
-        # if self.curr_token.type == LPAREN:
-        #     if isinstance(node, f):
-        #         node = node.var
-        #     e = self.parse_func_call(node)
-        # else:
-        #     e = self.logical(node)
-        if self.curr_token.type != END:
+        self.check_type(LPAREN)
+        if self.curr_token.type != RPAREN:
             e = self.logical()
         else:
             e = None
         # print(e)
-        self.check_type(END)
+        self.check_type(RPAREN)
+        # if self.curr_token.type != END:
+        #     e = self.logical()
+        # else:
+        #     e = None
+        # # print(e)
+        # self.check_type(END)
         return Statement("print", e)
-        # token = self.curr_token
-        # Type = token.type
-        # if Type == ID:
-        #     self.check_type(ID)
-        #     return statement("print", token.value)
-        # elif:
+        
     def parse_return(self):
         self.check_type(RETURN)
-        # node = self.logical()
-        # if self.curr_token.type == LPAREN:
-        #     e = self.parse_func_call(node)
-        # else:
-        #     e = self.logical(node)
+        
         e = self.logical()
         return Statement("return", e)
     
@@ -315,12 +328,24 @@ class Parser(object):
             Type = token.type
         
         self.check_type(RPAREN)
-        body = self.parse()
+        if self.curr_token.type == BEGIN:
+            body = self.parse()
+        else:
+            self.check_type(BEGIN)
+        
+
+        
+        
         return Function(name, params, body)
 
     def parse_func_call(self, n):
         node = n
         self.check_type(LPAREN)
+        if self.curr_token.type == RPAREN:
+            self.check_type(RPAREN)
+            if self.curr_token.type == LPAREN:
+                return self.parse_func_call(FunCall(node, []))
+            return FunCall(node, [])
         var = self.logical()
         token = self.curr_token
         Type = token.type
@@ -409,10 +434,13 @@ class Parser(object):
             # Nothing new here, just eat the STRING token and return the String() AST.
             self.check_type(STRING)
             return StringLiteral(token.value)
-        elif Type != RPAREN:
+        
+        else:
             print("None of the suggested tokens found:", INTEGER_CONST, ID, LPAREN, STRING, TRUE, FALSE, "...")
             self.check_type(INTEGER_CONST)
-
+            
+    
+        
 
     def exponential(self):
         """exponential : precedence3 | precedence3 POWER precedence3"""

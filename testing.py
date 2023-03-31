@@ -73,7 +73,7 @@ text = open("input.txt","r").read()
 # text = "3 > 4"
 # text = "-2*(1---2)"
 # text = "PRINT 2-+ +3 END"
-l = lex.Lexer(text)   
+l = lex.Lexer("BEGIN"+text+"END")   
 p = prs.Parser(l)
 i = Interpreter(p)
 # print(eval(i))
