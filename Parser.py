@@ -262,11 +262,7 @@ class Parser(object):
         
     def parse_return(self):
         self.check_type(RETURN)
-        # node = self.logical()
-        # if self.curr_token.type == LPAREN:
-        #     e = self.parse_func_call(node)
-        # else:
-        #     e = self.logical(node)
+        
         e = self.logical()
         return Statement("return", e)
     
@@ -347,6 +343,8 @@ class Parser(object):
         self.check_type(LPAREN)
         if self.curr_token.type == RPAREN:
             self.check_type(RPAREN)
+            if self.curr_token.type == LPAREN:
+                return self.parse_func_call(FunCall(node, []))
             return FunCall(node, [])
         var = self.logical()
         token = self.curr_token

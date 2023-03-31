@@ -236,7 +236,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             
             e = m if m.value != None else environment.get(name)
             v = e.get()
-            if isinstance(v, Fraction):
+            if isinstance(v, Fraction) or isinstance(v, FnObject):
                 return v
             else:
                 return eval_env(v)
