@@ -186,7 +186,20 @@ class Listing:
 class list_append:
     var : 'AST'
     item : 'AST'
+        
+        
+@dataclass
+class list_head:
+    name: 'AST'
 
+
+@dataclass
+class list_tail:
+    name: 'AST'
+
+@dataclass
+class list_isempty:
+    name: 'AST'
 
 
 @dataclass
