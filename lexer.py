@@ -70,6 +70,9 @@ LEN           = "LEN"
 LIST          = "LIST"
 APPEND        = "APPEND"
 POP           = "POP"
+HEAD          = "HEAD"
+TAIL          = "TAIL"
+ISEMPTY       = "ISEMPTY"
 
 
 # literals
@@ -120,7 +123,10 @@ KEYWORDS = {
     "LIST" : Token("LIST", "LIST"),
     "NONE" : Token("NONE", "NONE"),
     "APPEND" : Token("APPEND", "APPEND"),
-    "POP" : Token("POP", "POP")
+    "POP" : Token("POP", "POP"),
+    "HEAD" : Token("HEAD", "HEAD"),
+    "TAIL" : Token("TAIL", "TAIL"),
+    "ISEMPTY" : Token("ISEMPTY", "ISEMPTY")
     # 'PRINT': Token('PRINT', ';'),
     
 }
