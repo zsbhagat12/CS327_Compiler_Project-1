@@ -133,15 +133,7 @@ class Parser(object):
         self.check_type(RPAREN)
         return list_append(var, item)
     
-    def parse_list_append(self):
-        self.check_type(APPEND)
-        self.check_type(LPAREN)
-        var = self.variable()
-        self.check_type(COMMA)
-        item = self.parse()
-        self.check_type(RPAREN)
-        return list_append(var, item)
-    
+
     
     def parse_list_slice(self, c):
      
@@ -203,6 +195,27 @@ class Parser(object):
         c = self.parse()
         self.check_type(RPAREN)
         return length(c)
+    
+    def parse_head(self):
+        
+        self.check_type(LPAREN)
+        c = self.parse()
+        self.check_type(RPAREN)
+        return list_head(c)
+    
+    def parse_tail(self):
+        
+        self.check_type(LPAREN)
+        c = self.parse()
+        self.check_type(RPAREN)
+        return list_tail(c)
+    
+    def parse_isempty(self):
+        
+        self.check_type(LPAREN)
+        c = self.parse()
+        self.check_type(RPAREN)
+        return list_isempty(c)
          
     
     def parse_slice(self, c):
@@ -416,13 +429,20 @@ class Parser(object):
         elif Type == LEN:
             self.check_type(LEN)
             return self.parse_len()
-
+        elif Type == HEAD:
+            self.check_type(HEAD)
+            return self.parse_head
+        elif Type == TAIL:
+            self.check_type(TAIL)
+            return self.parse_tail
+        elif Type == ISEMPTY:
+            self.check_type(ISEMPTY)
+            return self.parse_isempty
         elif Type == LIST:
             self.check_type(LIST)
             if self.curr_token.type == COLON:
                 return self.parse_list(self.curr_token.type)
             return self.parse_list(self.curr_token.type)
-
         elif Type == ID:
             self.check_type(ID)
             if self.curr_token.type == LPAREN:
