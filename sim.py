@@ -263,6 +263,23 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             temp = environment.get(name)
             e = eval_env(temp)
             return len(e)
+
+        case list_head(MutVar(name)):
+            temp = environment.get(name)
+            e = eval_env(temp)
+            return e[0]
+        
+        case list_tail(MutVar(name)):
+            temp = environment.get(name)
+            e = eval_env(temp)
+            return e[1:]
+        
+        case list_isempty(MutVar(name)):
+            temp = environment.get(name)
+            e = eval_env(temp)
+            if len(e)==0:
+                return True
+            return False
         
         case list_append(MutVar(var), item):
          
