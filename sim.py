@@ -58,7 +58,12 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     elif isinstance(statement, type(None)):
                         print()
                     else:
-                        print(eval_env(statement)) 
+                        e = eval_env(statement)
+                        if isinstance(e, Listing):
+                            print(eval_env(e))
+                        else:
+                            print(e)
+                        # print(eval_env(statement)) 
                 case "return":
                     e = Statement(command, statement)
 
@@ -236,7 +241,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             
             e = m if m.value != None else environment.get(name)
             v = e.get()
-            if isinstance(v, Fraction) or isinstance(v, FnObject):
+            if isinstance(v, Fraction) or isinstance(v, FnObject) or isinstance(v, Listing):
                 return v
             else:
                 return eval_env(v)
@@ -262,7 +267,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case length(MutVar(name)):
             temp = environment.get(name)
             e = eval_env(temp)
-            return len(e)
+            return len(e.value)
 
         case list_head(MutVar(name)):
             temp = environment.get(name)
@@ -286,9 +291,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             if not environment.check(var):
                 print(f"list '{var}' not defined")
                 sys.exit()
-            temp = environment.get(var)
-            e1 = eval_env(temp)
-            e1.append(eval_env(item))
+            temp = environment.get(var).get().value
+            # e1 = eval_env(temp)
+            # e1.append(eval_env(item))
+            e1 = temp
+            e1.append(item)
             return e1
 
 
@@ -315,8 +322,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return temp
 
 
-        case Slicing(name, start, end, jump):       
+        case Slicing(name, start, end, jump):      
+             
             e1 = eval_env(name)
+            if isinstance(e1, Listing):
+                e1 = e1.value
             e2 = eval_env(start)
             e2 = int(e2)
             if end!=None:
@@ -411,8 +421,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return 
 
         case BinOp("=", MutVar(name) as m, val):
-            e = eval_env(val)
-            # e = val
+            if (not isinstance(val, Listing)):
+                e = eval_env(val)
+            else:
+                e = val
+            # e = eval_env(val)
             # program.get_left().put(eval(val))
             if not environment.check(name):
                 environment.add(name, m)
