@@ -3,7 +3,7 @@ from fractions import Fraction
 from typing import Union, Mapping, Optional, NewType, List
 
 # Resolver On/Off
-resolverOn = False #False ; Turn to False if not using resolver
+resolverOn = True #False ; Turn to False if not using resolver
 currentID = 0
 
 def fresh():

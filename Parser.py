@@ -62,6 +62,9 @@ class Parser(object):
     def parse_begin(self):
         """parse_begin : """
         self.check_type(BEGIN)
+        if self.curr_token.type == END:
+            self.check_type(END)
+            return Seq([])
         # s = self.parse_list()
         ignoreSEMI = False
         if self.curr_token.type == IF or self.curr_token.type == WHILE or self.curr_token.type == FOR or self.curr_token.type == FUNCTION or self.curr_token.type == BEGIN:
@@ -456,6 +459,9 @@ class Parser(object):
             return StringLiteral(token.value)
         
         else:
+            # if Type == END:
+            #     self.check_type(END)
+            #     return
             print("None of the suggested tokens found:", INTEGER_CONST, ID, LPAREN, STRING, TRUE, FALSE, "...")
             self.check_type(INTEGER_CONST)
             

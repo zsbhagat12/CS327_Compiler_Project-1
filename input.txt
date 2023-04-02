@@ -773,6 +773,17 @@ END}
     b:=c+1;
     PRINT(b);
 }
+x:= " BHAVINI";
+T := LIST:INTEGER[~1,~3,~4, ~2, ~7];
+PRINT (T );
 
+APPEND(T, ~8);
+
+PRINT( LEN(T)) ;
+
+y := T[0];
+
+PRINT (T );
+PRINT (y );
 
 
