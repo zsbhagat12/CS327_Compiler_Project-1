@@ -20,10 +20,11 @@ def run_test_cases(dir_path):
                         # with open(os.path.join(dir_path, file)) as f:
                         with open(file) as f:
                             text = f.read()
-                            l = lex.Lexer(text)   
-                            p = prs.Parser(l)
-                            i = Interpreter(p)
-                            eval(i)
+                        text = "BEGIN "+text+" END"
+                        l = lex.Lexer(text)   
+                        p = prs.Parser(l)
+                        i = Interpreter(p)
+                        eval(i)
                         sys.stdout = sys.__stdout__
 
 
@@ -61,7 +62,7 @@ def run_test_cases(dir_path):
                     # with open(os.path.join(dir_path, default)) as f:
                     flag = 1
                     # if re.search(".", default) != None:
-                    if default.find("."):
+                    if default.find(".")>=0:
                         # print("e111")
                         
                         for file in dir:
@@ -69,6 +70,7 @@ def run_test_cases(dir_path):
                                 flag = 0
                                 with open(file) as f:
                                     text = f.read()
+                                text = "BEGIN "+text+" END"
                                 l = lex.Lexer(text)
                                 p = prs.Parser(l)
                                 i = Interpreter(p)
@@ -94,15 +96,15 @@ def run_test_cases(dir_path):
                         # print("f222")
                         # run all files in folder
                         for file in dir:
-                            print(default)
+                            # print(default)
 
-                            if i.startswith(default) or (i.find(default+"\\")>=0):
+                            if file.startswith(default) or (file.find(default+"\\")>=0):
                                 # print("entering")
                                 flag = 0
                                 with open(file) as f:
                                     text = f.read()
 
-                    
+                                text = "BEGIN "+text+" END"
                                 l = lex.Lexer(text)   
                                 p = prs.Parser(l)
                                 i = Interpreter(p)

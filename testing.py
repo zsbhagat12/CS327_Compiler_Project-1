@@ -74,7 +74,7 @@ text = open("input.txt","r").read()
 # text = "-2*(1---2)"
 # text = "PRINT 2-+ +3 END"
 # if len(text) != 0:
-text = "BEGIN"+text+"END"
+text = "BEGIN "+text+" END"
 
 l = lex.Lexer(text)   
 p = prs.Parser(l)
