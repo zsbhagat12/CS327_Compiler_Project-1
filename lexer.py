@@ -161,6 +161,11 @@ class Lexer(object):
         else:
             self.curChar = self.text[self.pos]
             self.curLine += self.curChar
+            if self.curChar == '\n':
+                self.lineNum+=1
+                self.curLine=""
+                self.curLinePos=0
+        
 
     def peek(self):                             # returns the lookahead character
         if self.pos + 1 > len(self.text) - 1:
@@ -170,10 +175,10 @@ class Lexer(object):
 
     def skipSpaces(self):                       # to skip white spacses
         while self.curChar is not None and self.curChar.isspace():
-            if self.curChar == '\n':
-                self.lineNum+=1
-                self.curLine=""
-                self.curLinePos=0
+            # if self.curChar == '\n':
+            #     self.lineNum+=1
+            #     self.curLine=""
+            #     self.curLinePos=0
             self.nextChar()
 
     def skipComments(self):
@@ -190,6 +195,16 @@ class Lexer(object):
             # self.skipSpaces()
 
         self.nextChar()                         # to skip the closing curly brace as well
+
+    def scanSolution(self):
+        result = ''
+        while self.curChar != '$':
+            result += self.curChar
+            self.nextChar()
+        sys.stdout = open("solution.txt", "w") 
+        print(result)
+        sys.stdout = sys.__stdout__
+        self.nextChar()
 
     def intlex(self):                           
         # Consume all the consecutive digits and decimal if present.
@@ -257,6 +272,11 @@ class Lexer(object):
             if self.curChar == '{':
                 self.nextChar()
                 self.skipComments()
+                continue
+
+            if self.curChar == '$':
+                self.nextChar()
+                self.scanSolution()
                 continue
 
             if self.curChar == '~':

@@ -3,6 +3,7 @@ import lexer as lex
 from sim import *
 import sys
 import re
+import platform
 
 def run_test_cases(dir_path):
     while True:
@@ -10,11 +11,14 @@ def run_test_cases(dir_path):
         command = input("Enter command : ")
         match command:
             case "all":
-                for file in os.listdir(dir_path):
+                dir = giveFilesWithFolders(dir_path)
+                # for file in os.listdir(dir_path):
+                for file in dir:
                     if file.endswith(".txt"):
 
                         # print("Running test case: " + file)
-                        with open(os.path.join(dir_path, file)) as f:
+                        # with open(os.path.join(dir_path, file)) as f:
+                        with open(file) as f:
                             text = f.read()
                             l = lex.Lexer(text)   
                             p = prs.Parser(l)
@@ -30,11 +34,17 @@ def run_test_cases(dir_path):
 
                         # with open(os.path.join(dir_path, 'tempt.txt')) as f:
                         #     print(f.read())
-        
-                        output = os.popen('diff tempt.txt tempt2.txt').read()
+                        # if platform.platform().startswith('Windows'):
+                        #     output = os.popen('fc eval.txt solution.txt').read()
+                        # else:
+                        #     output = os.popen('diff eval.txt solution.txt').read()
+                        # print(output, len(output))
 
                         # print(output)
-                        if output == "":
+                        # if output == "":
+                        # compare two text files
+
+                        if open('eval.txt').read() == open('solution.txt').read():
                             print("Test passed: " + file)
                         else:
                             print("Test failed: " + file)
@@ -47,40 +57,110 @@ def run_test_cases(dir_path):
                 break
             case default:
                 try:
-                    with open(os.path.join(dir_path, default)) as f:
-                        text = f.read()
-                    l = lex.Lexer(text)   
-                    p = prs.Parser(l)
-                    i = Interpreter(p)
-                    eval(i)
-                    sys.stdout = sys.__stdout__
-                    output = os.popen('diff tempt.txt tempt2.txt').read()
+                    dir = giveFilesWithFolders(dir_path)
+                    # with open(os.path.join(dir_path, default)) as f:
+                    flag = 1
+                    # if re.search(".", default) != None:
+                    if default.find("."):
+                        # print("e111")
+                        
+                        for file in dir:
+                            if file.endswith(default):
+                                flag = 0
+                                with open(file) as f:
+                                    text = f.read()
+                                l = lex.Lexer(text)
+                                p = prs.Parser(l)
+                                i = Interpreter(p)
+                                eval(i)
+                                sys.stdout = sys.__stdout__
 
-                    # print(output)
-                    if output == "":
-                        print("Test passed: " + file)
+                                # if platform.platform().startswith('Windows'):
+                                #     output = os.popen('fc eval.txt solution.txt').read()
+                                # else:
+                                #     output = os.popen('diff eval.txt solution.txt').read()
+
+                               
+                                # print(output)
+                                # if output == "":
+                                if open('eval.txt').read() == open('solution.txt').read():
+                                    print("Test passed: " + file)
+                                else:
+                                    print("Test failed: " + file)
+                        if flag == 1:
+                            print("File or Folder not found")
+
                     else:
-                        print("Test failed: " + file)
+                        # print("f222")
+                        # run all files in folder
+                        for file in dir:
+                            print(default)
+
+                            if i.startswith(default) or (i.find(default+"\\")>=0):
+                                # print("entering")
+                                flag = 0
+                                with open(file) as f:
+                                    text = f.read()
+
+                    
+                                l = lex.Lexer(text)   
+                                p = prs.Parser(l)
+                                i = Interpreter(p)
+                                eval(i)
+                                sys.stdout = sys.__stdout__
+                                # if platform.platform().startswith('Windows'):
+                                #     output = os.popen('fc eval.txt solution.txt').read()
+                                # else:
+                                #     output = os.popen('diff eval.txt solution.txt').read()
+
+
+                                # print(output)
+                                # if output == "":
+                                if open('eval.txt').read() == open('solution.txt').read():
+                                    print("Test passed: " + file)
+                                else:
+                                    print("Test failed: " + file)
+                        if flag == 1:
+                            print("File or Folder not found")
 
                 except:
-                    print("File not found")
+                    print("File or Folder not found")
                     # if f == None:
                     #     print("File not found")
                     #     continue
 
-
+def giveFilesWithFolders(dir_path):
+    files = []
+    for file in os.listdir(dir_path):
+        if os.path.isdir(os.path.join(dir_path, file)):
+            
+            # files.append(file)
+            files.extend(giveFilesWithFolders(os.path.join(dir_path, file)))
+        else:
+            files.append(dir_path+"\\"+file)
+    return files
+ 
 
 if __name__ == "__main__":
     # start = time.time()
-    run_test_cases("test_cases")
+    # run_test_cases("test_cases")
     dir = os.listdir("test_cases")
+    dir.append("")
     print(dir)
-    for i in dir:
-        x = re.search(".", i)
-        print("hi")
-        if not x:
-            print("hi")
-            run_test_cases("test_cases/" + i)
+    dir = giveFilesWithFolders("test_cases")
+    print(dir)
+    # default = input("Enter folder")
+    # for i in dir:
+    #     x = re.search(".", i)
+        
+    #     print(i.startswith(default) or (i.find(default+"\\")>=0))
+
+    run_test_cases("test_cases")
+        # print("hi")
+        # print(x)
+        # if not x:
+            # print("hi")
+            # run_test_cases("test_cases/" + i)
     # print("Time taken", time.time()-start)
 
 

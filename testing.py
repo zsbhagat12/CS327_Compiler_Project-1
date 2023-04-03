@@ -73,12 +73,16 @@ text = open("input.txt","r").read()
 # text = "3 > 4"
 # text = "-2*(1---2)"
 # text = "PRINT 2-+ +3 END"
-l = lex.Lexer("BEGIN"+text+"END")   
+# if len(text) != 0:
+text = "BEGIN"+text+"END"
+
+l = lex.Lexer(text)   
 p = prs.Parser(l)
 i = Interpreter(p)
 # print(eval(i))
 
 eval(i)
+# print(open("eval.txt").read()==open("solution.txt").read())
 print("Time taken", time.time()-start)
 
 # test_While()

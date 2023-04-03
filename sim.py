@@ -45,8 +45,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 pp.pprint(tree)
 
             # typecheck(tree)
+            sys.stdout = open('eval.txt', 'w')
+            e = eval(tree)
             sys.stdout = sys.__stdout__
-            return eval(tree)
+
+            return e
         
         
         case Statement(command ,statement):
@@ -57,8 +60,21 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                         print(eval_string_env(statement))
                     elif isinstance(statement, type(None)):
                         print()
+                    elif isinstance(statement, MutVar):
+                        e = environment.get(statement.name).get()
+                        if isinstance(e, Listing):
+                            print(eval_env(e))
+                        else:
+                            print(e)
+
                     else:
-                        print(eval_env(statement)) 
+                        e = eval_env(statement)
+                        if isinstance(e, Listing):
+                            print(eval_env(e))
+                        
+                        else:
+                            print(e)
+                        # print(eval_env(statement)) 
                 case "return":
                     e = Statement(command, statement)
 
@@ -136,6 +152,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 sys.exit()
                 # environment.add(name, MutVar(name))
                 # environment.get(name).put(FnObject([],None))
+            
             m.value = copy.deepcopy(m.value)
             fn = m.value if m.value != None else environment.get(name).get() #fn is FnObject
             # pp = pprint.PrettyPrinter()
@@ -230,16 +247,22 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 
             # return
             if not environment.check(name):
+                print(environment.envs)
                 print(f"Mutable Variable '{name}' not defined")
                 sys.exit()
                 # environment.add(name, MutVar(name))
             
             e = m if m.value != None else environment.get(name)
+            # e = environment.get(name)
             v = e.get()
-            if isinstance(v, Fraction) or isinstance(v, FnObject):
+            typesWithNoEval = Fraction | FnObject | Listing | int | float | str | bool
+            # if isinstance(v, Fraction) or isinstance(v, FnObject) or isinstance(v, Listing):
+            if isinstance(v, typesWithNoEval):
                 return v
             else:
-                return eval_env(v)
+                v = eval_env(v)
+                # e.put(v)
+                return v
 
         case Increment(MutVar(name)):
             #print('Hi')
@@ -260,9 +283,12 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return 
         
         case length(MutVar(name)):
-            temp = environment.get(name)
-            e = eval_env(temp)
-            return len(e)
+            temp = environment.get(name).get()
+            # e = eval_env(temp)
+            # return len(e.value)
+            if isinstance(temp, Listing):
+                return len(temp.value)
+            return len(temp)
 
         case list_head(MutVar(name)):
             temp = environment.get(name)
@@ -286,9 +312,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             if not environment.check(var):
                 print(f"list '{var}' not defined")
                 sys.exit()
-            temp = environment.get(var)
-            e1 = eval_env(temp)
-            e1.append(eval_env(item))
+            temp = environment.get(var).get().value
+            # e1 = eval_env(temp)
+            # e1.append(eval_env(item))
+            e1 = temp
+            e1.append(item)
             return e1
 
 
@@ -305,6 +333,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     if isinstance(i, temp):
                         continue
                     else:
+                        print("Value of Invalid type in Listing")
                         raise InvalidProgram()
        
             temp =[]
@@ -315,8 +344,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return temp
 
 
-        case Slicing(name, start, end, jump):       
+        case Slicing(name, start, end, jump):      
+             
             e1 = eval_env(name)
+            if isinstance(e1, Listing):
+                e1 = eval_env(e1)
             e2 = eval_env(start)
             e2 = int(e2)
             if end!=None:
@@ -411,8 +443,13 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return 
 
         case BinOp("=", MutVar(name) as m, val):
-            e = eval_env(val)
-            # e = val
+            if (not isinstance(val, Listing)):
+                e = eval_env(val)
+            else:
+                e = val
+
+            program.right = val
+            # e = eval_env(val)
             # program.get_left().put(eval(val))
             if not environment.check(name):
                 environment.add(name, m)
@@ -423,6 +460,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 mutvar = environment.get(name)
                 # environment.update(name, MutVar(name))
                 mutvar.put(e)
+                m.put(e)
             return mutvar.get() #Assignment as expression
         
         case BinOp("+=", MutVar(name) as m, val):
@@ -570,6 +608,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return eval_env(left) * eval_env(right)
         case BinOp("/", left, right):
             return eval_env(left) / eval_env(right)
+        case BinOp("//", left, right):
+            return eval_env(left) // eval_env(right)
         case BinOp("%", left, right):
             return eval_env(left) % eval_env(right)
         case UnOp("-", mid):

@@ -1,0 +1,23 @@
+
+{1. Increment and Decrement}
+BEGIN
+    i := 10;
+    PRINT (i) ;
+    INC(i);
+    PRINT (i) ;
+    DEC(i);
+    PRINT (i) ;
+    DEC(i);
+    PRINT (i) ;
+    PRINT ("....") ;
+    PRINT() ;
+    PRINT ("....") ;
+END
+$10
+11
+10
+9
+....
+
+....$
+

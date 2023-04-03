@@ -9,6 +9,8 @@ def resolve(program: AST, environment: Environment = None) -> AST:
         return resolve(program, environment)
     
     match program:
+        case IntLiteral(_) as I:
+            return I
         case NumLiteral(_) as N:
             return N
         case BoolLiteral(_) as B:
@@ -138,6 +140,33 @@ def resolve(program: AST, environment: Environment = None) -> AST:
         case While(c, b):
             
             return While(resolve_(c), resolve_(b))
+        case ForLoop(start, condition, increment, body):
+            return ForLoop(resolve_(start), resolve_(condition), resolve_(increment), resolve_(body))
+        
+        case Listing(value, datatype):
+            for i in range(len(value)):
+                value[i] = resolve_(value[i])
+            return Listing(value, datatype)
+        
+        case Slicing(name, start, end, jump):   
+            return Slicing(resolve_(name), resolve_(start), resolve_(end), resolve_(jump))
+        
+        case list_append(MutVar(var), item):
+            if not environment.check(var):
+                environment.add(var, MutVar(var))
+            return list_append(environment.get(var), resolve_(item))
+        case length(MutVar(var)):
+            if not environment.check(var):
+                environment.add(var, MutVar(var))
+            return length(resolve_(environment.get(var)))
+        case Increment(MutVar(var)):
+            return Increment(resolve_(environment.get(var)))
+        case Decrement(MutVar(var)):
+            return Decrement(resolve_(environment.get(var)))
+
+        
+
+
         
 # def eval(program: AST, environment: Environment = None) -> Value:
 #     if environment is None:

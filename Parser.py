@@ -62,6 +62,9 @@ class Parser(object):
     def parse_begin(self):
         """parse_begin : """
         self.check_type(BEGIN)
+        if self.curr_token.type == END:
+            self.check_type(END)
+            return Seq([])
         # s = self.parse_list()
         ignoreSEMI = False
         if self.curr_token.type == IF or self.curr_token.type == WHILE or self.curr_token.type == FOR or self.curr_token.type == FUNCTION or self.curr_token.type == BEGIN:
@@ -222,6 +225,7 @@ class Parser(object):
      
         self.check_type(LSPAREN)
         if self.curr_token.type==COMMA:
+            # self.check_type(COMMA)
             start = NumLiteral(0)
         else:
             start = self.parse()
@@ -233,7 +237,10 @@ class Parser(object):
         elif self.curr_token.type==COMMA:
             index_type = False
             self.check_type(COMMA)
-            end = self.parse()
+            if self.curr_token.type!=COMMA:
+                end = self.parse()
+            else:
+                end = None
         else:
             index_type = False
             end = self.parse()
@@ -456,6 +463,9 @@ class Parser(object):
             return StringLiteral(token.value)
         
         else:
+            # if Type == END:
+            #     self.check_type(END)
+            #     return
             print("None of the suggested tokens found:", INTEGER_CONST, ID, LPAREN, STRING, TRUE, FALSE, "...")
             self.check_type(INTEGER_CONST)
             
@@ -508,6 +518,8 @@ class Parser(object):
                 self.check_type(INT_DIV)                
             elif token.type == MODULO:
                 self.check_type(MODULO)
+            elif token.type == INT_DIV:
+                self.check_type(INT_DIV)
             node = BinOp(left=node, operator=token.value, right=self.exponential())
             Type = self.curr_token.type
         return node
