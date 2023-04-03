@@ -225,6 +225,7 @@ class Parser(object):
      
         self.check_type(LSPAREN)
         if self.curr_token.type==COMMA:
+            # self.check_type(COMMA)
             start = NumLiteral(0)
         else:
             start = self.parse()
@@ -236,7 +237,10 @@ class Parser(object):
         elif self.curr_token.type==COMMA:
             index_type = False
             self.check_type(COMMA)
-            end = self.parse()
+            if self.curr_token.type!=COMMA:
+                end = self.parse()
+            else:
+                end = None
         else:
             index_type = False
             end = self.parse()
@@ -514,6 +518,8 @@ class Parser(object):
                 self.check_type(INT_DIV)                
             elif token.type == MODULO:
                 self.check_type(MODULO)
+            elif token.type == INT_DIV:
+                self.check_type(INT_DIV)
             node = BinOp(left=node, operator=token.value, right=self.exponential())
             Type = self.curr_token.type
         return node

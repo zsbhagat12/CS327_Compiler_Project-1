@@ -82,6 +82,7 @@ i = Interpreter(p)
 # print(eval(i))
 
 eval(i)
+# print(open("eval.txt").read()==open("solution.txt").read())
 print("Time taken", time.time()-start)
 
 # test_While()

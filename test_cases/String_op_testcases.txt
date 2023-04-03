@@ -1,0 +1,22 @@
+{String Operations}
+
+BEGIN 
+str := "String Checking";
+PRINT( str );
+PRINT (LEN(str)) ;
+x := 2;
+y := 13;
+z := 3;
+PRINT (str[x,y,z]) ;
+PRINT (str[14] );
+PRINT (str[1,5] );
+PRINT (str[,,]) ;
+{PRINT "bisbciwi"[4] END;}
+
+END
+$String Checking
+15
+rghk
+g
+trin
+String Checking$

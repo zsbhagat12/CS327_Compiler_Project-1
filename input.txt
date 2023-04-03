@@ -483,44 +483,44 @@ BEGIN
     PRINT odd(4) END;
 END}
 {Mutual Recursion Testing 2}{
-BEGIN
+
     FUNCTION even(n)
     BEGIN
         IF n = 0
-        THEN RETURN TRUE
-        ELSE END;
+        THEN RETURN TRUE;
+        ELSE END
         IF n = 1
-        THEN RETURN FALSE
-        ELSE END;
+        THEN RETURN FALSE;
+        ELSE END
         RETURN odd(n-1);
-    END;
+    END
     FUNCTION odd(m)
     BEGIN
-        PRINT "1st Odd" END;
+        PRINT ("1st Odd") ;
         IF m = 0
-        THEN RETURN FALSE
-        ELSE END;
+        THEN RETURN FALSE;
+        ELSE END
         IF m = 1
-        THEN RETURN TRUE
-        ELSE END;
+        THEN RETURN TRUE;
+        ELSE END
         RETURN even(m-1);
-    END;
-    PRINT even(5) END;
-    PRINT odd(4) END;
+    END
+    PRINT (even(42)) ;
+    PRINT (odd(157)) ;
     FUNCTION odd(m)
     BEGIN
-        PRINT "2nd Odd" END;
+        PRINT ("2nd Odd") ;
         IF m = 0
-        THEN RETURN FALSE
-        ELSE END;
+        THEN RETURN FALSE;
+        ELSE END
         IF m = 1
-        THEN RETURN TRUE
-        ELSE END;
+        THEN RETURN TRUE;
+        ELSE END
         RETURN even(m-1);
-    END;
-    PRINT even(5) END;
-    PRINT odd(4) END;
-END}
+    END
+    PRINT (even(5)) ;
+    PRINT (odd(4)) ;
+}
 {Function binding Testing}{
 BEGIN
     FUNCTION add(a,b)
@@ -772,7 +772,8 @@ END}
     c:=1;
     b:=c+1;
     PRINT(b);
+    b:=b+1;
+    PRINT(b);
 }
-
 
 

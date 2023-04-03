@@ -1,0 +1,78 @@
+{FIZZZ BUZZ code}
+BEGIN 
+   
+   n:=35;
+   i:=1;
+
+   WHILE i<=n
+   DO
+      BEGIN
+         IF i%3=0 && i%5=0
+         THEN 
+            BEGIN
+               PRINT ("FIZZ BUZZ");
+            END
+         ELSE
+         END
+          IF i%3=0 && i%5<>0
+         THEN 
+            BEGIN
+               PRINT ("FIZZ") ;
+            END
+         ELSE
+         END
+         IF i%3<>0 && i%5=0
+         THEN 
+            BEGIN
+               PRINT ("BUZZ") ;
+            END
+         ELSE
+         END
+         IF i%3<>0 && i%5<>0
+         THEN 
+            BEGIN
+               PRINT( i) ;
+            END
+         ELSE
+         END
+         
+         i:=i+1;
+    
+      END
+   END
+END
+$1
+2
+FIZZ
+4
+BUZZ
+FIZZ
+7
+8
+FIZZ
+BUZZ
+11
+FIZZ
+13
+14
+FIZZ BUZZ
+16
+17
+FIZZ
+19
+BUZZ
+FIZZ
+22
+23
+FIZZ
+BUZZ
+26
+FIZZ
+28
+29
+FIZZ BUZZ
+31
+32
+FIZZ
+34
+BUZZ$

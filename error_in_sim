@@ -1,4 +1,4 @@
 Current AST
 None
 Current Environment:
-[{}, {}]
+[{}, {'i': MutVar(name='i', value=Fraction(10, 1), id=47)}]

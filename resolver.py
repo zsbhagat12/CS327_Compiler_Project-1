@@ -140,6 +140,8 @@ def resolve(program: AST, environment: Environment = None) -> AST:
         case While(c, b):
             
             return While(resolve_(c), resolve_(b))
+        case ForLoop(start, condition, increment, body):
+            return ForLoop(resolve_(start), resolve_(condition), resolve_(increment), resolve_(body))
         
         case Listing(value, datatype):
             for i in range(len(value)):
@@ -157,6 +159,10 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             if not environment.check(var):
                 environment.add(var, MutVar(var))
             return length(resolve_(environment.get(var)))
+        case Increment(MutVar(var)):
+            return Increment(resolve_(environment.get(var)))
+        case Decrement(MutVar(var)):
+            return Decrement(resolve_(environment.get(var)))
 
         
 
