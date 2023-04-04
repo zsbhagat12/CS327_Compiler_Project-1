@@ -1,0 +1,11 @@
+{Recursive Function Testing (Factorial)}
+BEGIN   
+    FUNCTION fact(n)
+    BEGIN
+        IF n<=1 
+        THEN RETURN 1
+        ELSE RETURN n*fact(n-1)
+        END;
+    END;
+    PRINT fact(98) END;
+END

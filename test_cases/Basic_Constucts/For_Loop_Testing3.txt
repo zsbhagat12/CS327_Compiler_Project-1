@@ -1,0 +1,46 @@
+{case 3}
+BEGIN 
+    p:=1;
+    q:=1;
+    FOR i:= 10 ;  ; i := i - 1 
+    DO 
+        BEGIN 
+        q:=q*p;
+        p:=p+1;   
+        {PRINT (p);}          
+        PRINT (q);
+        PRINT (i);
+        IF i <= 0 
+            THEN
+                BEGIN 
+                BREAK;
+                END
+            ELSE
+                END   
+        END 
+    END 
+END
+
+$1
+10
+2
+9
+6
+8
+24
+7
+120
+6
+720
+5
+5040
+4
+40320
+3
+362880
+2
+3628800
+1
+39916800
+0
+$

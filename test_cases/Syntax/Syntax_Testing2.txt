@@ -1,0 +1,29 @@
+{Looks matter 2}
+
+    a:=1;
+    PRINT("1st");
+    PRINT (a) ;
+    IF a = 1
+    THEN
+        BEGIN
+        PRINT("2nd");
+        PRINT (a) ;
+        END
+    ELSE IF a = 2
+    THEN
+    PRINT("2.5nd");
+    ELSE
+    PRINT("2.75nd");
+    
+    END
+    WHILE a < 10
+        DO
+            a:=a+1;
+        END
+    PRINT("3rd");
+    PRINT( a);
+    c:=1;
+    b:=c+1;
+    PRINT(b);
+    b:=b+1;
+    PRINT(b);

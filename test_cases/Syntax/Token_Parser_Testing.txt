@@ -1,0 +1,7 @@
+{Token/Parser Test for not accepting ** and other such operators/tokens}
+BEGIN
+    a:=1;
+    b:=2;
+    c:=b**03;
+    PRINT c END;
+END

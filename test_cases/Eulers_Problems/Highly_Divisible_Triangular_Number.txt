@@ -1,0 +1,64 @@
+{Project Euler Problem 12	Highly divisible triangular number}
+BEGIN
+    
+    n:=50;  {5->28,6, time: 0.018s  ; 50->25200,90, time: 100.029s; 500->}
+    sum:=0;
+    max:=sum;
+    i:=1;
+    num:=1;
+    WHILE sum<=n
+    DO
+        BEGIN
+            sum:=1;
+            num:=i*(i+1)/2;
+            j:=1;
+            WHILE {j<num@(1/2)} j<=num/2
+            DO
+                BEGIN
+                    IF num%j = 0
+                    THEN 
+                        BEGIN
+                        sum+=1;
+                        END
+                    ELSE END
+                    j+=1;
+                END
+            END
+            
+            {IF num = num@(1/2) * num@(1/2)
+            THEN 
+                BEGIN
+                sum+=1;
+                END
+            ELSE END}
+            
+            IF max<sum
+            THEN 
+                BEGIN
+                {PRINT("max");
+                PRINT (max);
+                PRINT (i);
+                PRINT("sum");
+                PRINT (sum);}
+                max:=sum;
+                    
+                END
+            ELSE END
+            i+=1; 
+            
+        END
+    END
+    PRINT ("Required Number:");
+    PRINT (num);
+    PRINT ("No of factors of above number:");
+    PRINT (sum);
+    PRINT ("No of factors to be exceeded:");
+    PRINT (n);
+END
+$Required Number:
+25200
+No of factors of above number:
+90
+No of factors to be exceeded:
+50
+$

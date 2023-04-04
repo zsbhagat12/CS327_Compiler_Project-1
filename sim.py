@@ -252,7 +252,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 sys.exit()
                 # environment.add(name, MutVar(name))
             
-            e = m if m.value != None else environment.get(name)
+            # e = m if m.value != None else environment.get(name)
+            e = m if environment.get(name).get() == None else environment.get(name)
             # e = environment.get(name)
             v = e.get()
             typesWithNoEval = Fraction | FnObject | Listing | int | float | str | bool
@@ -391,7 +392,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case ForLoop(start, condition, increment, body):
             # print("Zeeshan", condition)
 
-            eval_env(start)
+            if start != None:
+                eval_env(start)
             if(condition == None):
                 while True:
                     v = eval_env(body)
@@ -401,7 +403,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                         if v.command=="return":
                             return v.statement
                     else:
-                        eval_env(increment)
+                        if increment != None:
+                            eval_env(increment)
             else:
                 while(eval_env(condition)):
                     v = eval_env(body)
@@ -411,7 +414,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                         if v.command=="return":
                             return v.statement
                     else:
-                        eval_env(increment)
+                        if increment != None:
+                            eval_env(increment)
             return
         
 

@@ -1,0 +1,75 @@
+{Project Euler Problem 3	Largest prime factor}
+BEGIN
+    n:=600851475143; {13195->5,7,13,29->0.38s, after optimize/actual better soln->0.014s; 600851475143->71,839,1471,6857->0.23s}
+    i:=2;
+    maxPrimeFactor:=0;
+    FUNCTION findFirstPrimeFactor(num, ini)
+    BEGIN 
+        j:=ini;
+        flag:=0;
+        WHILE j<=num/2
+        DO
+            BEGIN
+                IF num%j=0
+                THEN 
+                    BEGIN
+                        flag:=1;
+                        {i:=j;
+                        PRINT j END;}
+                        BREAK;
+                    END
+                ELSE END;
+                j+=1;
+            END
+        END;
+        
+        IF flag=0
+        THEN RETURN num
+        ELSE RETURN j
+        END;
+    END;
+
+    {IF isPrime(n)=FALSE
+    THEN 
+        BEGIN}
+            WHILE i<n
+            DO
+                BEGIN
+                    i:=findFirstPrimeFactor(n, i);
+                    {IF isPrime(i)
+                    THEN 
+                        BEGIN}
+                            prevN:=n;
+                            WHILE n%i=0
+                            DO 
+                                BEGIN
+                                    
+                                    n:=n/i;
+                                    
+                                END
+                            END;
+                            IF prevN<>n
+                            THEN 
+                                BEGIN
+                                maxPrimeFactor:=i;
+                                PRINT i END; 
+                                END
+                            ELSE END;
+                            
+                            
+                       { END
+                    ELSE END;
+                    i+=1;}
+                END
+            END;
+            
+        {END
+    ELSE
+        
+        
+        
+    END;}
+    {maxPrimeFactor:=n;}
+    PRINT "Max Prime Factor of n:" END;
+    PRINT maxPrimeFactor END;
+END

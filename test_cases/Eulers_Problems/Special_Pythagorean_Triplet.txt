@@ -1,0 +1,22 @@
+{Project Euler Problem 9	Special Pythagorean triplet}
+BEGIN
+    a:=1;b:=0;c:=0;
+    WHILE a<1000
+    DO 
+        BEGIN
+            IF a*a%(1000-a)=0
+            THEN 
+                BEGIN
+                b:=((1000-a)-a*a/(1000-a))/2;
+                c:=((1000-a)+a*a/(1000-a))/2;
+                BREAK;
+                END
+            ELSE END;
+            a+=1;
+        END
+    END;
+    PRINT "a,b,c are:" END; {200, 375, 425}
+    PRINT a END;
+    PRINT b END;
+    PRINT c END;
+END

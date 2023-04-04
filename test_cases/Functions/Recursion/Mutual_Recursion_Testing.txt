@@ -1,0 +1,25 @@
+{Mutual Recursion Testing}
+BEGIN
+    FUNCTION even(n)
+    BEGIN
+        IF n = 0
+        THEN RETURN TRUE
+        ELSE END;
+        IF n = 1
+        THEN RETURN FALSE
+        ELSE END;
+        RETURN odd(n-1);
+    END;
+    FUNCTION odd(m)
+    BEGIN
+        IF m = 0
+        THEN RETURN FALSE
+        ELSE END;
+        IF m = 1
+        THEN RETURN TRUE
+        ELSE END;
+        RETURN even(m-1);
+    END;
+    PRINT even(5) END;
+    PRINT odd(4) END;
+END

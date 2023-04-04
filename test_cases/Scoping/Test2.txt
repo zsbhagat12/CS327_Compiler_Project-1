@@ -1,0 +1,10 @@
+{test2}
+BEGIN
+    FUNCTION foo()
+        BEGIN
+            PRINT a END;
+        END;
+    a:=1;
+    PRINT foo() END;
+END
+{output: 1}

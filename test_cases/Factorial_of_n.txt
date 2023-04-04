@@ -1,0 +1,18 @@
+{Factorial of n}
+BEGIN 
+    i:=1;
+    p:=1;
+    n:=1559; {when while used python ifelse, max limit=494 }
+    WHILE i<n
+    DO
+        BEGIN
+        p:=p*i;
+        i:=i+1;{
+        PRINT i END;
+        PRINT p END;}
+        END
+    END;
+
+    PRINT i END;
+    PRINT p END;
+END

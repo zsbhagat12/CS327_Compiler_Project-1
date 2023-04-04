@@ -1,0 +1,22 @@
+{Project Euler Problem 1	Multiples of 3 or 5}
+BEGIN
+    sum:=0;
+    n:=1000; {233168}
+    i:=1;
+    WHILE i<n
+    DO
+        BEGIN
+            IF i%3=0 || i%5=0
+            THEN 
+                BEGIN
+                    sum:=sum+i;
+                    PRINT i END;
+                END
+            ELSE 
+            END;
+            i:=i+1;
+        END
+    END;
+    PRINT "SUM=" END;
+    PRINT sum END;
+END
