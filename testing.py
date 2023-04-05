@@ -1,6 +1,7 @@
 import lexer as lex
 # import Parser as prs
 from sim import *
+from codegen_VM import *
 import time
 
 # Combining lexer parser
@@ -78,10 +79,25 @@ text = "BEGIN "+text+" END"
 
 l = lex.Lexer(text)   
 p = prs.Parser(l)
-i = Interpreter(p)
-# print(eval(i))
+if stack_VM_On:
+    # compile code
+    # c = Compiler(p)
+    # v = VM()
+    # c = codegen(c)
+    # # print_bytecode(c)
+    # v.load(c)
+    # # then execute
+    # v.execute()
+    # sys.stdout = sys.__stdout__
+    ############################################# uncomment either above or below
+    # execute code
+    e = Executor(p)
+    codegen(e)
+else:    
 
-eval(i)
+    i = Interpreter(p)
+    # print(eval(i))
+    eval(i)
 # print(open("eval.txt").read()==open("solution.txt").read())
 print("Time taken", time.time()-start)
 

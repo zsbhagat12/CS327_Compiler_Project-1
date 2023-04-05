@@ -4,6 +4,7 @@ from sim import *
 import sys
 import re
 import platform
+from codegen_VM import *
 
 def run_test_cases(dir_path):
     while True:
@@ -23,8 +24,25 @@ def run_test_cases(dir_path):
                         text = "BEGIN "+text+" END"
                         l = lex.Lexer(text)   
                         p = prs.Parser(l)
-                        i = Interpreter(p)
-                        eval(i)
+                        if stack_VM_On:
+                            # compile code
+                            # c = Compiler(p)
+                            # v = VM()
+                            # c = codegen(c)
+                            # # print_bytecode(c)
+                            # v.load(c)
+                            # # then execute
+                            # v.execute()
+                            # sys.stdout = sys.__stdout__
+                            ############################################# uncomment either above or below
+                            # execute code
+                            e = Executor(p)
+                            codegen(e)
+                        else:    
+
+                            i = Interpreter(p)
+                            # print(eval(i))
+                            eval(i)
                         sys.stdout = sys.__stdout__
 
 
@@ -46,9 +64,10 @@ def run_test_cases(dir_path):
                         # compare two text files
 
                         if open('eval.txt').read() == open('solution.txt').read():
-                            print("Test passed: " + file)
+                                    
+                            print(" [92mTest passed:"  + file+"[0m")
                         else:
-                            print("Test failed: " + file)
+                            print(" [91mTest failed:"  + file+"[0m")
                         # output = os.popen('').read()
                         # for line in lines[1:]:
                         #     print(line)
@@ -71,10 +90,27 @@ def run_test_cases(dir_path):
                                 with open(file) as f:
                                     text = f.read()
                                 text = "BEGIN "+text+" END"
-                                l = lex.Lexer(text)
+                                l = lex.Lexer(text)   
                                 p = prs.Parser(l)
-                                i = Interpreter(p)
-                                eval(i)
+                                if stack_VM_On:
+                                    # compile code
+                                    # c = Compiler(p)
+                                    # v = VM()
+                                    # c = codegen(c)
+                                    # # print_bytecode(c)
+                                    # v.load(c)
+                                    # # then execute
+                                    # v.execute()
+                                    # sys.stdout = sys.__stdout__
+                                    ############################################# uncomment either above or below
+                                    # execute code
+                                    e = Executor(p)
+                                    codegen(e)
+                                else:    
+
+                                    i = Interpreter(p)
+                                    # print(eval(i))
+                                    eval(i)
                                 sys.stdout = sys.__stdout__
 
                                 # if platform.platform().startswith('Windows'):
@@ -86,9 +122,10 @@ def run_test_cases(dir_path):
                                 # print(output)
                                 # if output == "":
                                 if open('eval.txt').read() == open('solution.txt').read():
-                                    print("Test passed: " + file)
+                                    
+                                    print(" [92mTest passed:"  + file+"[0m")
                                 else:
-                                    print("Test failed: " + file)
+                                    print(" [91mTest failed:"  + file+"[0m")
                         if flag == 1:
                             print("File or Folder not found")
 
@@ -107,8 +144,25 @@ def run_test_cases(dir_path):
                                 text = "BEGIN "+text+" END"
                                 l = lex.Lexer(text)   
                                 p = prs.Parser(l)
-                                i = Interpreter(p)
-                                eval(i)
+                                if stack_VM_On:
+                                    # compile code
+                                    # c = Compiler(p)
+                                    # v = VM()
+                                    # c = codegen(c)
+                                    # # print_bytecode(c)
+                                    # v.load(c)
+                                    # # then execute
+                                    # v.execute()
+                                    # sys.stdout = sys.__stdout__
+                                    ############################################# uncomment either above or below
+                                    # execute code
+                                    e = Executor(p)
+                                    codegen(e)
+                                else:    
+
+                                    i = Interpreter(p)
+                                    # print(eval(i))
+                                    eval(i)
                                 sys.stdout = sys.__stdout__
                                 # if platform.platform().startswith('Windows'):
                                 #     output = os.popen('fc eval.txt solution.txt').read()
@@ -119,9 +173,10 @@ def run_test_cases(dir_path):
                                 # print(output)
                                 # if output == "":
                                 if open('eval.txt').read() == open('solution.txt').read():
-                                    print("Test passed: " + file)
+                                    
+                                    print(" [92mTest passed:"  + file+"[0m")
                                 else:
-                                    print("Test failed: " + file)
+                                    print(" [91mTest failed:"  + file+"[0m")
                         if flag == 1:
                             print("File or Folder not found")
 
