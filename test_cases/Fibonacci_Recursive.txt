@@ -1,0 +1,20 @@
+{Recursive Fibonacci}
+BEGIN
+    f:=0;
+    s:=1;
+    FUNCTION fibo(n)
+    BEGIN
+        IF n<=1
+        THEN RETURN f
+        ELSE 
+            BEGIN
+            t:=s;
+            s:=s+f;
+            f:=t;
+            fibo(n-1);
+            END
+        END;
+        
+    END;
+    PRINT fibo(123) END;
+END

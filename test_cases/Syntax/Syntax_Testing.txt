@@ -1,0 +1,37 @@
+{Looks matter}
+a:=1;
+PRINT("1st");
+PRINT (a) ;
+
+IF a = 1
+    THEN
+        BEGIN
+        PRINT("2nd");
+        PRINT (a) ;
+        END
+    ELSE
+        END
+WHILE a < 10
+    DO
+        BEGIN
+        
+        a:=a+1;
+        
+        END
+        
+    END
+PRINT("3rd");
+PRINT( a);
+FUNCTION foo()
+    BEGIN
+    PRINT (a) ;
+    END
+PRINT("4th");
+{PRINT (foo()) ;}
+foo();
+BEGIN
+    a:=4;
+    PRINT("5th");
+    PRINT (a) ;
+    
+END

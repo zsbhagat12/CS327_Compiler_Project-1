@@ -1,0 +1,19 @@
+{Resolver test; inspired from sir's class }
+BEGIN
+    FUNCTION foo(a)
+    BEGIN
+        IF FALSE
+        THEN RETURN foo(a) {infinite loop}
+        ELSE RETURN a-2
+        END;
+    END;
+    g:=foo;
+    FUNCTION foo(a)
+    BEGIN
+        RETURN a+5;
+    END;
+    h:=foo;
+    PRINT g(0) END;
+    PRINT h(1) END;
+
+END

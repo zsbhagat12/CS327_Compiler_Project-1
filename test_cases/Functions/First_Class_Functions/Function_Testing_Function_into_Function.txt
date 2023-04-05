@@ -1,0 +1,34 @@
+{Function Testing: Define function within another function, return, use it; almost first class}
+    FUNCTION f2(n)
+    BEGIN
+        RETURN n*n;
+    END
+    FUNCTION f4(n)
+    BEGIN
+        RETURN n@n;
+    END
+    FUNCTION f1(f3)
+    BEGIN
+        FUNCTION f11(n)
+        BEGIN
+            RETURN f3(n)*(n-1);
+            {PRINT ("f11");}
+        END
+        {PRINT ("f1");}
+        RETURN f11;
+    END
+    rf11:=f1(f2);
+    rf12:=f1(f4);
+    rf13:=f2(4);
+    rf14:=6;
+    PRINT (rf14); {6}
+    PRINT (rf13); {16}
+    PRINT (rf11(5)); {100}
+    PRINT (rf12(3)); {54}
+    {PRINT (f3(3)); {error}}
+
+$6
+16
+100
+54
+$

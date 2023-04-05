@@ -1,0 +1,10 @@
+{test1}
+BEGIN
+    a:=0;
+    BEGIN
+        a:=1;
+        PRINT a END;
+    END;
+    PRINT a END;
+END
+{output: 1,1}

@@ -1,0 +1,30 @@
+{resolver test 2}
+BEGIN 
+    i:=1;
+    s:=i; {1}
+    a:=2;
+    i:=a; {2}
+    s:=a@i@a; {16}
+    n:=s;   {16}
+    IF i< n 
+    THEN BEGIN
+            b:=n;
+            PRINT n END;
+            WHILE i+b-25 < 10
+            DO
+                BEGIN
+                    n:=i*b/a-n%i;
+                    PRINT n END;
+                    i+=i;
+                END
+            END;
+        END
+    ELSE 
+            {n:=a;}
+            PRINT n END
+        
+    END;
+    PRINT i END;
+    PRINT a END;
+    PRINT s END;
+END

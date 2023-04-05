@@ -1,0 +1,26 @@
+{First Class Function Test 2}
+BEGIN
+    FUNCTION f4(n)
+    BEGIN
+        RETURN n@n;
+    END
+    FUNCTION f1(f3)
+    BEGIN
+        FUNCTION f11(n)
+        BEGIN
+            RETURN f3(n)*(n-1);
+            {PRINT ("f11");}
+        END
+        {PRINT ("f1" );}
+        RETURN f11;
+    END
+    
+    rf12:=f1(f4);
+    PRINT (rf12(3)); {54}
+    PRINT (f1(f4)(3)); {54}
+    
+END
+
+$54
+54
+$

@@ -1,0 +1,18 @@
+{multiple ifelse testing}
+BEGIN
+    n:=0;
+    a:=0;
+    IF n = 0
+        THEN a:=1;
+        ELSE END
+    IF n = 1
+        THEN a:=0;
+        ELSE END 
+    IF n = 2
+        THEN a:=2;
+        ELSE END    
+    PRINT (a);
+END
+
+$1
+$

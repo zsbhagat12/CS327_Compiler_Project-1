@@ -96,13 +96,22 @@ class Parser(object):
     
     def parse_for(self):
         self.check_type(FOR)
-        start = self.parse()
+        if self.curr_token.type == SEMI:
+            start = None
+        else:
+            start = self.parse()
         # print("Hi", start)
         self.check_type(SEMI)
-        condition = self.logical()
+        if self.curr_token.type == SEMI:
+            condition = None
+        else:
+            condition = self.logical()
         # print("Hi2", end)
         self.check_type(SEMI)
-        increment = self.parse()
+        if self.curr_token.type == DO:
+            increment = None
+        else:
+            increment = self.parse()
         # print("Hi3",jump)
         self.check_type(DO)
         if self.curr_token.type != BEGIN and self.curr_token.type != IF and self.curr_token.type != WHILE and self.curr_token.type != FOR and self.curr_token.type != FUNCTION:

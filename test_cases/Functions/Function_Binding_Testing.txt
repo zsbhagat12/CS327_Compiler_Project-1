@@ -1,0 +1,13 @@
+{Function binding Testing}
+BEGIN
+    FUNCTION add(a,b)
+    BEGIN
+        c:=a+b;
+        RETURN dummy(c);
+    END;
+    FUNCTION dummy(a)
+    BEGIN
+        RETURN a;
+    END;
+    PRINT add(7,5) END;
+END

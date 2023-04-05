@@ -1,0 +1,41 @@
+{Project Euler Problem 5	Smallest multiple}
+BEGIN
+    FUNCTION HCF(first,second)
+    BEGIN
+        IF first<second {first should be kept bigger}
+        THEN 
+            BEGIN
+            t:=second;
+            second:=first;
+            first:=t;
+            END
+        ELSE END;
+        WHILE first%second<>0
+        DO
+            BEGIN
+            t:=second;
+            second:=first%second;
+            first:=t;
+            END
+        END;
+        RETURN second;
+        
+    END;
+    FUNCTION LCM(f,s)
+    BEGIN
+        RETURN f*s/HCF(f,s);
+    END;
+    i:=2;
+    n:=20; {10->2520; 20->232792560}
+    lcm:=i;
+    WHILE i<n
+    DO
+        BEGIN
+        i+=1;
+        lcm:=LCM(lcm, i);
+        END
+    END;
+    PRINT "Required Smallest Product:" END;
+    PRINT lcm END;
+
+END

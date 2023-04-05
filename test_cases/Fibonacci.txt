@@ -1,0 +1,20 @@
+{Fibonacci upto n numbers}
+BEGIN
+    n:=20577; {when while used python ifelse, max limit=495; 10000 time taken 29.94s, 15000->60.9s, 20577(max limit)->118.23s print takes time }
+    f:=0;
+    s:=1;
+    PRINT f END;
+    PRINT s END;
+    i:=2;
+    WHILE i<n
+    DO
+        BEGIN
+        t:=s;
+        s:=s+f;
+        f:=t;
+        PRINT s END;
+        PRINT i END;
+        i:=i+1;
+        END
+    END;
+END

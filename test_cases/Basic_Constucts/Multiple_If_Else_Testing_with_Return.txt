@@ -1,0 +1,19 @@
+{multiple ifelse to test return working}
+BEGIN
+    FUNCTION add(n)
+        BEGIN
+        IF n = 0
+            THEN RETURN 1;
+            ELSE END
+        IF n = 1
+            THEN RETURN 0;
+            ELSE END
+        IF n = 2
+            THEN RETURN 2;
+            ELSE END      
+        END
+    PRINT (add(0));
+END
+
+$1
+$

@@ -1,0 +1,50 @@
+{Project Euler Problem 4	Largest palindrome product}
+{7 second execution time}
+BEGIN
+    FUNCTION isPalin(num)
+    BEGIN
+        
+        pnum:=num;
+        sum:=0;
+        WHILE pnum>0
+        DO
+            BEGIN
+            sum := sum*10+pnum%10;
+            pnum:=pnum//10;
+            END
+        END;
+        RETURN sum=num;
+
+    END;
+
+    i:=999;
+    max:=0;
+    first:=0;second:=0;
+    WHILE i>=900
+    DO  
+        BEGIN
+            j:=i;
+            WHILE j>=900
+            DO
+                BEGIN
+                    IF isPalin(i*j) && max<i*j
+                    THEN 
+                        BEGIN
+                            max:=i*j;
+                            first:=i;
+                            second:=j;
+                            {PRINT max END;}
+                        END
+                    ELSE END;
+                    j:=j-1;
+                END
+            END;
+            i:=i-1;
+        END
+    END;
+    PRINT "Max Palindrome:" END;
+    PRINT max END;
+    PRINT "Constituent Numbers:" END;
+    PRINT first END; 
+    PRINT second END;   
+END
