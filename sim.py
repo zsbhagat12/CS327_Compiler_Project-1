@@ -153,8 +153,9 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 # environment.add(name, MutVar(name))
                 # environment.get(name).put(FnObject([],None))
             
-            m.value = copy.deepcopy(m.value)
+            # m.value = copy.deepcopy(m.value)
             fn = m.value if m.value != None else environment.get(name).get() #fn is FnObject
+            # fn = m.value if environment.get(name).get() == None else environment.get(name).get()
             # pp = pprint.PrettyPrinter()
             # pp.pprint(fn)
             # pp.pprint(environment.envs)
@@ -189,7 +190,10 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     environment.add(param.name, arg)
             # print(fn, id(fn.body))
             v = eval_env(fn.body)
-            
+            # if isinstance(v, MutVar) and isinstance(v.value, FnObject):
+            #     v.value = copy.deepcopy(v.value)
+            if isinstance(v, FnObject):
+                v = copy.deepcopy(v)
             environment.exit_scope()
             # print(name, v)
             return v

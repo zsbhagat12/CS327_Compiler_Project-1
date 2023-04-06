@@ -1,10 +1,14 @@
 {Function Testing}
 BEGIN
-    PRINT 2+3 END;
+    PRINT (2+3);
     FUNCTION add(a,b)
     BEGIN
         c:=a+b;
         RETURN c;
-    END;
-    PRINT add(2,5) END;
+    END
+    PRINT (add(2,5));
 END
+
+$5
+7
+$

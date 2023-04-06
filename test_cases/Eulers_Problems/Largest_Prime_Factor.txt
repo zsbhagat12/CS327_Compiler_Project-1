@@ -15,19 +15,19 @@ BEGIN
                     BEGIN
                         flag:=1;
                         {i:=j;
-                        PRINT j END;}
+                        PRINT (j);}
                         BREAK;
                     END
-                ELSE END;
+                ELSE END
                 j+=1;
             END
-        END;
+        END
         
         IF flag=0
-        THEN RETURN num
-        ELSE RETURN j
-        END;
-    END;
+        THEN RETURN num;
+        ELSE RETURN j;
+        END
+    END
 
     {IF isPrime(n)=FALSE
     THEN 
@@ -47,29 +47,37 @@ BEGIN
                                     n:=n/i;
                                     
                                 END
-                            END;
+                            END
                             IF prevN<>n
                             THEN 
                                 BEGIN
                                 maxPrimeFactor:=i;
-                                PRINT i END; 
+                                PRINT (i); 
                                 END
-                            ELSE END;
+                            ELSE END
                             
                             
                        { END
-                    ELSE END;
+                    ELSE END
                     i+=1;}
                 END
-            END;
+            END
             
         {END
     ELSE
         
         
         
-    END;}
+    END}
     {maxPrimeFactor:=n;}
-    PRINT "Max Prime Factor of n:" END;
-    PRINT maxPrimeFactor END;
+    PRINT ("Max Prime Factor of n:");
+    PRINT (maxPrimeFactor);
 END
+
+$71
+839
+1471
+6857
+Max Prime Factor of n:
+6857
+$

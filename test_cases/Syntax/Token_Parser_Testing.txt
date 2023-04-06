@@ -3,5 +3,13 @@ BEGIN
     a:=1;
     b:=2;
     c:=b**03;
-    PRINT c END;
+    PRINT (c);
 END
+
+$None of the suggested tokens found: INTEGER_CONST ID LPAREN STRING TRUE FALSE ...
+Expected Token Type:  INTEGER_CONST
+Got Token:  Token(MUL, '*')
+At line number: 1124
+    c:=b**0
+           ^
+Invalid character$

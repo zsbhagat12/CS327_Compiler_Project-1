@@ -5,7 +5,7 @@ BEGIN
     FUNCTION fibo(n)
     BEGIN
         IF n<=1
-        THEN RETURN f
+        THEN RETURN f;
         ELSE 
             BEGIN
             t:=s;
@@ -13,8 +13,10 @@ BEGIN
             f:=t;
             fibo(n-1);
             END
-        END;
+        END
         
-    END;
-    PRINT fibo(123) END;
+    END
+    PRINT (fibo(122));{123 when no isinstance}
 END
+$8670007398507948658051921
+$

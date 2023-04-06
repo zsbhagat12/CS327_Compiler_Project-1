@@ -2,9 +2,13 @@
 BEGIN
     FUNCTION foo()
         BEGIN
-            PRINT a END;
-        END;
+            PRINT (a);
+        END
     a:=1;
-    PRINT foo() END;
+    PRINT (foo());
 END
 {output: 1}
+
+$1
+None
+$

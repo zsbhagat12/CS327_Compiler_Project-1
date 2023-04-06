@@ -12,10 +12,10 @@ BEGIN
             sum := sum*10+pnum%10;
             pnum:=pnum//10;
             END
-        END;
+        END
         RETURN sum=num;
 
-    END;
+    END
 
     i:=999;
     max:=0;
@@ -33,18 +33,25 @@ BEGIN
                             max:=i*j;
                             first:=i;
                             second:=j;
-                            {PRINT max END;}
+                            {PRINT (max);}
                         END
-                    ELSE END;
+                    ELSE END
                     j:=j-1;
                 END
-            END;
+            END
             i:=i-1;
         END
-    END;
-    PRINT "Max Palindrome:" END;
-    PRINT max END;
-    PRINT "Constituent Numbers:" END;
-    PRINT first END; 
-    PRINT second END;   
+    END
+    PRINT ("Max Palindrome:");
+    PRINT (max);
+    PRINT ("Constituent Numbers:");
+    PRINT (first); 
+    PRINT (second);   
 END
+
+$Max Palindrome:
+906609
+Constituent Numbers:
+993
+913
+$

@@ -11,12 +11,16 @@ BEGIN
                 c:=((1000-a)+a*a/(1000-a))/2;
                 BREAK;
                 END
-            ELSE END;
+            ELSE END
             a+=1;
         END
-    END;
-    PRINT "a,b,c are:" END; {200, 375, 425}
-    PRINT a END;
-    PRINT b END;
-    PRINT c END;
+    END
+    PRINT ("a,b,c are:"); {200, 375, 425}
+    PRINT (a);
+    PRINT (b);
+    PRINT (c);
 END
+
+$Required Smallest Product:
+232792560
+$

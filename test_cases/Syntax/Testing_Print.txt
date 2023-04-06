@@ -1,5 +1,8 @@
 {print test}
 BEGIN 
     a:=1;
-    PRINT a END;
+    PRINT (a);
 END
+
+$1
+$
