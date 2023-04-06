@@ -70,19 +70,25 @@ class Parser(object):
         if self.curr_token.type == IF or self.curr_token.type == WHILE or self.curr_token.type == FOR or self.curr_token.type == FUNCTION or self.curr_token.type == BEGIN:
             ignoreSEMI = True
         e = self.parse()
+        if not ignoreSEMI:
+            self.check_type(SEMI)
+        ignoreSEMI = False
         token = self.curr_token
         Type = token.type
         seq = [e]
         
         while Type != END:
-            if not ignoreSEMI:
-                self.check_type(SEMI)
-            ignoreSEMI = False
-            if self.curr_token.type == END:
-                break
+            
+            # if self.curr_token.type == END:
+            #     break
+            
             if self.curr_token.type == IF or self.curr_token.type == WHILE or self.curr_token.type == FOR or self.curr_token.type == FUNCTION or self.curr_token.type == BEGIN:
                 ignoreSEMI = True
             e = self.parse()
+            if not ignoreSEMI:
+                self.check_type(SEMI)
+            
+            ignoreSEMI = False
             
             seq.append(e)
             token = self.curr_token
