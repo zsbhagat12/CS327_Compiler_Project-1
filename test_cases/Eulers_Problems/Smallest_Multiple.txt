@@ -9,7 +9,7 @@ BEGIN
             second:=first;
             first:=t;
             END
-        ELSE END;
+        ELSE END
         WHILE first%second<>0
         DO
             BEGIN
@@ -17,14 +17,14 @@ BEGIN
             second:=first%second;
             first:=t;
             END
-        END;
+        END
         RETURN second;
         
-    END;
+    END
     FUNCTION LCM(f,s)
     BEGIN
         RETURN f*s/HCF(f,s);
-    END;
+    END
     i:=2;
     n:=20; {10->2520; 20->232792560}
     lcm:=i;
@@ -34,8 +34,12 @@ BEGIN
         i+=1;
         lcm:=LCM(lcm, i);
         END
-    END;
-    PRINT "Required Smallest Product:" END;
-    PRINT lcm END;
+    END
+    PRINT ("Required Smallest Product:");
+    PRINT (lcm);
 
 END
+
+$Required Smallest Product:
+232792560
+$

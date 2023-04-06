@@ -3,17 +3,20 @@ BEGIN
     FUNCTION foo(a)
     BEGIN
         IF FALSE
-        THEN RETURN foo(a) {infinite loop}
-        ELSE RETURN a-2
-        END;
-    END;
+        THEN RETURN foo(a); {infinite loop}
+        ELSE RETURN a-2;
+        END
+    END
     g:=foo;
     FUNCTION foo(a)
     BEGIN
         RETURN a+5;
-    END;
+    END
     h:=foo;
-    PRINT g(0) END;
-    PRINT h(1) END;
-
+    PRINT (g(0));
+    PRINT (h(1));
 END
+
+$-2
+6
+$

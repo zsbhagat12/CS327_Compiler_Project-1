@@ -35,3 +35,15 @@ BEGIN
     PRINT (a) ;
     
 END
+
+$1st
+1
+2nd
+1
+3rd
+10
+4th
+10
+5th
+4
+$

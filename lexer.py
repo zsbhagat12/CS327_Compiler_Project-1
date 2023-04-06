@@ -187,14 +187,15 @@ class Lexer(object):
         # self.nextChar()                         # to skip the closing curly brace as well
         noOfstartBraces = 1
         while noOfstartBraces != 0 :
-            self.nextChar()
+            
             if self.curChar == '{':
                 noOfstartBraces+=1
             elif self.curChar == '}':
                 noOfstartBraces-=1
+            self.nextChar()                       # to skip the closing curly brace as well
             # self.skipSpaces()
 
-        self.nextChar()                         # to skip the closing curly brace as well
+        # self.nextChar()                         # to skip the closing curly brace as well
 
     def scanSolution(self):
         result = ''

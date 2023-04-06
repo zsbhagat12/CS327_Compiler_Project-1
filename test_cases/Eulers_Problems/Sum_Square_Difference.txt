@@ -3,6 +3,10 @@ BEGIN
     n:=100; {10->2640; 100->25164150}
     squareOfSum:=n*(n+1)*n*(n+1)/4;
     sumOfSquare:=n*(n+1)*(2*n+1)/6;
-    PRINT "Resultant Difference" END;
-    PRINT squareOfSum-sumOfSquare END;
+    PRINT ("Resultant Difference");
+    PRINT (squareOfSum-sumOfSquare);
 END
+
+$Resultant Difference
+25164150
+$
