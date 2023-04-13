@@ -151,6 +151,25 @@ class Parser(object):
         self.check_type(RPAREN)
         return list_append(var, item)
     
+    def parse_update_list(self):
+        self.check_type(LISTUPDATE)
+        self.check_type(LPAREN)
+        var = self.variable()
+        self.check_type(LSPAREN)
+        index= self.parse()
+        self.check_type(RSPAREN)
+        self.check_type(COMMA)
+        value = self.parse()
+        self.check_type(RPAREN)
+        return list_update(var, index, value)
+
+
+
+        
+
+
+    
+    
 
     
     def parse_list_slice(self, c):
@@ -680,6 +699,8 @@ class Parser(object):
                 return self.parse_dec()
             case 'APPEND':
                 return self.parse_list_append()
+            case 'LISTUPDATE':
+                return self.parse_update_list()
             # case 'SEMI':
             #     return
                 # return self.parse()
