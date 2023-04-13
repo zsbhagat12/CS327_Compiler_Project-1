@@ -323,7 +323,17 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             e1 = temp
             e1.append(item)
             return e1
+        
+        case list_update(MutVar(var), index, value):
+            if not environment.check(var):
+                print(f"list '{var}' not defined")
+                sys.exit()
+            temp = environment.get(var).get().value
+            e1 = int(eval_env(index))
+            # e2 = int(eval_env(value))
 
+            temp[e1] = value
+            return temp
 
         
         case Listing(value, datatype):

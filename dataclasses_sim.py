@@ -206,6 +206,12 @@ class list_isempty:
 class length:
     name: 'AST'   
 
+@dataclass
+class list_update:
+    var :'AST'
+    index: 'AST'
+    value: 'AST'
+
 class Environment:
     envs: List
 

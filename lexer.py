@@ -73,6 +73,7 @@ POP           = "POP"
 HEAD          = "HEAD"
 TAIL          = "TAIL"
 ISEMPTY       = "ISEMPTY"
+LISTUPDATE   = "LISTUPDATE"
 
 
 # literals
@@ -126,7 +127,8 @@ KEYWORDS = {
     "POP" : Token("POP", "POP"),
     "HEAD" : Token("HEAD", "HEAD"),
     "TAIL" : Token("TAIL", "TAIL"),
-    "ISEMPTY" : Token("ISEMPTY", "ISEMPTY")
+    "ISEMPTY" : Token("ISEMPTY", "ISEMPTY"),
+    "LISTUPDATE" : Token("LISTUPDATE", "LISTUPDATE")
     # 'PRINT': Token('PRINT', ';'),
     
 }
