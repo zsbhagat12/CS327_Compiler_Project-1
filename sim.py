@@ -351,26 +351,32 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             if jump!=None:
                 e4 = eval_env(jump)
                 e4 = int(e4)
-            # print(e1,e2,e3,e4)
-            # sys.stdout = open('bug', 'w')
-            if end!=None and jump!=None:
-                Listing (e1, dt)
-                e1[e2:e3:e4] = item
-            elif end!=None and jump==None:
-                Listing (e1, dt)
-                e1[e2:e3] = item
-            elif end==None and jump!=None:
-                Listing (e1, dt)
-                e1[e2::e4] = item
-            else:
-                if str(type(item)) == type_dic[dt]:
-                    e1[e2] = item
-                    # print(e1)
+            if dt!=None:           
+                if end!=None and jump!=None:
+                    e1[e2:e3:e4] = item
+                    Listing (e1, dt)
+                elif end!=None and jump==None:
+                    e1[e2:e3] = item
+                    Listing (e1, dt)
+                elif end==None and jump!=None:
+                    e1[e2::e4] = item
+                    Listing (e1, dt)
                 else:
-                  
-                    raise InvalidProgram(Exception)
+                    if str(type(item)) == type_dic[dt]:
+                        e1[e2] = item
+                    else:
+                        print("Value of Invalid type in Listing")
                     
-            # sys.stdout = sys.__stdout__
+                        raise InvalidProgram(Exception)
+            else:
+                if end!=None and jump!=None:
+                    e1[e2:e3:e4] = item
+                elif end!=None and jump==None:
+                    e1[e2:e3] = item
+                elif end==None and jump!=None:
+                    e1[e2::e4] = item
+                else:
+                    e1[e2] = item
             return e1
 
         
