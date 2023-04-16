@@ -324,16 +324,44 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             e1.append(item)
             return e1
         
-        case list_update(MutVar(var), index, value):
+        # case list_index_update(MutVar(var), start, value):
+        #     if not environment.check(var):
+        #         print(f"list '{var}' not defined")
+        #         sys.exit()
+        #     temp = environment.get(var).get().value
+        #     e1 = int(eval_env(start))
+        #     temp[e1] = value
+        #     return temp
+        
+        case list_update(MutVar(var) as m, start, end, jump, item):
             if not environment.check(var):
                 print(f"list '{var}' not defined")
                 sys.exit()
             temp = environment.get(var).get().value
-            e1 = int(eval_env(index))
-            # e2 = int(eval_env(value))
-
-            temp[e1] = value
-            return temp
+            # e1 = eval_env(temp)
+            if isinstance(item, Listing):
+                item = item.value
+            # print(item)
+            e1 = temp
+            e2 = eval_env(start)
+            e2 = int(e2)
+            if end!=None:
+                e3 = eval_env(end)
+                e3  = int(e3)
+            if jump!=None:
+                e4 = eval_env(jump)
+                e4 = int(e4)
+            # print(e1,e2,e3,e4)
+            if end!=None and jump!=None:
+                e1[e2:e3:e4] = item
+            elif end!=None and jump==None:
+                e1[e2:e3] = item
+            elif end==None and jump!=None:
+                e1[e2::e4] = item
+            else:
+                e1[e2] = item
+            
+            return e1
 
         
         case Listing(value, datatype):

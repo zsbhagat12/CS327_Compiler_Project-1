@@ -155,10 +155,16 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             if not environment.check(var):
                 environment.add(var, MutVar(var))
             return list_append(environment.get(var), resolve_(item))
-        case list_update(MutVar(var), index, value):
+        case list_update(MutVar(var), start, end, jump, item):
             if not environment.check(var):
                 environment.add(var, MutVar(var))
-            return list_update(environment.get(var), resolve_(index), resolve_(value))
+            return list_update(environment.get(var), resolve_(start), resolve_(end), resolve_(jump), resolve_(item))
+
+
+        # case list_index_update(MutVar(var), start, value):
+        #     if not environment.check(var):
+        #         environment.add(var, MutVar(var))
+        #     return list_index_update(environment.get(var), resolve_(start), resolve_(value))
         case length(MutVar(var)):
             if not environment.check(var):
                 environment.add(var, MutVar(var))

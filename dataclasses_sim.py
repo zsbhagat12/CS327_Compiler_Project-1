@@ -209,8 +209,18 @@ class length:
 @dataclass
 class list_update:
     var :'AST'
-    index: 'AST'
+    start: 'AST'
+    end : 'AST'
+    jump : 'AST'
     value: 'AST'
+    
+
+# @dataclass
+# class list_index_update:
+#     var:'AST'
+#     start:'AST'
+ 
+#     value:'AST'
 
 class Environment:
     envs: List
