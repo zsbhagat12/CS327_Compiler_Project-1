@@ -15,6 +15,8 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             return N
         case BoolLiteral(_) as B:
             return B
+        case FloatLiteral(_) as F:
+            return F
         case StringLiteral(_) as SL:
             return SL
         case BinOp("=" as aop, MutVar(name) as m, right) :
