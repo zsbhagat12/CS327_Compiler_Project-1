@@ -1,0 +1,13 @@
+{Checking the resolver id generation through variables and their repeated multiple occurrences}
+i:=1;
+a:=i;
+i:=i+1;
+b:=i;
+i:=3;
+c:=i;
+PRINT(a);
+PRINT(b);
+PRINT(c);
+$1
+2
+3$

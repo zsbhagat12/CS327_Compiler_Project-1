@@ -37,6 +37,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             pp.pprint(tree)
             
             if resolverOn:
+                init_resolver()
                 tree = resolve(tree)
                 sys.stdout = open('resolved_tree', 'w')
                 pp = pprint.PrettyPrinter(stream=sys.stdout)
@@ -87,6 +88,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     return e
                 case "break":
                     return program  
+                case "continue":
+                    return program
                 
             return 
 
@@ -120,6 +123,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 v = eval_env(thing)
                 if isinstance(v,Statement):
                     if v.command=="break":
+                        break
+                    if v.command=="continue":
                         break
                     if v.command=="return":
                          return v.statement
@@ -324,15 +329,6 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             e1.append(item)
             return e1
         
-        # case list_index_update(MutVar(var), start, value):
-        #     if not environment.check(var):
-        #         print(f"list '{var}' not defined")
-        #         sys.exit()
-        #     temp = environment.get(var).get().value
-        #     e1 = int(eval_env(start))
-        #     temp[e1] = value
-        #     return temp
-        
         case list_update(MutVar(var) as m, start, end, jump, item):
             if not environment.check(var):
                 print(f"list '{var}' not defined")
@@ -341,8 +337,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             # e1 = eval_env(temp)
             if isinstance(item, Listing):
                 item = item.value
-            # print(item)
-            e1 = temp
+            e1 = temp 
             e2 = eval_env(start)
             e2 = int(e2)
             if end!=None:
@@ -360,8 +355,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 e1[e2::e4] = item
             else:
                 e1[e2] = item
-            
             return e1
+
 
         
         case Listing(value, datatype):
@@ -442,6 +437,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     if isinstance(v,Statement):
                         if v.command=="break":
                             break
+                        if v.command=="continue":
+                            continue
                         if v.command=="return":
                             return v.statement
                     else:
@@ -453,6 +450,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     if isinstance(v,Statement):
                         if v.command=="break":
                             break
+                        if v.command=="continue":
+                            continue
                         if v.command=="return":
                             return v.statement
                     else:
@@ -484,6 +483,8 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 if isinstance(v,Statement):
                     if v.command=="break":
                         break
+                    if v.command=="continue":
+                        continue
                     if v.command=="return":
                         return v.statement
             return 
@@ -512,11 +513,15 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case BinOp("+=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
+            # if not environment.check(name):
+            #     environment.add(name, m)
+            #     mutvar = environment.get(name)
+            #     e += mutvar.get()
+            #     mutvar.put(e)
             if not environment.check(name):
-                environment.add(name, m)
-                mutvar = environment.get(name)
-                e += mutvar.get()
-                mutvar.put(e)
+                print(environment.envs)
+                print(f"Mutable Variable '{name}' not defined")
+                sys.exit()
 
             else:
                 mutvar = environment.get(name)
@@ -529,11 +534,15 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case BinOp("-=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
+            # if not environment.check(name):
+            #     environment.add(name, m)
+            #     mutvar = environment.get(name)
+            #     e += mutvar.get()
+            #     mutvar.put(e)
             if not environment.check(name):
-                environment.add(name, m)
-                mutvar = environment.get(name)
-                e -= mutvar.get()
-                mutvar.put(e)
+                print(environment.envs)
+                print(f"Mutable Variable '{name}' not defined")
+                sys.exit()
 
             else:
                 mutvar = environment.get(name)
@@ -547,11 +556,15 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case BinOp("/=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
+            # if not environment.check(name):
+            #     environment.add(name, m)
+            #     mutvar = environment.get(name)
+            #     e += mutvar.get()
+            #     mutvar.put(e)
             if not environment.check(name):
-                environment.add(name, m)
-                mutvar = environment.get(name)
-                e /= mutvar.get()
-                mutvar.put(e)
+                print(environment.envs)
+                print(f"Mutable Variable '{name}' not defined")
+                sys.exit()
 
             else:
                 mutvar = environment.get(name)
@@ -563,11 +576,15 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case BinOp("*=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
+            # if not environment.check(name):
+            #     environment.add(name, m)
+            #     mutvar = environment.get(name)
+            #     e += mutvar.get()
+            #     mutvar.put(e)
             if not environment.check(name):
-                environment.add(name, m)
-                mutvar = environment.get(name)
-                e *= mutvar.get()
-                mutvar.put(e)
+                print(environment.envs)
+                print(f"Mutable Variable '{name}' not defined")
+                sys.exit()
 
             else:
                 mutvar = environment.get(name)
@@ -579,11 +596,15 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case BinOp("**=", MutVar(name) as m, val):
             e = eval_env(val) 
             # program.get_left().put(eval(val))
+            # if not environment.check(name):
+            #     environment.add(name, m)
+            #     mutvar = environment.get(name)
+            #     e += mutvar.get()
+            #     mutvar.put(e)
             if not environment.check(name):
-                environment.add(name, m)
-                mutvar = environment.get(name)
-                e **= mutvar.get()
-                mutvar.put(e)
+                print(environment.envs)
+                print(f"Mutable Variable '{name}' not defined")
+                sys.exit()
 
             else:
                 mutvar = environment.get(name)

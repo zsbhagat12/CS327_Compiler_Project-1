@@ -10,18 +10,21 @@ class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
         self.curr_token = self.lexer.get_token()
-        self.lexer.lineNum = 0
+        # self.lexer.lineNum = 0
 
     def check_type(self, Type):
         if self.curr_token.type == Type:
             self.curr_token = self.lexer.get_token()
         else:
+            # sys.stdout = open('eval.txt', 'w')
             print("Expected Token Type: ", Type)
             print("Got Token: ", self.curr_token)
             print("At line number:", self.lexer.lineNum)
             print(self.lexer.curLine)
             print(" "*(self.lexer.curLinePos-1),"^")
-            sys.exit('Invalid character')
+            # sys.exit('Invalid character')
+            # sys.stdout = sys.__stdout__
+            sys.exit()
 
 
 
@@ -36,6 +39,8 @@ class Parser(object):
         else:    
             true = self.parse()
         self.check_type(ELSE)
+        node = IfElse(condition, true, None)
+        node1 = node
         while self.curr_token.type == IF:
             self.check_type(IF)
             condition = self.logical()
@@ -46,16 +51,20 @@ class Parser(object):
             else:    
                 true = self.parse()
             self.check_type(ELSE)
+            node1.else_body = IfElse(condition, true, None)
+            node1 = node1.else_body
         if self.curr_token.type != END:
             if self.curr_token.type != BEGIN and self.curr_token.type != IF and self.curr_token.type != WHILE and self.curr_token.type != FOR and self.curr_token.type != FUNCTION:
                 false = self.parse()
                 self.check_type(SEMI)
             else:
                 false = self.parse()
+            
         else:
             false = None
         self.check_type(END)
-        node = IfElse(condition, true, false)
+        # node = IfElse(condition, true, false)
+        node1.else_body = false
         return node     
     
 
@@ -155,7 +164,7 @@ class Parser(object):
         self.check_type(LISTUPDATE)
         self.check_type(LPAREN)
         # for now we are only supporting list update of the form a[0] = 1
-       
+
         token = self.curr_token
         self.check_type(ID)
         list_slice = self.parse_slice(MutVar(token.value))
@@ -164,10 +173,10 @@ class Parser(object):
             value = self.parse_list(self.curr_token.type)
         else:
             value = self.parse()
-       
+
+        
         # var = self.variable()
         # self.check_type(LSPAREN)
-
 
         # if self.curr_token.type ==COLON:
         #     index_type = False
@@ -183,22 +192,19 @@ class Parser(object):
         #     index_type = True
 
 
-
-
         # if index_type== True:
         #     self.check_type(RSPAREN)
         #     self.check_type(COMMA)
         #     value = self.parse()
         #     self.check_type(RPAREN)
         #     return list_index_update(var, start, value)
-       
+
         # if self.curr_token.type==RSPAREN:
         #     end = None
         #     self.check_type(RSPAREN)
         # else:
         #     end = self.parse()
         #     self.check_type(RSPAREN)
-
 
         # self.check_type(COMMA)
         # if self.curr_token.type == LSPAREN:
@@ -208,7 +214,7 @@ class Parser(object):
         #         value.append(self.parse())
         #         if self.curr_token.type != RSPAREN:
         #             self.check_type(COMMA)
-           
+
         # else:
         #     value = self.parse()
         # self.check_type(RSPAREN)
@@ -219,9 +225,6 @@ class Parser(object):
         jump = list_slice.jump
         return list_update(var, start, end, jump, value)
 
-        
-
-            
     def parse_list_slice(self, c):
      
         self.check_type(LSPAREN)
@@ -311,11 +314,10 @@ class Parser(object):
             start = NumLiteral(0)
         else:
             start = self.precedence1()
-       
+
         if self.curr_token.type==RSPAREN:
             index_type = True
             self.check_type(RSPAREN)
-
 
         elif self.curr_token.type==COLON:
             index_type = False
@@ -327,13 +329,12 @@ class Parser(object):
         else:
             index_type = False
             end = self.precedence1()
-       
-   
+            
         if index_type==False:
             if self.curr_token.type==COLON:
                 self.check_type(COLON)
                 if self.curr_token.type!=RSPAREN:
-                    jump = self.precedence1()  
+                    jump = self.precedence1()   
                 else:
                     jump = NumLiteral(1)
 
@@ -369,6 +370,7 @@ class Parser(object):
         
         e = self.logical()
         return Statement("return", e)
+    
     
     def parse_list(self, Type):
         if Type != LSPAREN:
@@ -560,8 +562,10 @@ class Parser(object):
             # if Type == END:
             #     self.check_type(END)
             #     return
+            # sys.stdout = open("eval.txt", "w")
             print("None of the suggested tokens found:", INTEGER_CONST, ID, LPAREN, STRING, TRUE, FALSE, "...")
             self.check_type(INTEGER_CONST)
+            # sys.stdout = sys.__stdout__
             
     
         
@@ -735,6 +739,7 @@ class Parser(object):
 
     def parse(self):
         """parse : parse_if | parse_print | parse_begin | assignment"""
+        sys.stdout = open('eval.txt', 'w')
         match self.curr_token.type:
             case 'IF':
                 return self.parse_if()
@@ -753,6 +758,9 @@ class Parser(object):
             case 'BREAK':
                 self.check_type(BREAK)
                 return Statement("break",NumLiteral(0))
+            case 'CONTINUE':
+                self.check_type(CONTINUE)
+                return Statement("continue",NumLiteral(0))
             case 'INC':
                 return self.parse_inc()
             case 'DEC':
@@ -771,3 +779,4 @@ class Parser(object):
                 
                 # node = MutVar(node.name)
                 return self.assignment(node)
+        # sys.stdout = sys.__stdout__

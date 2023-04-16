@@ -1,5 +1,32 @@
 from dataclasses_sim import *
+import sys
 
+# Resolver On/Off
+resolverOn = True #False ; Turn to False if not using resolver
+
+currentID = -1
+def fresh():
+    global currentID
+    currentID = currentID + 1
+    return currentID
+stk = [[0,-1]]
+def handle_new(v):
+    global stk
+    v.id = fresh()
+    v.fdepth = len(stk) - 1
+    v.localID = stk[-1][1] = stk[-1][1] + 1
+    # return stk[-1][1]
+def begin_fun():
+    global stk
+    stk.append([0, -1])
+def end_fun():
+    global stk
+    stk.pop()
+def init_resolver():
+    global currentID
+    currentID = -1
+    global stk
+    stk = [[0,-1]]
 lateBinding = {}
 def resolve(program: AST, environment: Environment = None) -> AST:
     if environment is None:
@@ -7,7 +34,7 @@ def resolve(program: AST, environment: Environment = None) -> AST:
     environment.program = program
     def resolve_(program: AST) -> AST:
         return resolve(program, environment)
-    
+    sys.stdout = open('eval.txt', 'w')
     match program:
         case IntLiteral(_) as I:
             return I
@@ -23,25 +50,39 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             r = resolve_(right)
             if not environment.check(name):
                 environment.add(name, m)
+                handle_new(m)
             else:
-                environment.update(name, m)
+                if name in lateBinding:
+                    for i in range(len(lateBinding[name])):
+                        lateBinding[name][i].id = m.id
+                        lateBinding[name][i].put(m.value)
+                        lateBinding[name][i].localID = m.localID
+                        lateBinding[name][i].fdepth = m.fdepth
+                    lateBinding.pop(name)
+            # else:
+            #     environment.update(name, m)
             # environment.enter_scope()
             m = resolve_(m)
             mutvar = environment.get(name)
-            # r = resolve_(right)
-            mutvar.put(r)
+            # handle_new(mutvar)
+            
+            # mutvar.put(r)
             
             # environment.exit_scope()
             return BinOp(aop, m, r)
         case BinOp("+="as aop, MutVar(name)as m, right) | BinOp("-="as aop, MutVar(name)as m, right) | BinOp("/="as aop, MutVar(name)as m, right) | BinOp("*="as aop, MutVar(name)as m, right) | BinOp("**="as aop, MutVar(name)as m, right):
             r = resolve_(right)
-            if not environment.check(name):
-                environment.add(name, m)
+            # if not environment.check(name):
+            #     # environment.add(name, m)
+            #     print(environment.envs)
+            #     print(f"Mutable Variable '{name}' not defined")
+            #     sys.exit()
+            
             # environment.enter_scope()
             m = resolve_(m)
             mutvar = environment.get(name)
-            # r = resolve_(right)
-            mutvar.put(r)
+            
+            # mutvar.put(r)
             
             # environment.exit_scope()
             return BinOp(aop, m, r)
@@ -53,7 +94,20 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             return environment.get(name)
         case MutVar(name) as m :
             if not environment.check(name):
-                environment.add(name, m)
+                # environment.add(name, m)
+                if name not in lateBinding:
+                    lateBinding[name] = [m]
+                else:
+                    lateBinding[name].append(m)
+                return m
+                # print("Current Environment:")
+                # print(environment.envs)
+                # print(f"Mutable Variable '{name}' not defined")
+                # sys.exit()
+            
+
+
+            # m.localID = handle_new()
             return environment.get(name)
         case Let(Variable(name) as v, e1, e2):
             re1 = resolve_(e1)
@@ -83,33 +137,49 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             return LetFun(v, params, rbody, rexpr)
         case Function(MutVar(name) as m, params , body) | Function(Variable(name) as m, params , body):
             new = False
+            handle_new(m)
             # environment.add(name, m)
             if not environment.check(name):
                 environment.add(name, m)
                 if name in lateBinding:
-                    lateBinding[name].fn.id = m.id
+                    for i in range(len(lateBinding[name])):
+                        lateBinding[name][i].id = m.id
+                        lateBinding[name][i].put(m.value)
+                        lateBinding[name][i].localID = m.localID
+                        lateBinding[name][i].fdepth = m.fdepth
+                        # lateBinding.pop(name)
                     # lateBinding.pop(name)
                     new = True
             else:   
-                if name in lateBinding:
-                    lateBinding[name].fn.id = m.id
-                    lateBinding[name].fn.put(m.value)
-                    lateBinding.pop(name)
+                # if name in lateBinding:
+                #     for i in range(len(lateBinding[name])):
+                #         lateBinding[name][i].id = m.id
+                #         lateBinding[name][i].put(m.value)
+                #         lateBinding[name][i].localID = m.localID
+                #         lateBinding[name][i].fdepth = m.fdepth
+                #         lateBinding.pop(name)
                 environment.update(name, m)
             mutvar = environment.get(name)
+            # mutvar.localID = handle_new()
             
+            begin_fun()
             environment.enter_scope()
             # rparams = []
             for param in params:
                 environment.add(param.name, param)
-        
+                if isinstance(param, MutVar):
+                    # param.localID = handle_new()
+                    handle_new(param)
                 # rparams.append(resolve_(param))
             rbody = resolve_(body)
             environment.exit_scope()
+            end_fun()
             e = FnObject(params, rbody)
             mutvar.put(e)
             if new:
-                lateBinding[name].fn.put(e)
+                for i in range(len(lateBinding[name])):
+                    lateBinding[name][i].put(e)
+                # lateBinding[name].fn.put(e)
                 lateBinding.pop(name)
             return Function(mutvar, params, rbody)
         case Seq(things):
@@ -121,11 +191,15 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             environment.exit_scope()
             return Seq(v)
         case FunCall(MutVar(name) as m, args):
-            if not environment.check(name):
-                lateBinding[name] = program
             m = resolve_(m)
-            fn = environment.get(name).get()
-            m.put(fn)
+            # if not environment.check(name):
+            #     if name in lateBinding:
+            #         lateBinding[name].append(m)
+            #     else:
+            #         lateBinding[name] = [m]
+            
+            # fn = environment.get(name).get()
+            # m.put(fn)
             argv = []
             
             for arg in args:
@@ -161,12 +235,7 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             if not environment.check(var):
                 environment.add(var, MutVar(var))
             return list_update(environment.get(var), resolve_(start), resolve_(end), resolve_(jump), resolve_(item))
-
-
-        # case list_index_update(MutVar(var), start, value):
-        #     if not environment.check(var):
-        #         environment.add(var, MutVar(var))
-        #     return list_index_update(environment.get(var), resolve_(start), resolve_(value))
+            
         case length(MutVar(var)):
             if not environment.check(var):
                 environment.add(var, MutVar(var))
@@ -175,6 +244,7 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             return Increment(resolve_(environment.get(var)))
         case Decrement(MutVar(var)):
             return Decrement(resolve_(environment.get(var)))
+        
 
         
 

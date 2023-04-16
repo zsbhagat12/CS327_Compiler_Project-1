@@ -4,5 +4,4 @@ BEGIN
     PRINT (a);
 END
 
-$1
-$
+$1$

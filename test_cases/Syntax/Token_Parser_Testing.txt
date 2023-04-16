@@ -1,4 +1,13 @@
 {Token/Parser Test for not accepting ** and other such operators/tokens}
+{This is a test for the program's error messages so keep the solution within $$ before code for this and similar code}
+{Expected Solution}
+$None of the suggested tokens found: INTEGER_CONST ID LPAREN STRING TRUE FALSE ...
+Expected Token Type:  INTEGER_CONST
+Got Token:  Token(MUL, '*')
+At line number: 14
+    c:=b**0
+           ^$
+{Code Begins}
 BEGIN
     a:=1;
     b:=2;
@@ -6,10 +15,3 @@ BEGIN
     PRINT (c);
 END
 
-$None of the suggested tokens found: INTEGER_CONST ID LPAREN STRING TRUE FALSE ...
-Expected Token Type:  INTEGER_CONST
-Got Token:  Token(MUL, '*')
-At line number: 1124
-    c:=b**0
-           ^
-Invalid character$

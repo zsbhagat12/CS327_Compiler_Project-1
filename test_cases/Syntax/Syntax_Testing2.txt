@@ -3,6 +3,7 @@
     a:=1;
     PRINT("1st");
     PRINT (a) ;
+    a+=1;
     IF a = 1
     THEN
         BEGIN
@@ -30,9 +31,8 @@
 
 $1st
 1
-2.75nd
+2.5nd
 3rd
 10
 2
-3
-$
+3$

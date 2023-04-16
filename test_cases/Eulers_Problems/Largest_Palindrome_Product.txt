@@ -53,5 +53,4 @@ $Max Palindrome:
 906609
 Constituent Numbers:
 993
-913
-$
+913$

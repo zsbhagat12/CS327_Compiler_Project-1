@@ -1,0 +1,25 @@
+{Return funcall to check which variable it catches}
+FUNCTION foo()
+BEGIN
+    a:=2;
+    FUNCTION bar()
+    BEGIN
+        a:=3;
+        RETURN a;
+    END
+    RETURN bar();
+END
+PRINT (foo());
+FUNCTION foo()
+BEGIN
+    a:=2;
+    FUNCTION bar()
+    BEGIN
+        {a:=3;}
+        RETURN a;
+    END
+    RETURN bar();
+END
+PRINT (foo());
+$3
+2$

@@ -64,6 +64,7 @@ RANGE         = "RANGE"
 BY            = "BY"
 TO            = "TO"
 BREAK         = "BREAK"
+CONTINUE      = "CONTINUE"
 INC           = "INC"
 DEC           = "DEC"
 LEN           = "LEN"
@@ -118,6 +119,7 @@ KEYWORDS = {
     'BY': Token('BY', 'BY'),
     'TO': Token("TO", "TO"),
     'BREAK': Token("BREAK", "BREAK"),
+    "CONTINUE" : Token("CONTINUE", "CONTINUE"),
      "INC" : Token("INC", "INC"),
     "DEC" : Token("DEC","DEC"),
     "LEN" : Token("LEN", "LEN"),

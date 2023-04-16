@@ -12,5 +12,4 @@ BEGIN
     PRINT (add(7,5));
 END
 
-$12
-$
+$12$

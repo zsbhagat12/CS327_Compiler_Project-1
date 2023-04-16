@@ -41,5 +41,4 @@ BEGIN
 END
 
 $Required Smallest Product:
-232792560
-$
+232792560$

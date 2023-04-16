@@ -3,6 +3,7 @@ import lexer as lex
 from sim import *
 from codegen_VM import *
 import time
+import sys
 
 # Combining lexer parser
 # text = "IF 2 > 1 THEN 3+5 ELSE 41 END"
@@ -79,25 +80,29 @@ text = "BEGIN "+text+" END"
 
 l = lex.Lexer(text)   
 p = prs.Parser(l)
-if stack_VM_On:
-    # compile code
-    # c = Compiler(p)
-    # v = VM()
-    # c = codegen(c)
-    # # print_bytecode(c)
-    # v.load(c)
-    # # then execute
-    # v.execute()
-    # sys.stdout = sys.__stdout__
-    ############################################# uncomment either above or below
-    # execute code
-    e = Executor(p)
-    codegen(e)
-else:    
+try:
+    if stack_VM_On:
+        # compile code
+        # c = Compiler(p)
+        # v = VM()
+        # c = codegen(c)
+        # # print_bytecode(c)
+        # v.load(c)
+        # # then execute
+        # v.execute()
+        # sys.stdout = sys.__stdout__
+        ############################################# uncomment either above or below
+        # execute code
+        e = Executor(p)
+        codegen(e)
+    else:    
 
-    i = Interpreter(p)
-    # print(eval(i))
-    eval(i)
+        i = Interpreter(p)
+        # print(eval(i))
+        eval(i)
+except:
+    pass
+sys.stdout = sys.__stdout__
 # print(open("eval.txt").read()==open("solution.txt").read())
 print("Time taken", time.time()-start)
 

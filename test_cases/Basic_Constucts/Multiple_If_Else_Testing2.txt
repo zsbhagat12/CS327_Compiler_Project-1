@@ -1,0 +1,9 @@
+{Consecutive If Else statements}
+IF 3<3
+THEN PRINT(1);
+ELSE IF 3<4
+THEN PRINT(2);
+ELSE PRINT(3);
+        
+END
+$2$
