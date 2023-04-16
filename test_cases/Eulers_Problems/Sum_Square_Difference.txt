@@ -8,5 +8,4 @@ BEGIN
 END
 
 $Resultant Difference
-25164150
-$
+25164150$

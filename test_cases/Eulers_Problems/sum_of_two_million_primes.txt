@@ -1,0 +1,32 @@
+BEGIN
+sum := 0;
+FOR i := 2 ; i < 20000 {2000000} ; i := i + 1
+DO  {20000->21171191->35s, 2000000->->}
+    BEGIN
+    flag := 0;
+    FOR j := 2 ; j <= i@(1/2) ; j := j + 1
+        DO
+            BEGIN
+            IF i % j = 0
+                THEN
+                    BEGIN
+                    flag := 1;
+                    BREAK;
+                    END
+                ELSE
+                    END
+            END
+        END
+    IF flag = 0
+        THEN
+            BEGIN
+            { PRINT i END;}
+            sum := sum + i;
+            END
+        ELSE
+            END
+    END
+    END
+PRINT (sum );
+END
+$21171191$

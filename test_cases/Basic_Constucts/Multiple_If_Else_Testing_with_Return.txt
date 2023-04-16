@@ -15,5 +15,4 @@ BEGIN
     PRINT (add(0));
 END
 
-$1
-$
+$1$

@@ -2,14 +2,7 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import Union, Mapping, Optional, NewType, List
 
-# Resolver On/Off
-resolverOn = True #False ; Turn to False if not using resolver
-currentID = 0
 
-def fresh():
-    global currentID
-    currentID = currentID + 1
-    return currentID
 @dataclass
 class BoolLiteral:
     value: bool
@@ -65,7 +58,27 @@ class UnOp:
 
 @dataclass
 class Variable:
+    __match_args__ = ("name",)
+
     name: str
+    id: int
+    fdepth: int
+    localID: int
+    # type: Optional[SimType] = None
+
+    def __init__(self, name, type = None):
+        self.name = name
+        self.type = type
+        self.id = self.fdepth = self.localID = None
+
+    def __hash__(self):
+        return hash(self.id)
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __repr__(self):
+        return f"{self.name}::{self.id}::{self.localID}"
 
 @dataclass
 class Let:
@@ -120,11 +133,16 @@ class Seq:
 class MutVar:
     name: str
     value: 'AST'
-    id: int #Final[int]  #comment it if not using resolver
+    id: int 
+    fdepth: int
+    localID: int
     def __init__(self, name) -> None:
         self.value = None
         self.name = name
-        self.id = fresh() if resolverOn else 0
+        # self.id = fresh() if resolverOn else 0
+        self.id = self.fdepth = self.localID = None
+
+
     def get(self):
         return self.value
     def put(self, val):
@@ -205,6 +223,21 @@ class list_isempty:
 @dataclass
 class length:
     name: 'AST'   
+
+@dataclass
+class list_update:
+    var :'AST'
+    start: 'AST'
+    end : 'AST'
+    jump : 'AST'
+    value: 'AST'
+
+# @dataclass
+# class list_index_update:
+#     var:'AST'
+#     start:'AST'
+ 
+#     value:'AST'
 
 class Environment:
     envs: List

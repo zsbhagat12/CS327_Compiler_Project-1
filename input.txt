@@ -1,779 +1,410 @@
-{Factorial of n}{
-BEGIN 
-    i:=1;
-    p:=1;
-    n:=1559; {when while used python ifelse, max limit=494 }
-    WHILE i<n
-    DO
-        BEGIN
-        p:=p*i;
-        i:=i+1;{
-        PRINT i END;
-        PRINT p END;}
-        END
-    END;
+{Total test cases:  41
+ Test passed:test_cases\Basic_Constucts\For_Loop_Testing1.txt
+ Test passed:test_cases\Basic_Constucts\For_Loop_Testing2.txt
+ Test passed:test_cases\Basic_Constucts\For_Loop_Testing3.txt
+ Test passed:test_cases\Basic_Constucts\Multiple_If_Else_Testing.txt
+ Test passed:test_cases\Basic_Constucts\Multiple_If_Else_Testing2.txt
+ Test passed:test_cases\Basic_Constucts\Multiple_If_Else_Testing_with_Return.txt
+ Test passed:test_cases\Eulers_Problems\Digit_Fifth_Power.txt
+ Test passed:test_cases\Eulers_Problems\Even_Fibonacci.txt
+ Test passed:test_cases\Eulers_Problems\Highly_Divisible_Triangular_Number.txt
+ Test passed:test_cases\Eulers_Problems\Largest_Palindrome_Product.txt
+ Test passed:test_cases\Eulers_Problems\Largest_Prime_Factor.txt
+ Test passed:test_cases\Eulers_Problems\Multiples_of_3_or_5.txt
+ Test passed:test_cases\Eulers_Problems\Smallest_Multiple.txt
+ Test passed:test_cases\Eulers_Problems\Special_Pythagorean_Triplet.txt
+ Test passed:test_cases\Eulers_Problems\sum_of_two_million_primes.txt
+ Test passed:test_cases\Eulers_Problems\Sum_Square_Difference.txt
+ Test passed:test_cases\Factorial_of_n.txt
+ Test passed:test_cases\Fibonacci.txt
+ Test passed:test_cases\Fibonacci_Recursive.txt
+ Test passed:test_cases\fizz\fizz_buzz.txt
+ Test failed:test_cases\Functions\First_Class_Functions\First_Class_Function_Testing.txt
+ Test failed:test_cases\Functions\First_Class_Functions\First_Class_Function_Testing2.txt
+ Test failed:test_cases\Functions\First_Class_Functions\Function_Testing_Function_into_Function.txt
+ Test passed:test_cases\Functions\Function_Binding_Testing.txt
+ Test passed:test_cases\Functions\Function_Testing.txt
+ Test passed:test_cases\Functions\Recursion\Mutual_Recursion_Testing.txt
+ Test passed:test_cases\Functions\Recursion\Mutual_Recursion_Testing2.txt
+ Test passed:test_cases\Functions\Recursion\Recursive_Function_Testing.txt
+ Test passed:test_cases\Resolver_Testing\Resolver_Testing.txt
+ Test passed:test_cases\Resolver_Testing\Resolver_Testing2.txt
+ Test passed:test_cases\Scoping\Test1.txt
+ Test failed:test_cases\Scoping\Test2.txt
+ Test passed:test_cases\Scoping\Test3.txt
+ Test failed:test_cases\Scoping\Test4.txt
+ Test failed:test_cases\String_List_Testing\IncrementDecrement_testcases.txt
+ Test passed:test_cases\String_List_Testing\int_array_test.txt
+ Test passed:test_cases\String_List_Testing\String_op_testcases.txt
+ Test passed:test_cases\Syntax\Syntax_Testing.txt
+ Test passed:test_cases\Syntax\Syntax_Testing2.txt
+ Test passed:test_cases\Syntax\Testing_Print.txt
+ Test passed:test_cases\Syntax\Token_Parser_Testing.txt
+Passed Count: 35 Failed Count: 6
+Time taken:  169.12761449813843}
 
-    PRINT i END;
-    PRINT p END;
-END}
-{Fibonacci upto n numbers}{
-BEGIN
-    n:=20577; {when while used python ifelse, max limit=495; 10000 time taken 29.94s, 15000->60.9s, 20577(max limit)->118.23s print takes time }
-    f:=0;
-    s:=1;
-    PRINT f END;
-    PRINT s END;
-    i:=2;
-    WHILE i<n
-    DO
-        BEGIN
-        t:=s;
-        s:=s+f;
-        f:=t;
-        PRINT s END;
-        PRINT i END;
+{max := ~0 ;
+maxval := ~0;
+pathMaxFound := ~0;
+i := ~0 ;
+limit := ~1000; 
+listing := LIST:INTEGER[]; 
+
+WHILE i < limit DO 
+    BEGIN
+        APPEND(listing,~0);
         i:=i+1;
-        END
-    END;
-END}
-{Function Testing}{
-BEGIN
-    PRINT 2+3 END;
-    FUNCTION add(a,b)
-    BEGIN
-        c:=a+b;
-        RETURN c;
-    END;
-    PRINT add(2,5) END;
-END}
-{Recursive Function Testing (Factorial)}{
-BEGIN   
-    FUNCTION fact(n)
-    BEGIN
-        IF n<=1 
-        THEN RETURN 1
-        ELSE RETURN n*fact(n-1)
-        END;
-    END;
-    PRINT fact(98) END;
-END}
-{Recursive Fibonacci}{
-BEGIN
-    f:=0;
-    s:=1;
-    FUNCTION fibo(n)
-    BEGIN
-        IF n<=1
-        THEN RETURN f
-        ELSE 
-            BEGIN
-            t:=s;
-            s:=s+f;
-            f:=t;
-            fibo(n-1);
-            END
-        END;
-        
-    END;
-    PRINT fibo(123) END;
-END}
-{Project Euler Problem 1	Multiples of 3 or 5}{
-BEGIN
-    sum:=0;
-    n:=1000; {233168}
-    i:=1;
-    WHILE i<n
-    DO
-        BEGIN
-            IF i%3=0 || i%5=0
-            THEN 
-                BEGIN
-                    sum:=sum+i;
-                    PRINT i END;
-                END
-            ELSE 
-            END;
-            i:=i+1;
-        END
-    END;
-    PRINT "SUM=" END;
-    PRINT sum END;
+    END
+END
 
-END}
-{Project Euler Problem 2	Even Fibonacci numbers}{
-BEGIN
-    sum:=0;
-    n:=4000000; {4613732}
-    f:=1;
-    s:=2;
-    WHILE f<=n
-    DO
-        BEGIN
-            t:=s;
-            s:=s+f;
-            f:=t;
-            IF f%2=0
-            THEN 
-                BEGIN
-                sum+=f;
-                PRINT f END;
-                END
-            ELSE
-            END;
-        END
-    END;
-    PRINT "SUM=" END;
-    PRINT sum END;
-END}
-{Project Euler Problem 3	Largest prime factor}{
-BEGIN
-    n:=600851475143; {13195->5,7,13,29->0.38s, after optimize/actual better soln->0.014s; 600851475143->71,839,1471,6857->0.23s}
-    i:=2;
-    maxPrimeFactor:=0;
-    FUNCTION findFirstPrimeFactor(num, ini)
-    BEGIN 
-        j:=ini;
-        flag:=0;
-        WHILE j<=num/2
-        DO
+i := ~1;
+
+WHILE i <= limit DO  
+    BEGIN
+        n := i;
+        count := ~1;
+        flag := 1; {if flag=0, some value in cache}
+        stack := LIST:INTEGER[];
+
+        WHILE n > 1 DO
             BEGIN
-                IF num%j=0
-                THEN 
+                IF n < i && listing[n-1] <> ~0 THEN
                     BEGIN
-                        flag:=1;
-                        {i:=j;
-                        PRINT j END;}
+                        count := count + listing[n-1] - ~1;
+                        flag := 0;
                         BREAK;
                     END
-                ELSE END;
-                j+=1;
-            END
-        END;
-        
-        IF flag=0
-        THEN RETURN num
-        ELSE RETURN j
-        END;
-    END;
+                ELSE END
 
-    {IF isPrime(n)=FALSE
-    THEN 
-        BEGIN}
-            WHILE i<n
-            DO
-                BEGIN
-                    i:=findFirstPrimeFactor(n, i);
-                    {IF isPrime(i)
-                    THEN 
-                        BEGIN}
-                            prevN:=n;
-                            WHILE n%i=0
-                            DO 
-                                BEGIN
-                                    
-                                    n:=n/i;
-                                    
-                                END
-                            END;
-                            IF prevN<>n
-                            THEN 
-                                BEGIN
-                                maxPrimeFactor:=i;
-                                PRINT i END; 
-                                END
-                            ELSE END;
-                            
-                            
-                       { END
-                    ELSE END;
-                    i+=1;}
+                IF n % 2 = 0 THEN
+                    n := n / 2;
+                ELSE
+                    n := 3 * n + ~1;
                 END
-            END;
-            
-        {END
-    ELSE
-        
-        
-        
-    END;}
-    {maxPrimeFactor:=n;}
-    PRINT "Max Prime Factor of n:" END;
-    PRINT maxPrimeFactor END;
-END}
-{Project Euler Problem 4	Largest palindrome product}{
-{7 second execution time}
-BEGIN
-    FUNCTION isPalin(num)
-    BEGIN
-        
-        pnum:=num;
-        sum:=0;
-        WHILE pnum>0
-        DO
-            BEGIN
-            sum := sum*10+pnum%10;
-            pnum:=pnum//10;
-            END
-        END;
-        RETURN sum=num;
+                count := count + ~1;
 
-    END;
+                IF n < LEN(listing) THEN
+                    BEGIN
+                        IF listing[n-1] <> ~0 THEN
+                            BEGIN
+                                count := count + listing[n-1] - ~1;
+                                LISTUPDATE(listing[n-1],count);
+                                flag := 0;
+                                discount := count - ~1;
+                                k := LEN(stack);
+                                j := 1;
 
-    i:=999;
-    max:=0;
-    first:=0;second:=0;
-    WHILE i>=900
-    DO  
-        BEGIN
-            j:=i;
-            WHILE j>=900
-            DO
-                BEGIN
-                    IF isPalin(i*j) && max<i*j
-                    THEN 
-                        BEGIN
-                            max:=i*j;
-                            first:=i;
-                            second:=j;
-                            {PRINT max END;}
+                                WHILE j < k DO
+                                    BEGIN
+                                        IF listing[stack[j-1]-1] = ~0 THEN
+                                            BEGIN
+                                                LISTUPDATE(listing[stack[j-1]-1],discount);
+                                                discount := discount - ~1;
+                                            END
+                                        ELSE END
+
+                                        j := j + 1;
+                                    END
+                                END
+                            END
+                        ELSE
+                            BEGIN
+                                APPEND(stack,n);
+                            END
                         END
-                    ELSE END;
-                    j:=j-1;
+                    END
+                ELSE
+                    BEGIN
+                        pathMaxFound := n;
+                        j := LEN(listing);
+                        WHILE j < n DO
+                            BEGIN
+                                APPEND(listing,~0);
+                                j := j + 1;
+                            END
+                        END
+
+                        APPEND(stack,n);
+                    END
                 END
-            END;
-            i:=i-1;
-        END
-    END;
-    PRINT "Max Palindrome:" END;
-    PRINT max END;
-    PRINT "Constituent Numbers:" END;
-    PRINT first END; 
-    PRINT second END;   
-END}
-{Project Euler Problem 5	Smallest multiple}{
-BEGIN
-    FUNCTION HCF(first,second)
-    BEGIN
-        IF first<second {first should be kept bigger}
-        THEN 
-            BEGIN
-            t:=second;
-            second:=first;
-            first:=t;
+    
             END
-        ELSE END;
-        WHILE first%second<>0
+        END
+        IF count > max THEN
+            BEGIN
+                max := count;
+                maxval := i;
+            END
+        ELSE END
+        i := i + 1;
+    END
+END
+
+PRINT("Max length: ");
+PRINT(max);
+PRINT("Max value for which path longest: ");
+PRINT(maxval);
+PRINT("Max value found during path: ");
+PRINT(pathMaxFound);}
+
+{Euler 14 - Longest Collatz sequence - memoisation with list and whileloop}
+{max := ~0 ;
+maxval := ~0;
+pathMaxFound := ~0;
+i := ~0 ;
+limit := ~1000; {Bytecode without memoisation: 100->119,97->1.22s/0.36s, 1000->179,871->2.28s/5.76s, 10000->262,6171->31.71s/78.15s, 100000->351,77031->403s/1004s, 1000000->525,837799->}
+{Bytecode with partial memo: 100->119,97->0.4s, 1000->179,871->6.78s, 10000->262,6171->31.71s, 100000->351,77031->, 1000000->525,837799->}
+{Bytecode with full memo: 100->119,97->0.58s, 1.38s(list as tuple), 1000->179,871->10.42s(list as list), 396s(list as tuple), 10000->262,6171->761.74s(list as list), 100000->351,77031->403s, 1000000->->}
+{Bytecode with full memo, tuple concat: 100->119,97->0.815s, 1000->179,871->196s, 10000->262,6171->, 100000->351,77031->, 1000000->525,837799->}
+{sim with full memo: 100->119,97->59.3s, 1000->179,871->, 10000->262,6171->, 100000->351,77031->403s, 1000000->525,837799->}
+{sim with full memo, reject outer limit: 100->119,97->107s/83s, 1000->179,871->, 10000->262,6171->, 100000->351,77031->403s, 1000000->525,837799->}
+listing := LIST:INTEGER[]; 
+WHILE i<limit
+DO 
+    BEGIN
+    APPEND(listing,~0);
+    i:=i+1;
+    END
+END
+PRINT("Initial length of list: ");
+PRINT(LEN(listing));
+i:=~1;
+WHILE i <= limit
+DO  
+    BEGIN
+        n:=i;
+        count:=~1;
+        flag:=1; {if flag=0, some value in cache}
+        stack:=LIST:INTEGER[];
+        WHILE n>1
         DO
             BEGIN
-            t:=second;
-            second:=first%second;
-            first:=t;
+                {IF n=368 || n=61
+                THEN PRINT(n);
+                ELSE END}
+                IF n%2 = 0
+                THEN
+                    n := n/2;
+                ELSE
+                    n:= 3*n+~1;
+                END
+                count:= count+~1;
+                
+                IF n<LEN(listing)
+                THEN
+                    BEGIN
+                        {PRINT("n: ");
+                        PRINT(n);
+                        PRINT(listing);
+                        PRINT(count);}
+                        IF listing[n-1] <> ~0
+                        THEN
+                            BEGIN
+                                {PRINT("Cache hit: ");
+                                PRINT(count);
+                                PRINT(listing[n-1]);}
+                                count:=count+listing[n-1]-~1;
+                                LISTUPDATE(listing[n-1],count);
+                                flag:=0;
+                                discount:=count-~1;
+                                k:=LEN(stack);
+                                j:=1;
+                                WHILE j<k
+                                DO
+                                    BEGIN
+                                        IF listing[stack[j-1]-1] = ~0
+                                        THEN
+                                            BEGIN
+                                                {PRINT("Updating: ");
+                                                PRINT(stack[j-1]);
+                                                PRINT(listing[stack[j-1]-1]);
+                                                PRINT(listing);
+                                                PRINT(stack);}
+                                                LISTUPDATE(listing[stack[j-1]-1],discount);
+                                                discount:=discount-~1;
+                                            END
+                                        ELSE END
+                                        j:=j+1;
+                                    END
+                                END
+                                
+                                BREAK;
+                            END
+                        ELSE
+                            BEGIN
+                                {PRINT("stack");
+                                PRINT(stack);}
+                                APPEND(stack,n);
+                                {PRINT(stack);}
+                            END
+                        
+                        END
+                    END
+                ELSE
+                    BEGIN
+                        pathMaxFound:=n;
+                        j:=LEN(listing);
+                        WHILE j<n
+                        DO
+                            BEGIN
+                                APPEND(listing,~0);
+                                j:=j+1;
+                            END
+                        END
+                        {PRINT("stack");
+                        PRINT(stack);}
+                        APPEND(stack,n);
+                        {PRINT(stack);}
+                    END
+                END
+
+                
+                {IF flag=1
+                THEN
+                count:= count+~1;
+                ELSE END}
+                
+                
             END
-        END;
-        RETURN second;
+        END
+        {PRINT("Count: ");
+        PRINT(count);}
+        {LISTUPDATE(listing[i-1],count);}
+        {PRINT(listing);}
+        {IF flag=1
+        THEN
+            count:=~1;
+        ELSE END}
         
-    END;
-    FUNCTION LCM(f,s)
-    BEGIN
-        RETURN f*s/HCF(f,s);
-    END;
-    i:=2;
-    n:=20; {10->2520; 20->232792560}
-    lcm:=i;
-    WHILE i<n
-    DO
-        BEGIN
-        i+=1;
-        lcm:=LCM(lcm, i);
-        END
-    END;
-    PRINT "Required Smallest Product:" END;
-    PRINT lcm END;
-
-END}
-{Project Euler Problem 6	Sum square difference}{
-BEGIN
-    n:=100; {10->2640; 100->25164150}
-    squareOfSum:=n*(n+1)*n*(n+1)/4;
-    sumOfSquare:=n*(n+1)*(2*n+1)/6;
-    PRINT "Resultant Difference" END;
-    PRINT squareOfSum-sumOfSquare END;
-END}
-{Project Euler Problem 9	Special Pythagorean triplet}{
-BEGIN
-    a:=1;b:=0;c:=0;
-    WHILE a<1000
-    DO 
-        BEGIN
-            IF a*a%(1000-a)=0
-            THEN 
-                BEGIN
-                b:=((1000-a)-a*a/(1000-a))/2;
-                c:=((1000-a)+a*a/(1000-a))/2;
-                BREAK;
-                END
-            ELSE END;
-            a+=1;
-        END
-    END;
-    PRINT "a,b,c are:" END; {200, 375, 425}
-    PRINT a END;
-    PRINT b END;
-    PRINT c END;
-END}
-{Function Testing: Define function within another function, return, use it; almost first class}{
-BEGIN
-    FUNCTION f2(n)
-    BEGIN
-        RETURN n*n;
-    END;
-    FUNCTION f4(n)
-    BEGIN
-        RETURN n@n;
-    END;
-    FUNCTION f1(f3)
-    BEGIN
-        FUNCTION f11(n)
-        BEGIN
-            RETURN f3(n)*(n-1);
-            {PRINT "f11" END;}
-        END;
-        {PRINT "f1" END;}
-        RETURN f11;
-    END;
-    rf11:=f1(f2);
-    rf12:=f1(f4);
-    rf13:=f2(4);
-    rf14:=6;
-    PRINT rf14 END; {6}
-    PRINT rf13 END; {16}
-    PRINT rf11(5) END; {100}
-    PRINT rf12(3) END; {54}
-    {PRINT f3(3) END; {error}}
-
-END}
-{First Class Function Test 2}{
-BEGIN
-    FUNCTION f4(n)
-    BEGIN
-        RETURN n@n;
-    END;
-    FUNCTION f1(f3)
-    BEGIN
-        FUNCTION f11(n)
-        BEGIN
-            RETURN f3(n)*(n-1);
-            {PRINT "f11" END;}
-        END;
-        {PRINT "f1" END;}
-        RETURN f11;
-    END;
-    
-    rf12:=f1(f4);
-    PRINT rf12(3) END; {54}
-    PRINT f1(f4)(3) END; {54}
-    
-END}
-{First Class Function Test 3}{
-{BEGIN}
-    FUNCTION f2(n)
-    BEGIN
-        RETURN n*n;
-    END{;}
-    FUNCTION f4(n)
-    BEGIN
-        RETURN n@n;
-    END{;}
-    FUNCTION f5()BEGIN
-
-        FUNCTION f1(f3)
-        BEGIN
-            FUNCTION f11(n)
+        IF count> max
+        THEN
             BEGIN
-                RETURN f3(n)*(n-1);
-                {PRINT "f11" END;}
-            END{;}
-            {PRINT "f1" END;}
-            RETURN f11;
-        END{;}
-        RETURN f1;
-    END{;}
-    rf5:=f5();
-    rf51:=rf5(f2);
-    PRINT( rf51(5)) {END}; {100}
-    rf11:=f5()(f4);
-    rf22:=f5();
-    PRINT( rf11(4)) {END}; {768}
-    PRINT (rf22(f4)(3)) {END}; {54}
-    PRINT (f5()(f2)(5)) {END}; {100}
-    
-{END}}
-{Resolver test; inspired from sir's class }{
-BEGIN
-    FUNCTION foo(a)
-    BEGIN
-        IF FALSE
-        THEN RETURN foo(a) {infinite loop}
-        ELSE RETURN a-2
-        END;
-    END;
-    g:=foo;
-    FUNCTION foo(a)
-    BEGIN
-        RETURN a+5;
-    END;
-    h:=foo;
-    PRINT g(0) END;
-    PRINT h(1) END;
+            max:=count;
+            maxval := i;
+            END
+        ELSE 
+        END
+        i:=i+1;
+    END
+END
+PRINT("Max length: ");
+PRINT(max);
+PRINT("Max value for which path longest: ");
+PRINT(maxval);
+{PRINT("Final length of listing: ");
+PRINT(LEN(listing));}
+PRINT("Max value found during path: ");
+PRINT(pathMaxFound);
+{PRINT(listing);}}
 
-END}
-{resolver test 2}{
-BEGIN 
-    i:=1;
-    s:=i; {1}
-    a:=2;
-    i:=a; {2}
-    s:=a@i@a; {16}
-    n:=s;   {16}
-    IF i< n 
-    THEN BEGIN
-            b:=n;
-            PRINT n END;
-            WHILE i+b-25 < 10
-            DO
-                BEGIN
-                    n:=i*b/a-n%i;
-                    PRINT n END;
-                    i+=i;
-                END
-            END;
+{without memoisation}
+max := 0 ;
+maxval := 0;
+i := 1 ;
+limit := 100000;
+WHILE i <= limit
+DO  
+    BEGIN
+    n:=i;
+    count:=1;
+    WHILE n>1
+    DO
+    BEGIN
+        IF n%2 = 0
+        THEN
+            n := n/2;
+        ELSE
+            n:= 3*n+1;
+        END
+        count:= count+1;
+    END
+    END
+    IF count>= max
+    THEN
+        BEGIN
+        max:=count;
+        maxval := i;
         END
     ELSE 
-            {n:=a;}
-            PRINT n END
-        
-    END;
-    PRINT i END;
-    PRINT a END;
-    PRINT s END;
-END}
-{Mutual Recursion Testing}{
-BEGIN
-    FUNCTION even(n)
-    BEGIN
-        IF n = 0
-        THEN RETURN TRUE
-        ELSE END;
-        IF n = 1
-        THEN RETURN FALSE
-        ELSE END;
-        RETURN odd(n-1);
-    END;
-    FUNCTION odd(m)
-    BEGIN
-        IF m = 0
-        THEN RETURN FALSE
-        ELSE END;
-        IF m = 1
-        THEN RETURN TRUE
-        ELSE END;
-        RETURN even(m-1);
-    END;
-    PRINT even(5) END;
-    PRINT odd(4) END;
-END}
-{Mutual Recursion Testing 2}{
+    END
+    i:=i+1;
+    END
+END
+PRINT(max);
+PRINT(maxval);
 
-    FUNCTION even(n)
-    BEGIN
-        IF n = 0
-        THEN RETURN TRUE;
-        ELSE END
-        IF n = 1
-        THEN RETURN FALSE;
-        ELSE END
-        RETURN odd(n-1);
-    END
-    FUNCTION odd(m)
-    BEGIN
-        PRINT ("1st Odd") ;
-        IF m = 0
-        THEN RETURN FALSE;
-        ELSE END
-        IF m = 1
-        THEN RETURN TRUE;
-        ELSE END
-        RETURN even(m-1);
-    END
-    PRINT (even(42)) ;
-    PRINT (odd(157)) ;
-    FUNCTION odd(m)
-    BEGIN
-        PRINT ("2nd Odd") ;
-        IF m = 0
-        THEN RETURN FALSE;
-        ELSE END
-        IF m = 1
-        THEN RETURN TRUE;
-        ELSE END
-        RETURN even(m-1);
-    END
-    PRINT (even(5)) ;
-    PRINT (odd(4)) ;
-}
-{Function binding Testing}{
-BEGIN
-    FUNCTION add(a,b)
-    BEGIN
-        c:=a+b;
-        RETURN dummy(c);
-    END;
-    FUNCTION dummy(a)
-    BEGIN
-        RETURN a;
-    END;
-    PRINT add(7,5) END;
-END}
-{print test}{
-BEGIN 
-    a:=1;
-    PRINT a END;
-END}
 
-{multiple ifelse testing}{
+{l := LIST[~7, ~2, ~4, ~10, ~8];
+LISTUPDATE(l[3],~10);
+PRINT(l);
+LISTUPDATE(l[1:3],[~0,~0]);
+PRINT(l);}
+
+{with memoisation but only list}
+{FUNCTION csl(n,cache)
 BEGIN
-    n:=0;
-    a:=0;
-    IF n = 0
-        THEN a:=1
-        ELSE END;
     IF n = 1
-        THEN a:=0
-        ELSE END; 
-    IF n = 2
-        THEN a:=2
-        ELSE END;    
-    PRINT a END;
-END}
-
-{multiple ifelse to test return working}{
-BEGIN
-    FUNCTION add(n)
-        BEGIN
-        IF n = 0
-            THEN RETURN 1
-            ELSE END;
-        IF n = 1
-            THEN RETURN 0
-            ELSE END;
-        IF n = 2
-            THEN RETURN 2
-            ELSE END;      
-        END;
-    PRINT add(0) END;
-END}
-
-{case 3}{
-BEGIN 
-    p:=1;
-    q:=1;
-    FOR i:= 10 ;  ; i := i - 1 
-    DO 
-        BEGIN 
-        q:=q*p;
-        p:=p+1;   
-        {PRINT p END;}          
-        PRINT q END;
-        PRINT i END;
-        IF i <= 0 
-            THEN
-                BEGIN 
-                BREAK;
+        THEN RETURN cache[0];
+        ELSE END
+    IF (n < LEN(cache) && cache[n-1] <> ~0)
+        THEN RETURN cache[n-1];
+        ELSE END
+    IF n % 2 = 0
+        THEN length := (csl(n/2,cache) + ~1);
+        ELSE length := (csl(n*3+1,cache) + ~1);
+             END
+    IF n < LEN(cache)
+        THEN BEGIN
+            r := n-1;
+            LISTUPDATE(cache[r],length);
+            END
+        ELSE END
+    IF n = LEN(cache)
+        THEN APPEND(cache, length);
+        ELSE
+            BEGIN
+            j:=0;
+            WHILE j<(n - LEN(cache))
+                DO
+                    BEGIN
+                        APPEND(cache,~0);
+                        j:=j+1; 
+                    END
                 END
-            ELSE
-                END   
-        END 
-    END; 
-END}
-{Project Euler Problem 12	Highly divisible triangular number}{
-BEGIN
-    
-    n:=500;  {5->28,6, time: 0.018s  ; 500->}
-    sum:=0;
-    max:=sum;
-    i:=1;
-    num:=1;
-    WHILE sum<=n
-    DO
-        BEGIN
-            sum:=1;
-            num:=i*(i+1)/2;
-            j:=1;
-            WHILE {j<num@(1/2)} j<=num/2
-            DO
-                BEGIN
-                    IF num%j = 0
-                    THEN 
-                        BEGIN
-                        sum+=1;
-                        END
-                    ELSE END;
-                    j+=1;
-                END
-            END;
-            
-            {IF num = num@(1/2) * num@(1/2)
-            THEN 
-                BEGIN
-                sum+=1;
-                END
-            ELSE END;}
+            s := n-1;
+            LISTUPDATE(cache[s],length);
+            END
+            END      
+    RETURN length;
+END
 
-            IF max<sum
-            THEN 
-                BEGIN
-                    max:=sum;
-                    PRINT i END;
-                    PRINT sum END;
-                END
-            ELSE END;
-            i+=1; 
-            
-        END
-    END;
-    PRINT "Required Number:" END;
-    PRINT num END;
-    PRINT "No of factors of above number:" END;
-    PRINT sum END;
-    PRINT "No of factors to be exceeded:" END;
-    PRINT n END;
-END}
-{Token/Parser Test for not accepting ** and other such operators/tokens}{
+maxl := ~0;
+maxn := 0;
+cache := LIST:INTEGER[~1];
+i:=10;
+n:=1;
+WHILE n <= i
+DO
 BEGIN
-    a:=1;
-    b:=2;
-    c:=b**03;
-    PRINT c END;
-END}
-{Project Euler Problem 30	Digit fifth powers}{
-BEGIN
-    sum := 0;
-    FOR i := 0; i <= 7*9*9*9*9*9*9; i := i + 1
-    DO
-    BEGIN
-        newsum := 0;
-        reduce := i;
-        WHILE reduce > 0
-        DO
-        BEGIN
-            digit := reduce % 10;
-            reduce := reduce // 10;
-            power := 1;
-            FOR j := 1; j <= 5; j+=1
-            DO
-                BEGIN
-                power := power * digit;
-                END
-            END;
-            newsum := newsum + power;
-        END
-        END;
-        IF newsum = i
-        THEN sum := sum + i
-        ELSE END;
-        END
-    END;
-    PRINT sum END;
-END}
-
-
-{test1}{
-BEGIN
-    a:=0;
-    BEGIN
-        a:=1;
-        PRINT a END;
-    END;
-    PRINT a END;
-END}
-{output: 1,1}
-
-{test2}{
-BEGIN
-    FUNCTION foo()
-        BEGIN
-            PRINT a END;
-        END;
-    a:=1;
-    PRINT foo() END;
-END}
-{output: 1}
-{Looks matter}{
-a:=1;
-PRINT("1st");
-PRINT (a) ;
-
-IF a = 1
-    THEN
-        BEGIN
-        PRINT("2nd");
-        PRINT (a) ;
-        END
-    ELSE
-        END
-WHILE a < 10
-    DO
-        BEGIN
-        
-        a:=a+1;
-        
-        END
-        
-    END
-PRINT("3rd");
-PRINT( a);
-FUNCTION foo()
-    BEGIN
-    PRINT (a) ;
-    END
-PRINT("4th");
-{PRINT (foo()) ;}
-foo();
-BEGIN
-    a:=4;
-    PRINT("5th");
-    PRINT (a) ;
-    
-END}
-{Looks matter 2}{
-
-    a:=1;
-    PRINT("1st");
-    PRINT (a) ;
-    IF a = 1
-    THEN
-        BEGIN
-        PRINT("2nd");
-        PRINT (a) ;
-        END
-    ELSE IF a = 2
-    THEN
-    PRINT("2.5nd");
-    ELSE
-    PRINT("2.75nd");
-    
-    END
-    WHILE a < 10
-        DO
-            a:=a+1;
-        END
-    PRINT("3rd");
-    PRINT( a);
-    c:=1;
-    b:=c+1;
-    PRINT(b);
-    b:=b+1;
-    PRINT(b);
+    len := csl(n,cache);
+    IF len > maxl
+        THEN BEGIN
+            maxl:=len;
+            maxn:=n;
+            END
+        ELSE
+            END
+    {PRINT("before");
+    PRINT(n);}
+    n+=1;
+    {PRINT("after");
+    PRINT(n);}
+END
+END
+PRINT (maxl);
+PRINT (maxn);
 }
+
+
 
 

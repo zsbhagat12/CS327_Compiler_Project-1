@@ -1,35 +1,6 @@
-1
-2
-FIZZ
-4
-BUZZ
-FIZZ
-7
-8
-FIZZ
-BUZZ
-11
-FIZZ
-13
-14
-FIZZ BUZZ
-16
-17
-FIZZ
-19
-BUZZ
-FIZZ
-22
-23
-FIZZ
-BUZZ
-26
-FIZZ
-28
-29
-FIZZ BUZZ
-31
-32
-FIZZ
-34
-BUZZ
+None of the suggested tokens found: INTEGER_CONST ID LPAREN STRING TRUE FALSE ...
+Expected Token Type:  INTEGER_CONST
+Got Token:  Token(MUL, '*')
+At line number: 14
+    c:=b**0
+           ^

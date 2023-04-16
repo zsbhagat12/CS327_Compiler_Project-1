@@ -64,6 +64,7 @@ RANGE         = "RANGE"
 BY            = "BY"
 TO            = "TO"
 BREAK         = "BREAK"
+CONTINUE      = "CONTINUE"
 INC           = "INC"
 DEC           = "DEC"
 LEN           = "LEN"
@@ -73,6 +74,7 @@ POP           = "POP"
 HEAD          = "HEAD"
 TAIL          = "TAIL"
 ISEMPTY       = "ISEMPTY"
+LISTUPDATE   = "LISTUPDATE"
 
 
 # literals
@@ -117,6 +119,7 @@ KEYWORDS = {
     'BY': Token('BY', 'BY'),
     'TO': Token("TO", "TO"),
     'BREAK': Token("BREAK", "BREAK"),
+    "CONTINUE" : Token("CONTINUE", "CONTINUE"),
      "INC" : Token("INC", "INC"),
     "DEC" : Token("DEC","DEC"),
     "LEN" : Token("LEN", "LEN"),
@@ -126,7 +129,8 @@ KEYWORDS = {
     "POP" : Token("POP", "POP"),
     "HEAD" : Token("HEAD", "HEAD"),
     "TAIL" : Token("TAIL", "TAIL"),
-    "ISEMPTY" : Token("ISEMPTY", "ISEMPTY")
+    "ISEMPTY" : Token("ISEMPTY", "ISEMPTY"),
+    "LISTUPDATE" : Token("LISTUPDATE", "LISTUPDATE")
     # 'PRINT': Token('PRINT', ';'),
     
 }

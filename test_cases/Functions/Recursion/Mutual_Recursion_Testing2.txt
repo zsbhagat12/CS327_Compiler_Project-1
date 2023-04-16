@@ -144,5 +144,4 @@ True
 False
 2nd Odd
 1st Odd
-False
-$
+False$

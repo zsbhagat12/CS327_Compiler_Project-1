@@ -21,6 +21,7 @@ BEGIN
     PRINT (c);
 END
 
-$Required Smallest Product:
-232792560
-$
+$a,b,c are:
+200
+375
+425$

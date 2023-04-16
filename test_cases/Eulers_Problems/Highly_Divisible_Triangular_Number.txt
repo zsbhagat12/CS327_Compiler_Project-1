@@ -60,5 +60,4 @@ $Required Number:
 No of factors of above number:
 90
 No of factors to be exceeded:
-50
-$
+50$

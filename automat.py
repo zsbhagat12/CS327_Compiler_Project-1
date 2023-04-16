@@ -5,44 +5,52 @@ import sys
 import re
 import platform
 from codegen_VM import *
+import time
 
 def run_test_cases(dir_path):
     while True:
         sys.stdout = sys.__stdout__
         command = input("Enter command : ")
+        startTime = time.time()
+        passCount = 0
+        failCount = 0
         match command:
-            case "all":
+            case "all": # 41 cases, without bytecode->220s, with bytecode-> 160s
                 dir = giveFilesWithFolders(dir_path)
+                print("Total test cases: ", len(dir))
                 # for file in os.listdir(dir_path):
                 for file in dir:
                     if file.endswith(".txt"):
 
                         # print("Running test case: " + file)
-                        # with open(os.path.join(dir_path, file)) as f:
+                        # with open(os.path.join(dir_path, file)) as f: 
                         with open(file) as f:
                             text = f.read()
                         text = "BEGIN "+text+" END"
                         l = lex.Lexer(text)   
                         p = prs.Parser(l)
-                        if stack_VM_On:
-                            # compile code
-                            # c = Compiler(p)
-                            # v = VM()
-                            # c = codegen(c)
-                            # # print_bytecode(c)
-                            # v.load(c)
-                            # # then execute
-                            # v.execute()
-                            # sys.stdout = sys.__stdout__
-                            ############################################# uncomment either above or below
-                            # execute code
-                            e = Executor(p)
-                            codegen(e)
-                        else:    
+                        try:
+                            if stack_VM_On:
+                                # compile code
+                                # c = Compiler(p)
+                                # v = VM()
+                                # c = codegen(c)
+                                # # print_bytecode(c)
+                                # v.load(c)
+                                # # then execute
+                                # v.execute()
+                                # sys.stdout = sys.__stdout__
+                                ############################################# uncomment either above or below
+                                # execute code
+                                e = Executor(p)
+                                codegen(e)
+                            else:    
 
-                            i = Interpreter(p)
-                            # print(eval(i))
-                            eval(i)
+                                i = Interpreter(p)
+                                # print(eval(i))
+                                eval(i)
+                        except:
+                            pass
                         sys.stdout = sys.__stdout__
 
 
@@ -66,12 +74,17 @@ def run_test_cases(dir_path):
                         if open('eval.txt').read() == open('solution.txt').read():
                                     
                             print(" [92mTest passed:"  + file+"[0m")
+                            passCount += 1
                         else:
                             print(" [91mTest failed:"  + file+"[0m")
+                            failCount += 1
                         # output = os.popen('').read()
                         # for line in lines[1:]:
                         #     print(line)
                 # continue
+                print("Passed Count:", passCount, "Failed Count:", failCount)
+                print("Time taken: ", time.time()-startTime)
+
 
             case "exit":
                 break
@@ -92,25 +105,28 @@ def run_test_cases(dir_path):
                                 text = "BEGIN "+text+" END"
                                 l = lex.Lexer(text)   
                                 p = prs.Parser(l)
-                                if stack_VM_On:
-                                    # compile code
-                                    # c = Compiler(p)
-                                    # v = VM()
-                                    # c = codegen(c)
-                                    # # print_bytecode(c)
-                                    # v.load(c)
-                                    # # then execute
-                                    # v.execute()
-                                    # sys.stdout = sys.__stdout__
-                                    ############################################# uncomment either above or below
-                                    # execute code
-                                    e = Executor(p)
-                                    codegen(e)
-                                else:    
+                                try:
+                                    if stack_VM_On:
+                                        # compile code
+                                        # c = Compiler(p)
+                                        # v = VM()
+                                        # c = codegen(c)
+                                        # # print_bytecode(c)
+                                        # v.load(c)
+                                        # # then execute
+                                        # v.execute()
+                                        # sys.stdout = sys.__stdout__
+                                        ############################################# uncomment either above or below
+                                        # execute code
+                                        e = Executor(p)
+                                        codegen(e)
+                                    else:    
 
-                                    i = Interpreter(p)
-                                    # print(eval(i))
-                                    eval(i)
+                                        i = Interpreter(p)
+                                        # print(eval(i))
+                                        eval(i)
+                                except:
+                                    pass
                                 sys.stdout = sys.__stdout__
 
                                 # if platform.platform().startswith('Windows'):
@@ -124,8 +140,11 @@ def run_test_cases(dir_path):
                                 if open('eval.txt').read() == open('solution.txt').read():
                                     
                                     print(" [92mTest passed:"  + file+"[0m")
+                                    passCount += 1
                                 else:
                                     print(" [91mTest failed:"  + file+"[0m")
+                                    failCount += 1
+                                
                         if flag == 1:
                             print("File or Folder not found")
 
@@ -144,25 +163,28 @@ def run_test_cases(dir_path):
                                 text = "BEGIN "+text+" END"
                                 l = lex.Lexer(text)   
                                 p = prs.Parser(l)
-                                if stack_VM_On:
-                                    # compile code
-                                    # c = Compiler(p)
-                                    # v = VM()
-                                    # c = codegen(c)
-                                    # # print_bytecode(c)
-                                    # v.load(c)
-                                    # # then execute
-                                    # v.execute()
-                                    # sys.stdout = sys.__stdout__
-                                    ############################################# uncomment either above or below
-                                    # execute code
-                                    e = Executor(p)
-                                    codegen(e)
-                                else:    
+                                try:
+                                    if stack_VM_On:
+                                        # compile code
+                                        # c = Compiler(p)
+                                        # v = VM()
+                                        # c = codegen(c)
+                                        # # print_bytecode(c)
+                                        # v.load(c)
+                                        # # then execute
+                                        # v.execute()
+                                        # sys.stdout = sys.__stdout__
+                                        ############################################# uncomment either above or below
+                                        # execute code
+                                        e = Executor(p)
+                                        codegen(e)
+                                    else:    
 
-                                    i = Interpreter(p)
-                                    # print(eval(i))
-                                    eval(i)
+                                        i = Interpreter(p)
+                                        # print(eval(i))
+                                        eval(i)
+                                except:
+                                    pass
                                 sys.stdout = sys.__stdout__
                                 # if platform.platform().startswith('Windows'):
                                 #     output = os.popen('fc eval.txt solution.txt').read()
@@ -175,10 +197,14 @@ def run_test_cases(dir_path):
                                 if open('eval.txt').read() == open('solution.txt').read():
                                     
                                     print(" [92mTest passed:"  + file+"[0m")
+                                    passCount += 1
                                 else:
                                     print(" [91mTest failed:"  + file+"[0m")
+                                    failCount += 1
                         if flag == 1:
                             print("File or Folder not found")
+                    print("Passed Count:", passCount, "Failed Count:", failCount)
+                    print("Time taken: ", time.time()-startTime)
 
                 except:
                     print("File or Folder not found")
