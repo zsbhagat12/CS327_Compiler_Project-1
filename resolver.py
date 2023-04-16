@@ -235,6 +235,7 @@ def resolve(program: AST, environment: Environment = None) -> AST:
             if not environment.check(var):
                 environment.add(var, MutVar(var))
             return list_update(environment.get(var), resolve_(start), resolve_(end), resolve_(jump), resolve_(item))
+            
         case length(MutVar(var)):
             if not environment.check(var):
                 environment.add(var, MutVar(var))

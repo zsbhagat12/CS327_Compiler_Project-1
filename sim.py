@@ -346,6 +346,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             if jump!=None:
                 e4 = eval_env(jump)
                 e4 = int(e4)
+            # print(e1,e2,e3,e4)
             if end!=None and jump!=None:
                 e1[e2:e3:e4] = item
             elif end!=None and jump==None:

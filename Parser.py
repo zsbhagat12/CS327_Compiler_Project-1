@@ -164,7 +164,7 @@ class Parser(object):
         self.check_type(LISTUPDATE)
         self.check_type(LPAREN)
         # for now we are only supporting list update of the form a[0] = 1
-        
+
         token = self.curr_token
         self.check_type(ID)
         list_slice = self.parse_slice(MutVar(token.value))
@@ -173,6 +173,7 @@ class Parser(object):
             value = self.parse_list(self.curr_token.type)
         else:
             value = self.parse()
+
         
         # var = self.variable()
         # self.check_type(LSPAREN)
@@ -182,6 +183,7 @@ class Parser(object):
         #     start = NumLiteral(0)
         # else:
         #     start = self.parse()
+
 
         # if self.curr_token.type == COMMA:
         #     index_type = False
@@ -196,7 +198,7 @@ class Parser(object):
         #     value = self.parse()
         #     self.check_type(RPAREN)
         #     return list_index_update(var, start, value)
-        
+
         # if self.curr_token.type==RSPAREN:
         #     end = None
         #     self.check_type(RSPAREN)
@@ -212,7 +214,7 @@ class Parser(object):
         #         value.append(self.parse())
         #         if self.curr_token.type != RSPAREN:
         #             self.check_type(COMMA)
-            
+
         # else:
         #     value = self.parse()
         # self.check_type(RSPAREN)
@@ -222,7 +224,7 @@ class Parser(object):
         end = list_slice.end
         jump = list_slice.jump
         return list_update(var, start, end, jump, value)
-    
+
     def parse_list_slice(self, c):
      
         self.check_type(LSPAREN)
@@ -242,8 +244,6 @@ class Parser(object):
         else:
             index_type = False
             end = self.parse()
-        
-    
         if index_type==False:
             if self.curr_token.type==COMMA:
                 self.check_type(COMMA)
@@ -314,7 +314,7 @@ class Parser(object):
             start = NumLiteral(0)
         else:
             start = self.precedence1()
-        
+
         if self.curr_token.type==RSPAREN:
             index_type = True
             self.check_type(RSPAREN)
@@ -329,8 +329,7 @@ class Parser(object):
         else:
             index_type = False
             end = self.precedence1()
-        
-    
+            
         if index_type==False:
             if self.curr_token.type==COLON:
                 self.check_type(COLON)
@@ -339,6 +338,7 @@ class Parser(object):
                 else:
                     jump = NumLiteral(1)
 
+
             else:
                 jump = NumLiteral(1)
             self.check_type(RSPAREN)
@@ -346,7 +346,7 @@ class Parser(object):
             end = None
             jump = None
         return Slicing(c, start, end, jump)
-    
+
    
     def parse_print(self):
         self.check_type(PRINT)
@@ -376,16 +376,20 @@ class Parser(object):
         if Type != LSPAREN:
             # print("ENTER")
             self.check_type(COLON)
-            
+           
             token = self.curr_token
             self.check_type(INTEGER)
             Type = token.type
             datatype = Type
 
+
             # print(datatype)
+
 
         else:
             datatype = NONE
+
+
 
 
         self.check_type(LSPAREN)
@@ -397,6 +401,7 @@ class Parser(object):
         token = self.curr_token
         Type = token.type
 
+
         while Type!= RSPAREN:
             self.check_type(COMMA)
             ele = self.parse()
@@ -407,10 +412,12 @@ class Parser(object):
         self.check_type(RSPAREN)
         # print(type(datatype))
 
+
         # print("done and dusted")
 
+
         return Listing(value, datatype)
-            
+
 
 
 
