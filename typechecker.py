@@ -1,3 +1,4 @@
+import lexer as lex
 from dataclasses_sim import *
 import Parser as prs
 from resolver import *
@@ -6,8 +7,14 @@ import pprint
 import copy
 pp = pprint.PrettyPrinter()
 
+text = open("input.txt","r").read()
+text = "BEGIN "+text+" END"
+
+l = lex.Lexer(text)   
+p = prs.Parser(l)
+
 def type_error():
-        sys.exit('static type check error')
+        sys.exit('Type check error')
 
 # Combining lexer parser
 @dataclass
@@ -36,6 +43,7 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
             pp.pprint(tree)
             
             if resolverOn:
+                init_resolver()
                 tree = resolve(tree)
                 sys.stdout = open('resolved_tree', 'w')
                 pp = pprint.PrettyPrinter(stream=sys.stdout)
@@ -43,7 +51,8 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 print("Resolved Tree:")
                 pp.pprint(tree)
 
-            sys.stdout = open('tcheck.txt', 'w')
+            # typecheck(tree)
+            sys.stdout = open('eval.txt', 'w')
             e = tcheck(tree)
             sys.stdout = sys.__stdout__
 
@@ -64,6 +73,7 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                             print(tcheck_env(e))
                         else:
                             print(e)
+
                     else:
                         e = tcheck_env(statement)
                         if isinstance(e, Listing):
@@ -84,6 +94,8 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                     return e
                 case "break":
                     return program  
+                case "continue":
+                    return program
                 
             return 
 
@@ -118,6 +130,8 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 if isinstance(v,Statement):
                     if v.command=="break":
                         break
+                    if v.command=="continue":
+                        break
                     if v.command=="return":
                          return v.statement
             environment.exit_scope()
@@ -150,8 +164,9 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 # environment.add(name, MutVar(name))
                 # environment.get(name).put(FnObject([],None))
             
-            m.value = copy.deepcopy(m.value)
+            # m.value = copy.deepcopy(m.value)
             fn = m.value if m.value != None else environment.get(name).get() #fn is FnObject
+            # fn = m.value if environment.get(name).get() == None else environment.get(name).get()
             # pp = pprint.PrettyPrinter()
             # pp.pprint(fn)
             # pp.pprint(environment.envs)
@@ -186,7 +201,10 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                     environment.add(param.name, arg)
             # print(fn, id(fn.body))
             v = tcheck_env(fn.body)
-            
+            # if isinstance(v, MutVar) and isinstance(v.value, FnObject):
+            #     v.value = copy.deepcopy(v.value)
+            if isinstance(v, FnObject):
+                v = copy.deepcopy(v)
             environment.exit_scope()
             # print(name, v)
             return v
@@ -266,11 +284,11 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
             #print('Hi')
             temp = environment.get(name)
             if str(temp.value.__class__.__name__) != "Fraction" and str(temp.value.__class__.__name__) != "int" and str(temp.value.__class__.__name__) != "float":
+                
                 type_error() 
-            
             e = tcheck_env(temp)
             #print('Hi')
-            e = e + tcheck_env(IntLiteral(1))
+            e = e + tcheck_env(NumLiteral(1))
             temp.put(e)
             environment.update(name, temp)
             return 
@@ -278,8 +296,8 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
         case Decrement(MutVar(name)):
             temp = environment.get(name)
             if str(temp.value.__class__.__name__) != "Fraction" and str(temp.value.__class__.__name__) != "int" and str(temp.value.__class__.__name__) != "float":
+                
                 type_error() 
-
             e = tcheck_env(temp)
             e = e - tcheck_env(NumLiteral(1))
             temp.put(e)
@@ -292,8 +310,6 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
             # return len(e.value)
             if isinstance(temp, Listing):
                 return len(temp.value)
-            else:
-                type_error() 
             return len(temp)
 
         case list_head(MutVar(name)):
@@ -302,6 +318,7 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 e = tcheck_env(temp)
                 return e[0]
             else:
+                
                 type_error()
         
         case list_tail(MutVar(name)):
@@ -310,6 +327,7 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 e = tcheck_env(temp)
                 return e[1:]
             else:
+                
                 type_error()
         
         case list_isempty(MutVar(name)):
@@ -320,27 +338,57 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                     return True
                 return False
             else:
+                
                 type_error()
         
         case list_append(MutVar(var), item):
+         
             if not environment.check(var):
                 print(f"list '{var}' not defined")
                 sys.exit()
             temp = environment.get(var).get().value
+            # e1 = tcheck_env(temp)
+            # e1.append(tcheck_env(item))
             if not isinstance(temp, list):
+                
                 type_error()
             tp = environment.get(var).get().datatype
             if tp == "INTEGER" and str(tcheck_env(item).__class__.__name__) != "int":
+                
                 type_error()
             if tp == "STRING" and str(tcheck_env(item).__class__.__name__) != "str":
+                
                 type_error()
-            # print(temp.__class__.__name__, l.value.datatype.__class__.__name__, tcheck_env(item).__class__.__name__)
-            # if str(l.value.datatype.__class__.__name__) != str(tcheck_env(item).__class__.__name__):
-            #     type_error()
-            # e1 = tcheck_env(temp)
-            # e1.append(tcheck_env(item))
             e1 = temp
             e1.append(item)
+            return e1
+        
+        case list_update(MutVar(var) as m, start, end, jump, item):
+            if not environment.check(var):
+                print(f"list '{var}' not defined")
+                sys.exit()
+            temp = environment.get(var).get().value
+            # e1 = tcheck_env(temp)
+            if isinstance(item, Listing):
+                item = item.value
+            e1 = temp 
+            e2 = tcheck_env(start)
+            e2 = int(e2)
+            if end!=None:
+                e3 = tcheck_env(end)
+                e3  = int(e3)
+            if jump!=None:
+                e4 = tcheck_env(jump)
+                e4 = int(e4)
+            # print(e1,e2,e3,e4)
+            if end!=None and jump!=None:
+                e1[e2:e3:e4] = item
+            elif end!=None and jump==None:
+                e1[e2:e3] = item
+            elif end==None and jump!=None:
+                e1[e2::e4] = item
+            else:
+                e1[e2] = item
             return e1
 
 
@@ -354,12 +402,11 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 elif datatype == "NONE":
                     temp = None
                 for i in value:
-                    if temp == "INTEGER" and str(tcheck_env(i).__class__.__name__) != "int":
-                        type_error()
-                    if temp == "STRING" and str(tcheck_env(i).__class__.__name__) != "str":
-                        type_error()
-                    else:
+                    if isinstance(i, temp):
                         continue
+                    else:
+                        print("Value of Invalid type in Listing")
+                        raise InvalidProgram()
        
             temp =[]
             for i in program.value:
@@ -369,19 +416,30 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
             return temp
 
 
-        case Slicing(name, start, end, jump):      
-             
+        case Slicing(name, start, end, jump): 
             e1 = tcheck_env(name)
+            if not isinstance(e1,str) and not isinstance(e1,Listing):
+                
+                type_error()
             if isinstance(e1, Listing):
                 e1 = tcheck_env(e1)
             e2 = tcheck_env(start)
+            if isinstance(e2, str) or isinstance(e2, bool):
+                
+                type_error()
             e2 = int(e2)
             if end!=None:
                 e3 = tcheck_env(end)
+                if isinstance(e3, str) or isinstance(e3, bool):
+                    
+                    type_error()
                 e3  = int(e3)
 
             if jump!=None:
                 e4 = tcheck_env(jump)
+                if isinstance(e4, str) or isinstance(e4, bool):
+                    
+                    type_error()
                 e4  = int(e4)
     
             if end == None and jump!=None:
@@ -392,16 +450,28 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 e = e1[e2:e3:e4]
             return e
         
-        case list_Slicing(name, start, end, jump):       
+        case list_Slicing(name, start, end, jump):    
             e1 = tcheck_env(name)
+            if not isinstance(e1,str) and not isinstance(e1,Listing):
+                
+                type_error()
             e2 = tcheck_env(start)
+            if isinstance(e2, str) or isinstance(e2, bool):
+                
+                type_error()
             e2 = int(e2)
             if end!=None:
                 e3 = tcheck_env(end)
+                if isinstance(e3, str) or isinstance(e3, bool):
+                    
+                    type_error()
                 e3  = int(e3)
 
             if jump!=None:
                 e4 = tcheck_env(jump)
+                if isinstance(e4, str) or isinstance(e4, bool):
+                    
+                    type_error()
                 e4  = int(e4)
     
             if end == None and jump!=None:
@@ -418,17 +488,21 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
 
             if start != None:
                 if not isinstance(start,BinOp):
+                    
                     type_error()
                 else:
                     if start.operator != "=":
+                        
                         type_error()
                 tcheck_env(start)
-            
+
             if increment != None:
                 if not isinstance(start, BinOp):
+                    
                     type_error()
                 else:
                     if start.operator not in ["=","+=","-=","*=","/=","**="]:
+                        
                         type_error()
 
             if(condition == None):
@@ -437,6 +511,8 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                     if isinstance(v,Statement):
                         if v.command=="break":
                             break
+                        if v.command=="continue":
+                            continue
                         if v.command=="return":
                             return v.statement
                     else:
@@ -448,6 +524,8 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                     if isinstance(v,Statement):
                         if v.command=="break":
                             break
+                        if v.command=="continue":
+                            continue
                         if v.command=="return":
                             return v.statement
                     else:
@@ -455,12 +533,32 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                             tcheck_env(increment)
             return
         
+
+        # def for_loop_helper(en, condition):
+        # # print(jump)
+        # flag = tcheck_env(condition)
+        # # if(flag < en):
+        # #     tcheck_env(body)
+        # #     return for_loop_helper(en, jump)
+        # # while(flag != en):
+        # #     tcheck_env(body)
+        # #     flag = tcheck_env(condition)
+        # while(tcheck_env(condition)):
+        #     tcheck_env(body)
+        #     tcheck_env(en)
+        # return
+
         case While(c, b):
+            # if tcheck_bool_env(c):
+            #     tcheck_env(b)
+            #     tcheck_env(While(c, b))
             while (tcheck_bool_env(c)): # avoid recursion depth
                 v = tcheck_env(b)
                 if isinstance(v,Statement):
                     if v.command=="break":
                         break
+                    if v.command=="continue":
+                        continue
                     if v.command=="return":
                         return v.statement
             return 
@@ -480,25 +578,35 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 mutvar.put(e)
 
             else:
+                # print(e.__class__.__name__)
                 mutvar = environment.get(name)
+                # print(mutvar.value.__class__.__name__)
+                if str(e.__class__.__name__)!=str(mutvar.value.__class__.__name__):
+                    type_error()
                 # environment.update(name, MutVar(name))
                 mutvar.put(e)
                 m.put(e)
             return mutvar.get() #Assignment as expression
         
-        case BinOp("+=", MutVar(name) as left, right):
-            e = tcheck_env(right) 
+        case BinOp("+=", MutVar(name) as m, val):
+            e = tcheck_env(val) 
             # program.get_left().put(tcheck(val))
+            # if not environment.check(name):
+            #     environment.add(name, m)
+            #     mutvar = environment.get(name)
+            #     e += mutvar.get()
+            #     mutvar.put(e)
             if not environment.check(name):
-                environment.add(name, left)
-                mutvar = environment.get(name)
-                e += mutvar.get()
-                mutvar.put(e)
+                print(environment.envs)
+                print(f"Mutable Variable '{name}' not defined")
+                sys.exit()
 
             else:
-                if (str(tcheck_env(left).__class__.__name__) == "str" and str(tcheck_env(right).__class__.__name__) != "str") or (str(tcheck_env(left).__class__.__name__) != "str" and str(tcheck_env(right).__class__.__name__) == "str"):
+                if (str(tcheck_env(m).__class__.__name__) == "str" and str(tcheck_env(val).__class__.__name__) != "str") or (str(tcheck_env(m).__class__.__name__) != "str" and str(tcheck_env(val).__class__.__name__) == "str"):
+                    
                     type_error()
-                if str(tcheck_env(left).__class__.__name__) in ["bool", "Listing"] or str(tcheck_env(right).__class__.__name__) in ["bool", "Listing"]:
+                if str(tcheck_env(m).__class__.__name__) in ["bool", "Listing"] or str(tcheck_env(val).__class__.__name__) in ["bool", "Listing"]:
+                    
                     type_error() 
                 mutvar = environment.get(name)
                 e += mutvar.get()
@@ -507,24 +615,22 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
             return mutvar.get() #Assignment as expression
         
 
-        case BinOp("-=", MutVar(name) as left, right) if op in ["-=","*=","/=","**="]:
+        case BinOp(op, MutVar(name) as m, val) if op in ["-=","*=","/=","**="]: 
             e = tcheck_env(val) 
             # program.get_left().put(tcheck(val))
+            # if not environment.check(name):
+            #     environment.add(name, m)
+            #     mutvar = environment.get(name)
+            #     e += mutvar.get()
+            #     mutvar.put(e)
             if not environment.check(name):
-                environment.add(name, m)
-                mutvar = environment.get(name)
-                if op == "-=":
-                    e -= mutvar.get()
-                if op == "*=":
-                    e -= mutvar.get()
-                if op == "/=":
-                    e -= mutvar.get()
-                if op == "**=":
-                    e -= mutvar.get()
-                mutvar.put(e)
+                print(environment.envs)
+                print(f"Mutable Variable '{name}' not defined")
+                sys.exit()
 
             else:
-                if str(tcheck_env(left).__class__.__name__) in ["bool", "str", "Listing"] or str(tcheck_env(right).__class__.__name__) in ["bool", "str", "Listing"]:
+                if str(tcheck_env(m).__class__.__name__) in ["bool", "str", "Listing"] or str(tcheck_env(val).__class__.__name__) in ["bool", "str", "Listing"]:
+                    
                     type_error()
                 mutvar = environment.get(name)
                 if op == "-=":
@@ -534,7 +640,9 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 if op == "/=":
                     e -= mutvar.get()
                 if op == "**=":
-                    e -= mutvar.get()
+                    e -= mutvar.get()   
+                mutvar = environment.get(name)
+                e -= mutvar.get()
                 # environment.update(name, MutVar(name))
                 mutvar.put(e)
             return mutvar.get() #Assignment as expression
@@ -588,17 +696,21 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
             environment.exit_scope()
             return v2
         
+        
         case BinOp(op, left, right) if op in ["+","-","*","/","//","%","**"]:
             tcheck_env(left)
             tcheck_env(right)
             if op == "+":
                 if (str(tcheck_env(left).__class__.__name__) == "str" and str(tcheck_env(right).__class__.__name__) != "str") or (str(tcheck_env(left).__class__.__name__) != "str" and str(tcheck_env(right).__class__.__name__) == "str"):
+                    
                     type_error()
                 if str(tcheck_env(left).__class__.__name__) in ["bool", "Listing"] or str(tcheck_env(right).__class__.__name__) in ["bool", "Listing"]:
+                    
                     type_error()                
                 return tcheck_env(left) + tcheck_env(right)    
             else:            
                 if str(tcheck_env(left).__class__.__name__) in ["bool", "str", "Listing"] or str(tcheck_env(right).__class__.__name__) in ["bool", "str", "Listing"]:
+                    
                     type_error()
                 if op == "-":
                     return tcheck_env(left) - tcheck_env(right)
@@ -614,11 +726,11 @@ def tcheck(program: AST, environment: Environment() = None) -> Value:
                 if op == "%":
                     return tcheck_env(left) % tcheck_env(right)  
                 if op == "**":
-                    return tcheck_env(left) ** tcheck_env(right)   
-
+                    return tcheck_env(left) ** tcheck_env(right)  
         case UnOp(op, mid) if op in ["+","-"]:
             tcheck_env(mid)
             if str(tcheck_env(mid).__class__.__name__) in ["bool", "str", "Listing"]:
+                
                 type_error()
             if op == "-":
                 return -1*tcheck_env(mid)
@@ -681,27 +793,35 @@ def tcheck_bool(program: AST, environment: Environment() = None) -> Val:
     
     def tcheck_string_env(program):
         return tcheck_string(program, environment)
-    match program:
+    match program:        
         case BoolLiteral(value):
             return value
         case NumLiteral(value):
+            
             type_error()
         case FloatLiteral(value):
+            
             type_error()
         case IntLiteral(value):
+            
             type_error()     
         case StringLiteral(value):
-            type_error()                    
-        case BinOp(op, left, right) if op in ["+","-","*","/","//","@","%"]:
+            
             type_error()
-        case UnOp(op,mid) if op in ["+","-","++","--","<<",">>"]:
+        case BinOp(op, left, right) if op in ["+","-","*","/","//","@","%"]:
+            
+            type_error()
+        case UnOp(op,mid) if op in ["+","-"]:
+            
             type_error()
         case BinOp(op, left, right) if op in ["==", "<", ">", ">=", "<=", "!="]:
             tcheck_env(left)
             tcheck_env(right)
             if (isinstance(tcheck_env(left), str) and not isinstance(tcheck_env(right), str)) or (not isinstance(tcheck_env(left), str) and isinstance(tcheck_env(right), str)):
+                
                 type_error()
             if (isinstance(tcheck_env(left), bool) or isinstance(tcheck_env(right), bool)):
+                
                 type_error()   
             if op == "==":         
                 return (tcheck_env(left)==tcheck_env(right))
@@ -715,24 +835,34 @@ def tcheck_bool(program: AST, environment: Environment() = None) -> Val:
                 return (tcheck_env(left)<=tcheck_env(right))
             if op == "!=":         
                 return (tcheck_env(left)!=tcheck_env(right))
-           
+            
         case UnOp("!", mid):
             tcheck_env(mid)
             if str(tcheck_env(left).__class__.__name__) != "bool":
                 type_error
             return (not tcheck_env(mid))
         
+        case UnOp("^", mid):
+            middle = tcheck_env(mid)
+            if isinstance(middle, int) or isinstance(middle, Fraction) or isinstance(middle, float):
+                return (middle!=0)
+            elif isinstance(middle, str):
+                return (middle!="")
+            else:
+                return middle
+            
         case BinOp(op, left, right) if op in ["&&", "||"]:
             tcheck_env(left)
             tcheck_env(right)
             if str(tcheck_env(left).__class__.__name__) != "bool" or str(tcheck_env(right).__class__.__name__) != "bool":
+                    
                     type_error()  
             if op =="&&":
                 return tcheck_env(left) and tcheck_env(right)
             else:      
                 return tcheck_env(left) or tcheck_env(right) 
         
-    sys.stdout = open('error_in_sim', 'w')    
+    sys.stdout = open('error_in_sim.txt', 'w')    
     pp = pprint.PrettyPrinter(stream=sys.stdout)
     print("Current AST")   
     pp.pprint(program)
@@ -740,4 +870,8 @@ def tcheck_bool(program: AST, environment: Environment() = None) -> Val:
     print("Current Environment:")
     
     pp.pprint( environment.envs)
-    raise InvalidProgram()
+    raise InvalidProgram()  
+
+i = Interpreter(p)
+tcheck(i)
+sys.stdout = sys.__stdout__
