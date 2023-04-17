@@ -38,6 +38,7 @@ POWEREQ       = 'POWEREQ'
 MULEQ         = 'MULEQ'
 FLOAT_DIVEQ   = "FLOAT_DIVEQ"
 POWER         = 'POWER'
+BOOLIFY       = "BOOLIFY"
 
 # keywords
 PROGRAM       = 'PROGRAM'
@@ -126,7 +127,7 @@ KEYWORDS = {
     'TO': Token("TO", "TO"),
     'BREAK': Token("BREAK", "BREAK"),
     "CONTINUE" : Token("CONTINUE", "CONTINUE"),
-     "INC" : Token("INC", "INC"),
+    "INC" : Token("INC", "INC"),
     "DEC" : Token("DEC","DEC"),
     "LEN" : Token("LEN", "LEN"),
     "LIST" : Token("LIST", "LIST"),
@@ -417,6 +418,10 @@ class Lexer(object):
                 self.nextChar()
                 return Token(DOT, '.')
 
+            if self.curChar == '^':
+                self.nextChar()
+                return Token(BOOLIFY, '^')
+            
             if self.curChar == ',':
                 self.nextChar()
                 return Token(COMMA, ',')
