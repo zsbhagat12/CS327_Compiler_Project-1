@@ -44,6 +44,9 @@ PROGRAM       = 'PROGRAM'
 VAR           = 'VAR'
 INTEGER       = 'INTEGER'
 REAL          = 'REAL'
+FLOAT         = 'FLOAT'
+FRACTION      = 'FRACTION'
+BOOLEAN       = 'BOOLEAN'
 INTEGER_DIV   = 'INTEGER_DIV'
 NONE          = 'NONE'
 READ          = 'READ'
@@ -101,6 +104,9 @@ KEYWORDS = {
     'VAR': Token('VAR', 'VAR'),
     'INTEGER': Token('INTEGER', 'INTEGER'),
     'REAL': Token('REAL', 'REAL'),
+    'FLOAT' : Token('FLOAT', 'FLOAT'),
+    'BOOLEAN' : Token('BOOLEAN', 'BOOLEAN'),
+    'FRACTION' : Token('FRACTION', 'FRACTION'),
     'DIV': Token('INTEGER_DIV', 'DIV'),
     'BEGIN': Token('BEGIN', 'BEGIN'),
     'END': Token('END', 'END'),
@@ -134,7 +140,6 @@ KEYWORDS = {
     # 'PRINT': Token('PRINT', ';'),
     
 }
-
 
 class Lexer(object):
     def __init__(self, text):

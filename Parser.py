@@ -373,12 +373,20 @@ class Parser(object):
     
     
     def parse_list(self, Type):
-        if Type != LSPAREN:
-            # print("ENTER")
+       
+        if Type == COLON:
             self.check_type(COLON)
-           
             token = self.curr_token
-            self.check_type(INTEGER)
+            if self.curr_token.type== INTEGER:
+                self.check_type(INTEGER)
+            if self.curr_token.type== STRING:
+                self.check_type(STRING)
+            if self.curr_token.type== FLOAT:
+                self.check_type(FLOAT)
+            if self.curr_token.type== BOOLEAN:
+                self.check_type(BOOLEAN)
+            if self.curr_token.type== FRACTION:
+                self.check_type(FRACTION) 
             Type = token.type
             datatype = Type
 
@@ -388,8 +396,6 @@ class Parser(object):
 
         else:
             datatype = NONE
-
-
 
 
         self.check_type(LSPAREN)
