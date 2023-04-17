@@ -1,6 +1,5 @@
 from dataclasses_sim import *
 import Parser as prs
-from type_checking import *
 from resolver import *
 import sys
 import pprint
@@ -732,8 +731,6 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return eval_env(left) | eval_env(right)
         case BinOp("&", left, right):
             return eval_env(left) & eval_env(right)
-        case BinOp("^", left, right):
-            return eval_env(left) ^ eval_env(right)
         case BinOp("**", left, right):
             return eval_env(left) ** eval_env(right)
         case _:
@@ -811,6 +808,14 @@ def eval_bool(program: AST, environment: Environment() = None) -> Val:
             return (eval_env(left)!=eval_env(right))
         case UnOp("!", mid):
             return (not eval_env(mid))
+        case UnOp("^", mid):
+            middle = eval_env(mid)
+            if isinstance(middle, int) or isinstance(middle, Fraction) or isinstance(middle, float):
+                return (middle!=0)
+            elif isinstance(middle, str):
+                return (middle!="")
+            else:
+                return middle
         case BinOp("&&", left, right):
             return eval_env(left) and eval_env(right)
         case BinOp("||", left, right):
