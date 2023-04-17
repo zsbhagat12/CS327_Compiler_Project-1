@@ -506,7 +506,7 @@ class Parser(object):
         
     
     def precedence3(self):
-        '''precedence3 : INTEGER | LPAREN precedence1 RPAREN | BoolLiteral | Indentifier| (+/-)precedence3 | StringLiteral'''
+        '''precedence3 : INTEGER | LPAREN precedence1 RPAREN | BoolLiteral | Indentifier| (+/-/^)precedence3 | StringLiteral'''
         token = self.curr_token
         Type = token.type
         if Type == PLUS:
@@ -517,6 +517,10 @@ class Parser(object):
             self.check_type(MINUS)
             node = UnOp(operator=token.value, mid=self.precedence3())
             return node
+        elif Type == BOOLIFY:
+            self.check_type(BOOLIFY)
+            node = UnOp(operator=token.value, mid=self.precedence3())
+            return node  
         elif Type == LPAREN:
             self.check_type(LPAREN)
             # node = self.precedence1() 
