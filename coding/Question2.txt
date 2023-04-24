@@ -1,0 +1,15 @@
+{Question 2 no of vowels in string}
+s := "abcdefghijklmnopqrstuvwxyz";
+vowels := 0;
+i := 0;
+WHILE i < LEN(s)
+DO
+    BEGIN
+    IF s[i] = "a" || s[i] = "e" || s[i] = "i" || s[i] = "o" || s[i] = "u" || s[i] = "A" || s[i] = "E" || s[i] = "I" || s[i] = "O" || s[i] = "U"
+        
+        THEN vowels += 1;
+        ELSE END
+    i += 1;
+    END
+END
+PRINT(vowels);

@@ -1,0 +1,20 @@
+{Question 4 no of words in sentence}
+s := "This is a sentence";
+i := 0;
+count := 1;
+WHILE i < LEN(s)
+DO
+    BEGIN
+        IF s[i] = " "
+        THEN
+            BEGIN
+                count += 1;
+                END
+        ELSE
+            
+                
+            END
+        i:=i+1;
+    END
+END
+PRINT(count);

@@ -1,0 +1,23 @@
+{Question 3  GCD}
+FUNCTION HCF(first,second)
+    BEGIN
+        IF first<second {first should be kept bigger}
+        THEN 
+            BEGIN
+            t:=second;
+            second:=first;
+            first:=t;
+            END
+        ELSE END
+        WHILE first%second<>0
+        DO
+            BEGIN
+            t:=second;
+            second:=first%second;
+            first:=t;
+            END
+        END
+        RETURN second;
+        
+    END
+PRINT(HCF(60,24));
