@@ -1,0 +1,11 @@
+input := ~12345;
+output := ~0;
+PRINT(input);
+WHILE input > ~0 
+    DO
+        BEGIN
+            output := output*~10 + input % ~2;
+            input := input // ~2;
+        END
+    END
+    PRINT(output);
