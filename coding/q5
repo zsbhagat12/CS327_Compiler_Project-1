@@ -1,0 +1,61 @@
+{Question 5 random password linear congruential generator}
+low := LIST["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+upp := LIST["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+dig := LIST["0","1","2","3","4","5","6","7","8","9"];
+n:=8;
+s:="";
+i:=0;
+seed:=50;
+a:=~20;
+c:=~10;
+x:=~0;
+WHILE i<n-6
+DO 
+    BEGIN
+        bead := seed;
+        
+        WHILE bead < 0
+        DO 
+            BEGIN
+            x := (a*x + c) % LEN(low);
+            bead -= 1;
+            PRINT(x);
+            END 
+        END 
+        s += low[x];
+        i+=1;
+    END
+END
+WHILE i<n-3
+DO 
+    BEGIN
+        bead := seed;
+        
+        WHILE bead < 0
+        DO 
+            BEGIN
+            x := (a*x + c) % LEN(upp);
+            bead -= 1;
+            END 
+        END 
+        s += upp[x];
+        i+=1;
+    END
+END
+WHILE i<n
+DO 
+    BEGIN
+        bead := seed;
+        
+        WHILE bead < 0
+        DO 
+            BEGIN
+            x := (a*x + c) % LEN(dig);
+            bead -= 1;
+            END 
+        END 
+        s += dig[x];
+        i+=1;
+    END
+END
+PRINT(s);
