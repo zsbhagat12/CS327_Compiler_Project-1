@@ -249,6 +249,8 @@ class VM:
     ip: int
     data: List[Value]
     currentFrame: Frame
+    fdepthCountVal: int
+    recursionDepthCountVal: int
 
     def load(self, bytecode):
         self.bytecode = bytecode
@@ -258,6 +260,8 @@ class VM:
         self.ip = 0
         self.data = []
         self.currentFrame = Frame()
+        self.fdepthCountVal = 0
+        self.recursionDepthCountVal = 0
     
     def fdepthCount(self):
         count = 0
@@ -293,11 +297,15 @@ class VM:
                             
                         
                     )
+                    self.fdepthCountVal = self.fdepthCount()
+                    self.recursionDepthCountVal = self.recursionDepthCount()
                     cf = self.data.pop()
                     self.ip = cf.entry
                 case I.RETURN():
                     self.ip = self.currentFrame.retaddr
                     self.currentFrame = self.currentFrame.dynamicLink
+                    self.fdepthCountVal = self.fdepthCount()
+                    self.recursionDepthCountVal = self.recursionDepthCount()
                 case I.UMINUS():
                     op = self.data.pop()
                     self.data.append(-op)
@@ -400,7 +408,7 @@ class VM:
                     self.data.pop()
                     self.ip += 1
                 case I.LOAD(fdepth, localID):
-                    current_fdepth = self.fdepthCount()
+                    current_fdepth = self.fdepthCountVal
                     if current_fdepth == fdepth + 1:
                         self.data.append(self.currentFrame.locals[localID])
                     else:
@@ -414,7 +422,7 @@ class VM:
                 #     self.ip += 1
                 case I.STORE(fdepth, localID):
                     v = self.data.pop()
-                    current_fdepth = self.fdepthCount()
+                    current_fdepth = self.fdepthCountVal
                     if current_fdepth == fdepth + 1:
                         self.currentFrame.locals[localID] = v
                     else:
@@ -443,9 +451,9 @@ class VM:
                     e = self.data.pop()
                     listing = self.data.pop()
                     # listing = list(listing)
-                    # listing.append(e)
+                    listing.append(e)
                     # tuple concat
-                    listing = listing + (e,)
+                    # listing = listing + (e,)
                     # listing = tuple(listing)
                     self.data.append(listing)
                     self.ip += 1
@@ -481,11 +489,11 @@ class VM:
                     if jump != None:
                         jump = int(jump)
                     if end == None and jump!=None:
-                        # listing[start::jump] = e
+                        listing[start::jump] = e
                         # tuple concat, consider jump
-                        while start < len(listing):
-                            listing = listing[:start] + e + listing[start+jump:]
-                            start += jump
+                        # while start < len(listing):
+                        #     listing = listing[:start] + e + listing[start+jump:]
+                        #     start += jump
 
                     # elif jump==None and end!=None:
                     #     # listing[start:end] = e
@@ -493,15 +501,16 @@ class VM:
                     #     listing = listing[:start] + e + listing[end:]
 
                     elif jump==None:
-                        # listing[start] = e
+                        listing[start] = e
                         # in tuple concat
-                        listing = listing[:start] + (e,) + listing[start+1:]
+                        # listing = listing[:start] + (e,) + listing[start+1:]
                     
                     else:
                         listing[start:end:jump] = e
-                        while start < end:
-                            listing = listing[:start] + e + listing[start+jump:]
-                            start += jump
+                        # tuple concat, consider jump
+                        # while start < end:
+                        #     listing = listing[:start] + e + listing[start+jump:]
+                        #     start += jump
 
                     # listing = tuple(listing)
                     self.data.append(listing)
@@ -897,7 +906,7 @@ def do_codegen (
             for i in program.value:
                 # temp.append(eval_env(i))
                 temp.append(i.value)
-            temp = tuple(temp)
+            # temp = tuple(temp)
             code.emit(I.PUSH(temp))
 
             # return temp

@@ -345,6 +345,8 @@ class Parser(object):
         else:
             end = None
             jump = None
+        if self.curr_token.type == LSPAREN:
+            return self.parse_slice(Slicing(c, start, end, jump))
         return Slicing(c, start, end, jump)
 
    
@@ -551,8 +553,9 @@ class Parser(object):
         elif Type == ISEMPTY:
             self.check_type(ISEMPTY)
             return self.parse_isempty
-        elif Type == LIST:
-            self.check_type(LIST)
+        elif Type == LIST or Type == LSPAREN:
+            if Type == LIST:
+                self.check_type(LIST)
             if self.curr_token.type == COLON:
                 return self.parse_list(self.curr_token.type)
             return self.parse_list(self.curr_token.type)
@@ -683,13 +686,14 @@ class Parser(object):
             node = n
         # node = self.relational()
         Type = self.curr_token.type
-        if(Type == OR or Type == AND):
+        while(Type == OR or Type == AND):
             token = self.curr_token
             if token.type == AND:
                 self.check_type(AND)
             elif token.type == OR:
                 self.check_type(OR)
             node = BinOp(left=node, operator= token.value, right=self.relational())
+            Type = self.curr_token.type
         return node
     
     def assignment(self, n=None):

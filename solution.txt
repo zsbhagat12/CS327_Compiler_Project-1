@@ -1,6 +1,6 @@
-None of the suggested tokens found: INTEGER_CONST ID LPAREN STRING TRUE FALSE ...
-Expected Token Type:  INTEGER_CONST
-Got Token:  Token(MUL, '*')
-At line number: 14
-    c:=b**0
-           ^
+String Checking
+15
+rghk
+g
+trin
+String Checking

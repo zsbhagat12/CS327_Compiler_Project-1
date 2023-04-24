@@ -1,0 +1,22 @@
+{Question 1 Prime or not Prime}
+n:=6;
+i:=2;
+flag:=1;
+WHILE i<n//2
+DO
+    BEGIN
+    IF n%i = 0
+        THEN
+            BEGIN
+            PRINT("Not prime");
+            flag:=0;
+            BREAK;
+            END
+        ELSE END
+    i:=i+1;
+    END
+END
+IF flag = 1
+    THEN
+    PRINT("Prime");
+ELSE END
