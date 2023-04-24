@@ -15,6 +15,8 @@ def type_error():
 class Interpreter:
     parser: prs.Parser
 
+typesWithNoEval = Fraction | FnObject | Listing | int | float | str | bool
+
 def eval(program: AST, environment: Environment() = None) -> Value:
     if environment is None:
         environment = Environment()
@@ -56,6 +58,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
         case Statement(command ,statement):
             match command:
                 case "print":
+                    # sys.stdout = sys.__stdout__ # for debugging output
                     # print(statement)
                     if isinstance(statement,StringLiteral) :
                         print(eval_string_env(statement))
@@ -64,6 +67,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     elif isinstance(statement, MutVar):
                         e = environment.get(statement.name).get()
                         if isinstance(e, Listing):
+                            # sys.stdout = sys.__stdout__
                             print(eval_env(e))
                         else:
                             print(e)
@@ -265,7 +269,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             e = m if environment.get(name).get() == None else environment.get(name)
             # e = environment.get(name)
             v = e.get()
-            typesWithNoEval = Fraction | FnObject | Listing | int | float | str | bool
+            
             # if isinstance(v, Fraction) or isinstance(v, FnObject) or isinstance(v, Listing):
             if isinstance(v, typesWithNoEval):
                 return v
@@ -333,11 +337,19 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             if not environment.check(var):
                 print(f"list '{var}' not defined")
                 sys.exit()
-            temp = environment.get(var).get().value
+            temp = environment.get(var).get()
             # e1 = eval_env(temp)
             if isinstance(item, Listing):
+                if end == None and jump == None:
+                    start = int(eval_env(start))
+                    temp.value[start] = item if isinstance(item, typesWithNoEval) else eval_env(item)
+                    return temp
                 item = item.value
-            e1 = temp 
+            # if isinstance(item, list):
+            #     item = Listing(item, "NONE")
+            if isinstance(temp, list):
+                temp = Listing(temp, "NONE")
+            e1 = temp.value 
             e2 = eval_env(start)
             e2 = int(e2)
             if end!=None:
@@ -356,8 +368,44 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             else:
                 e1[e2] = item
             return e1
-
-
+        
+        case list_update(Slicing(name, _, _, _) as s, start, end, jump, item):
+            if not environment.check(name):
+                print(f"list '{name}' not defined")
+                sys.exit()
+            # temp = environment.get(name).get()
+            temp = eval_env(s)
+            # e1 = eval_env(temp)
+            if isinstance(item, Listing):
+                if end == None and jump == None:
+                    start = int(eval_env(start))
+                    temp.value[start] = item if isinstance(item, typesWithNoEval) else eval_env(item)
+                    return temp
+                item = item.value
+            # if isinstance(item, list):
+            #     item = Listing(item, "NONE")
+            if isinstance(temp, list):
+                temp = Listing(temp, "NONE")
+            e1 = temp.value
+            e2 = eval_env(start)
+            e2 = int(e2)
+            if end!=None:
+                e3 = eval_env(end)
+                e3  = int(e3)
+            if jump!=None:
+                e4 = eval_env(jump)
+                e4 = int(e4)
+            # print(e1,e2,e3,e4)
+            if end!=None and jump!=None:
+                e1[e2:e3:e4] = item
+            elif end!=None and jump==None:
+                e1[e2:e3] = item
+            elif end==None and jump!=None:
+                e1[e2::e4] = item
+            else:
+                e1[e2] = item
+            return e1
+        
         
         case Listing(value, datatype):
             if datatype != "NONE":
