@@ -1,0 +1,27 @@
+l := LIST[-2, -3, 4, -1, -2, 1, 5, -3, 8];
+
+max := -100000000;
+maxend := 0 ;
+
+FOR i:=0; i<LEN(l); i:=i+1
+DO 
+    BEGIN
+    maxend := maxend + l[i];
+    IF max < maxend
+    THEN
+        max := maxend;
+    ELSE 
+        END
+    
+
+    IF maxend<0
+    THEN   
+        BEGIN
+        maxend :=0;
+        END
+    
+    ELSE END
+    
+END
+END
+PRINT(max);
