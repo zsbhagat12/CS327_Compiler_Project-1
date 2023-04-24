@@ -1,0 +1,60 @@
+in := LIST[1,5,8,12,9,13];
+n := LEN(in);
+i := 0;
+y := 0;
+WHILE i<(n-2)
+DO
+BEGIN
+    a := in[i];
+    j := i+1;
+    WHILE j < (n-1)
+    DO
+    BEGIN
+        b := in[j];
+        k := j+1;
+        WHILE k < n
+        DO
+        BEGIN
+            IF a+b = in[k] && y<>1
+            THEN 
+            BEGIN
+                PRINT("yes");
+                y:=1;
+                BREAK;
+                
+                PRINT(y);
+            END
+            ELSE END
+
+            IF a = b+in[k] && y<>1
+            THEN 
+            BEGIN
+                y := 1;
+                PRINT("yes"); 
+                BREAK;
+            END
+            ELSE END
+
+            IF b = a+in[k] && y<>1
+            THEN 
+            BEGIN
+                PRINT("yes"); 
+                y := 1;
+                BREAK;
+            END
+            ELSE END  
+
+            k := k+1;
+        END
+        END
+        j := j+1;
+    END
+    END
+    i:=i+1;
+END
+END
+
+IF y = 0
+THEN
+PRINT("no");
+ELSE END
