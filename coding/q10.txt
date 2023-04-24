@@ -1,0 +1,9 @@
+{Q10}
+in := 10;
+IF in % 2 = 0
+THEN
+    PRINT("even");
+ELSE
+    PRINT("odd");
+END
+END

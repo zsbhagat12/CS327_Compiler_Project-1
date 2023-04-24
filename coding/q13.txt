@@ -1,0 +1,50 @@
+{Q13}
+in := LIST[1,3,0,2,7,5,9,8];
+n := LEN(in);
+
+i := 1;
+min := in[0];
+max := in[0];
+maxin := 0;
+
+WHILE i < n
+    DO
+    BEGIN
+        IF in[i] < min
+        THEN
+        min := in[i];
+        ELSE END
+        IF in[i] > max
+        THEN
+        BEGIN
+        max := in[i];
+        maxin := i;END
+        ELSE END   
+        i := i+1;
+    END 
+    END
+min := min-1;
+max := 0;
+maxind := 0;
+i := 0;
+
+WHILE i < n
+    DO
+    BEGIN
+        IF in[i] > max
+        THEN
+            BEGIN
+            IF i <> maxin
+            THEN
+                BEGIN
+                    max := in[i];
+                    maxind := i;
+                END
+            ELSE END
+            END
+        ELSE END   
+        i := i+1;
+    END 
+    END
+
+PRINT(max);

@@ -1,0 +1,10 @@
+input := "Karthikeya narla";
+output := "";
+FOR i:= LEN(input)-1 ; i >= 0 ; i := i - 1 
+    DO  
+        BEGIN
+            output := output + input[i];
+        END 
+    END
+    PRINT(output);
+END

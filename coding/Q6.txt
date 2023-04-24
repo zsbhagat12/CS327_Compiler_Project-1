@@ -1,0 +1,20 @@
+input := "doo";
+rev := "";
+length := LEN(input);
+
+
+FOR i:=length-1 ; i>=0; i:=i-1
+DO
+    BEGIN
+    rev:= rev+input[i];
+  
+    END
+END
+
+IF rev = input
+    THEN 
+    PRINT("YES");
+ELSE
+    PRINT("NO");
+    END
+

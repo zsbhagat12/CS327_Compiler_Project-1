@@ -1,0 +1,13 @@
+{Q15}
+
+in := 5;
+i := 1;
+fac := 1;
+WHILE i <= in
+DO
+BEGIN
+    fac := fac * i;
+    i := i+1;
+END
+END
+PRINT(fac);
