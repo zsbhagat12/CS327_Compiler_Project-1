@@ -1,6 +1,5 @@
 from dataclasses_sim import *
 import Parser as prs
-from type_checking import *
 from resolver import *
 import sys
 import pprint

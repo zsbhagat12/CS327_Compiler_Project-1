@@ -1,6 +1,5 @@
 from dataclasses_sim import *
 import Parser as prs
-from type_checking import *
 from resolver import *
 import sys
 import pprint
@@ -334,22 +333,31 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return e1
         
         case list_update(MutVar(var) as m, start, end, jump, item):
+            type_dic = {"INTEGER": "<class 'dataclasses_sim.IntLiteral'>", "STRING": "<class 'dataclasses_sim.StringLiteral'>", "FLOAT":"<class 'dataclasses_sim.FloatLiteral'>", "BOOLEAN":"<class 'dataclasses_sim.BoolLiteral'>", "FRACTION":"<class 'dataclasses_sim.NumLiteral'>"}
             if not environment.check(var):
                 print(f"list '{var}' not defined")
                 sys.exit()
             temp = environment.get(var).get()
-            # e1 = eval_env(temp)
+
             if isinstance(item, Listing):
                 if end == None and jump == None:
                     start = int(eval_env(start))
                     temp.value[start] = item if isinstance(item, typesWithNoEval) else eval_env(item)
                     return temp
                 item = item.value
+
             # if isinstance(item, list):
             #     item = Listing(item, "NONE")
             if isinstance(temp, list):
                 temp = Listing(temp, "NONE")
             e1 = temp.value 
+
+                
+            if isinstance(temp, Listing):
+                dt = temp.datatype
+         
+
+
             e2 = eval_env(start)
             e2 = int(e2)
             if end!=None:
@@ -358,15 +366,32 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             if jump!=None:
                 e4 = eval_env(jump)
                 e4 = int(e4)
-            # print(e1,e2,e3,e4)
-            if end!=None and jump!=None:
-                e1[e2:e3:e4] = item
-            elif end!=None and jump==None:
-                e1[e2:e3] = item
-            elif end==None and jump!=None:
-                e1[e2::e4] = item
+            if dt!=None:           
+                if end!=None and jump!=None:
+                    e1[e2:e3:e4] = item
+                    Listing (e1, dt)
+                elif end!=None and jump==None:
+                    e1[e2:e3] = item
+                    Listing (e1, dt)
+                elif end==None and jump!=None:
+                    e1[e2::e4] = item
+                    Listing (e1, dt)
+                else:
+                    if str(type(item)) == type_dic[dt]:
+                        e1[e2] = item
+                    else:
+                        print("Value of Invalid type in Listing")
+                    
+                        raise InvalidProgram(Exception)
             else:
-                e1[e2] = item
+                if end!=None and jump!=None:
+                    e1[e2:e3:e4] = item
+                elif end!=None and jump==None:
+                    e1[e2:e3] = item
+                elif end==None and jump!=None:
+                    e1[e2::e4] = item
+                else:
+                    e1[e2] = item
             return e1
         
         case list_update(Slicing(name, _, _, _) as s, start, end, jump, item):
@@ -406,6 +431,7 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                 e1[e2] = item
             return e1
         
+
         
         case Listing(value, datatype):
             if datatype != "NONE":
@@ -413,6 +439,12 @@ def eval(program: AST, environment: Environment() = None) -> Value:
                     temp = IntLiteral
                 elif datatype == "STRING":
                     temp = StringLiteral
+                elif datatype == "BOOLEAN":
+                    temp = BoolLiteral
+                elif datatype == "FLOAT":
+                    temp = FloatLiteral
+                elif datatype == "FRACTION":
+                    temp = NumLiteral
                 elif datatype == "NONE":
                     temp = None
                 for i in value:
@@ -753,8 +785,6 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             return eval_env(left) | eval_env(right)
         case BinOp("&", left, right):
             return eval_env(left) & eval_env(right)
-        case BinOp("^", left, right):
-            return eval_env(left) ^ eval_env(right)
         case BinOp("**", left, right):
             return eval_env(left) ** eval_env(right)
         case _:
@@ -832,6 +862,14 @@ def eval_bool(program: AST, environment: Environment() = None) -> Val:
             return (eval_env(left)!=eval_env(right))
         case UnOp("!", mid):
             return (not eval_env(mid))
+        case UnOp("^", mid):
+            middle = eval_env(mid)
+            if isinstance(middle, int) or isinstance(middle, Fraction) or isinstance(middle, float):
+                return (middle!=0)
+            elif isinstance(middle, str):
+                return (middle!="")
+            else:
+                return middle
         case BinOp("&&", left, right):
             return eval_env(left) and eval_env(right)
         case BinOp("||", left, right):

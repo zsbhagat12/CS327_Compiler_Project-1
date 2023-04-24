@@ -38,12 +38,16 @@ POWEREQ       = 'POWEREQ'
 MULEQ         = 'MULEQ'
 FLOAT_DIVEQ   = "FLOAT_DIVEQ"
 POWER         = 'POWER'
+BOOLIFY       = "BOOLIFY"
 
 # keywords
 PROGRAM       = 'PROGRAM'
 VAR           = 'VAR'
 INTEGER       = 'INTEGER'
 REAL          = 'REAL'
+FLOAT         = 'FLOAT'
+FRACTION      = 'FRACTION'
+BOOLEAN       = 'BOOLEAN'
 INTEGER_DIV   = 'INTEGER_DIV'
 NONE          = 'NONE'
 READ          = 'READ'
@@ -101,6 +105,9 @@ KEYWORDS = {
     'VAR': Token('VAR', 'VAR'),
     'INTEGER': Token('INTEGER', 'INTEGER'),
     'REAL': Token('REAL', 'REAL'),
+    'FLOAT' : Token('FLOAT', 'FLOAT'),
+    'BOOLEAN' : Token('BOOLEAN', 'BOOLEAN'),
+    'FRACTION' : Token('FRACTION', 'FRACTION'),
     'DIV': Token('INTEGER_DIV', 'DIV'),
     'BEGIN': Token('BEGIN', 'BEGIN'),
     'END': Token('END', 'END'),
@@ -120,7 +127,7 @@ KEYWORDS = {
     'TO': Token("TO", "TO"),
     'BREAK': Token("BREAK", "BREAK"),
     "CONTINUE" : Token("CONTINUE", "CONTINUE"),
-     "INC" : Token("INC", "INC"),
+    "INC" : Token("INC", "INC"),
     "DEC" : Token("DEC","DEC"),
     "LEN" : Token("LEN", "LEN"),
     "LIST" : Token("LIST", "LIST"),
@@ -134,7 +141,6 @@ KEYWORDS = {
     # 'PRINT': Token('PRINT', ';'),
     
 }
-
 
 class Lexer(object):
     def __init__(self, text):
@@ -412,6 +418,10 @@ class Lexer(object):
                 self.nextChar()
                 return Token(DOT, '.')
 
+            if self.curChar == '^':
+                self.nextChar()
+                return Token(BOOLIFY, '^')
+            
             if self.curChar == ',':
                 self.nextChar()
                 return Token(COMMA, ',')
