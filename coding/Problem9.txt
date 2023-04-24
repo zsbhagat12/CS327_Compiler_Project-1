@@ -1,54 +1,87 @@
-{Problem 9}
-l := LIST[7, 2, 4, 1, 10, 1, 15];
+{Question 9 longest increasing subsequence}
+{a := LIST[~1,~3,~5,~2,~4,~6];}
+a := LIST[~6,~3,~2,~5,~7];
+
+l := LIST[~7, ~2, ~4, ~1, ~10, ~1, ~15];
 up := 0;
 ap := 0;
-FUNCTION lis()
-BEGIN
-    length := LEN(l);
-    ll := LIST[];
-    lll := LIST[];
-    FOR i := 0; i < length; i := i + 1
-    DO
-        BEGIN
-            APPEND(ll,1);
-        END
+max :=0;
+length := LEN(l);
+ll := LIST[];
+lll := LIST[];
+
+FOR i := 0; i < length; i := i + 1
+DO
+    BEGIN
+        APPEND(ll,~0);
     END
-    FOR j := 1; j < length; j := j + 1
-    DO
-        BEGIN
-            FOR k := 0; k < j; k := k + 1
-            DO
-                BEGIN
-                    IF l[j] > l[k] && ll[j] < ll[k] + 1
-                    THEN BEGIN
-                            up := ll[k] + 1;
-                            LISTUPDATE(ll[j], up);
-                            ap := ll[j];
-                            APPEND(lll, ap);
-                        END
-                    ELSE
+END
+FOR j := 1; j < length; j := j + 1
+DO
+    BEGIN
+        
+        FOR k := 0; k < j; k := k + 1
+        DO
+            BEGIN
+                IF l[j] > l[k] && ll[j] < ll[k] + 1
+                THEN BEGIN
+                        up := ll[k] + ~1;
+                        IF up = ~1
+                        THEN BEGIN
+                            LISTUPDATE(ll[k], up);
+                            up := up + ~1;
+                        END 
+                        ELSE END
+
+                        LISTUPDATE(ll[j], up);                          
                     END
+                ELSE
                 END
+
             END
         END
+        
     END
-
-    maximum := ll[0];
-    FOR i := 1; i < LEN(ll); i := i + 1
-    DO
-        BEGIN
-            IF ll[i] > maximum
-            THEN BEGIN
-                    maximum := ll[i];
-                END
-            ELSE
-            END
-        END
-    END
-
-    PRINT(lll);
-    PRINT("Maximum Subsequence:");
-    PRINT(maximum);
 END
 
-lis();
+maximum := ll[0];
+index := 0;
+FOR i := 1; i < LEN(ll); i := i + 1
+DO
+    BEGIN
+        IF ll[i] > maximum
+        THEN BEGIN
+                maximum := ll[i];
+                index := i;
+
+            END
+        ELSE
+        END
+    END
+END
+i:=0;
+WHILE i<maximum
+DO
+    BEGIN
+        APPEND(lll,~0);
+        i:=i+1;
+    END
+END
+freq := maximum;
+WHILE index >= 0
+DO
+    BEGIN
+        IF ll[index] = freq
+        THEN BEGIN
+                LISTUPDATE(lll[freq-1], l[index]);
+                freq := freq - 1;
+            END
+        ELSE END
+        
+        index := index - 1;
+    END
+END
+PRINT(lll);
+
+PRINT("Maximum Subsequence:");
+PRINT(maximum);

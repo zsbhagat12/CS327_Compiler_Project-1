@@ -1,0 +1,38 @@
+{Question 12 - Longest Palindromic Substring}
+l := "exxetexffxe";
+n := LEN(l);
+maxLength := ~1;
+start := ~0;
+flag:=0;
+FOR i:=0; i<n; i:=i+1
+DO
+    BEGIN
+        FOR j:=0; j<n; j:=j+1
+        DO
+            BEGIN
+                flag := 0;
+                FOR k:=0; k<((j - i) // 2) + 1; k:=k+1
+                DO  
+                    BEGIN
+                        IF l[i+k] <> l[j-k]
+                        THEN
+                            BEGIN
+                            flag:=1;
+                            BREAK;
+                            END
+                        ELSE END
+                    END
+                END
+                IF flag = 0 && (j-i+1) > maxLength
+                THEN
+                    BEGIN
+                    start := i;
+                    maxLength := j-i+1;
+                    END
+                ELSE END
+            END
+        END
+    END
+END
+PRINT(maxLength);
+PRINT(l[start:start+maxLength]);

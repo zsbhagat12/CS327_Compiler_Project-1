@@ -1,0 +1,24 @@
+{Question 14 count inversions in array}
+{a := LIST[~1,~3,~5,~2,~4,~6];}
+a := LIST[~6,~3,~5,~2,~7];
+i:=0;
+count:=0;
+WHILE i < LEN(a)
+DO
+    BEGIN
+        j:=i+1;
+        WHILE j < LEN(a)
+        DO
+            BEGIN
+            IF a[i] > a[j] 
+                THEN count:=count+1;
+                ELSE END
+            
+            j:=j+1;
+            END
+        END
+        i:=i+1;
+    END
+    
+END
+PRINT(count);

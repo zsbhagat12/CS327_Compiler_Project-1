@@ -1,0 +1,11 @@
+
+                ELSE END
+                j:=j+1;
+            END
+        END
+        i:=i+1;
+    END
+END
+PRINT(max);
+PRINT(s1);
+PRINT(s2);

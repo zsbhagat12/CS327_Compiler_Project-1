@@ -1,0 +1,45 @@
+{Question 16 quickselect median}
+{a := LIST[~1,~3,~5,~2,~4,~6];}
+a := LIST[~6,~3,~2,~5,~7];
+i:=0;
+max:=0;
+WHILE i < LEN(a)
+DO
+    BEGIN 
+        IF a[i] > max
+        THEN
+            max:=a[i];
+        ELSE END
+
+        i:=i+1;
+    END
+END
+pmax:=max;
+i:=1;
+WHILE i <= LEN(a)//2
+DO
+    BEGIN
+        j:=0;
+        max:=0;
+        WHILE j < LEN(a)
+        DO
+            BEGIN
+                IF a[j] > max && a[j] < pmax
+                THEN
+                    max:=a[j];
+                ELSE END
+
+                j:=j+1;
+            END
+        END
+        IF i = LEN(a)//2 && LEN(a)%2 = 0
+        THEN
+            max:=(max+pmax)/~2;
+        ELSE
+            pmax:=max;
+        END
+        i:=i+1;
+    END
+    
+END
+PRINT(max);
