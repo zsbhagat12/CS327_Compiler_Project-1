@@ -16,6 +16,25 @@ class Interpreter:
     parser: prs.Parser
 
 typesWithNoEval = Fraction | FnObject | Listing | int | float | str | bool
+def noEvalToEval(e):
+    if type(e) == int:
+        return IntLiteral(e)
+    elif type(e) == float:
+        return FloatLiteral(e)
+    elif type(e) == str:
+        return StringLiteral(e)
+    elif type(e) == bool:
+        return BoolLiteral(e)
+    elif type(e) == Fraction:
+        return NumLiteral(e)
+    elif type(e) == type(None):
+        return None
+    else:
+        return e
+
+
+    
+
 
 def eval(program: AST, environment: Environment() = None) -> Value:
     if environment is None:
@@ -330,6 +349,9 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             # e1 = eval_env(temp)
             # e1.append(eval_env(item))
             e1 = temp
+            if not isinstance(item, typesWithNoEval):
+                item = eval_env(item)
+                item = noEvalToEval(item)
             e1.append(item)
             return e1
         
@@ -349,6 +371,11 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             #     item = Listing(item, "NONE")
             if isinstance(temp, list):
                 temp = Listing(temp, "NONE")
+            if not isinstance(item, typesWithNoEval):
+                # print(item)
+                item = eval_env(item)
+                item = noEvalToEval(item)
+
             e1 = temp.value 
             e2 = eval_env(start)
             e2 = int(e2)
@@ -386,6 +413,10 @@ def eval(program: AST, environment: Environment() = None) -> Value:
             #     item = Listing(item, "NONE")
             if isinstance(temp, list):
                 temp = Listing(temp, "NONE")
+            if not isinstance(item, typesWithNoEval):
+                # print(item)
+                item = eval_env(item)
+                item = noEvalToEval(item)
             e1 = temp.value
             e2 = eval_env(start)
             e2 = int(e2)

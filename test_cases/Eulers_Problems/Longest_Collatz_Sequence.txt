@@ -10,6 +10,7 @@ BEGIN
             ELSE BEGIN
                 n := 3 * n + 1;
             END
+            END
         END
     END
     RETURN c;
@@ -34,4 +35,6 @@ BEGIN
     RETURN maxi;
 END
 
-PRINT (solution(1000));
+PRINT (solution(100));
+
+$97$

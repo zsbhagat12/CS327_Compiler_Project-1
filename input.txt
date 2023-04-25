@@ -528,29 +528,123 @@ PRINT (maxl);
 PRINT (maxn);
 }
 
-{Question 2 no of vowels in string}
-FUNCTION HCF(first,second)
+
+
+{Question 5 random password linear congruential generator}
+low := LIST["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+upp := LIST["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+dig := LIST["0","1","2","3","4","5","6","7","8","9"];
+lis := LIST[];
+n:=8;
+s:="";
+i:=0;
+seed:=~59;
+a:=~357103;
+c:=~239134;
+x:=~1;
+bead:=seed;
+flaglow:=0;
+flagupp:=0;
+flagdig:=0;
+WHILE i<n
+DO 
     BEGIN
-        IF first<second {first should be kept bigger}
-        THEN 
+        bead := seed;
+        WHILE bead > 0
+        DO 
             BEGIN
-            t:=second;
-            second:=first;
-            first:=t;
+            x := x + seed;
+            x := (a*x + c) % 3;
+            bead := bead - 1;
+            {PRINT(x);}
+            END 
+        END
+
+        IF x = 0
+        THEN BEGIN
+            lis := low;
+            flaglow:=1;
             END
-        ELSE END
-        WHILE first%second<>0
-        DO
-            BEGIN
-            t:=second;
-            second:=first%second;
-            first:=t;
+        ELSE IF x = 1
+        THEN BEGIN
+            lis := upp;
+            flagupp:=1;
+            END
+        ELSE BEGIN
+            lis := dig;
+            flagdig:=1;
             END
         END
-        RETURN second;
+        WHILE 3-(flaglow+flagupp+flagdig) = n-i 
+        DO
+            BEGIN
+                bead := seed;
+                WHILE bead > 0
+                DO 
+                    BEGIN
+                    x := x + seed;
+                    x := (a*x + c) % 3;
+                    bead := bead - 1;
+                    {PRINT(x);}
+                    END 
+                END 
+                IF x = 0 
+                THEN BEGIN
+                    lis := low;
+                    flaglow:=1;
+                    END
+                ELSE IF x = 1 
+                THEN BEGIN
+                    lis := upp;
+                    flagupp:=1;
+                    END
+                ELSE BEGIN
+                    lis := dig;
+                    flagdig:=1;
+                    END
+                END
+                IF n-i = 1
+                THEN BEGIN
+                        IF flaglow = 0
+                        THEN BEGIN
+                            lis := low;
+                            flaglow:=1;
+                            END
+                        ELSE IF flagupp = 0
+                        THEN BEGIN
+                            lis := upp;
+                            flagupp:=1;
+                            END
+                        ELSE BEGIN
+                            lis := dig;
+                            flagdig:=1;
+                            END
+                        END
+                    END
+                ELSE END
+            END 
+        END
+
+        bead := seed;
         
+        WHILE bead > 0
+        DO 
+            BEGIN
+            x := x + seed;
+            x := (a*x + c) % LEN(lis);
+            
+            bead := bead - 1;
+            {PRINT(x);}
+            END 
+        END 
+        s += lis[x];
+        i+=1;
     END
-PRINT(HCF(10,5));
+END
+
+PRINT(s);
+
+
 
 
 
