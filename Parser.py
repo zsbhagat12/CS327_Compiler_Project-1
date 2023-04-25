@@ -501,7 +501,8 @@ class Parser(object):
                 Type = token.type
                 #self.parse_slice(Variable(token.value), Type)
                 return Variable(token.value)
-                
+            elif self.curr_token.type == LSPAREN:
+                return self.parse_slice(MutVar(token.value))
             else:
                 return MutVar(token.value)
             
@@ -743,10 +744,12 @@ class Parser(object):
                 # print(self.curr_token)
                 node = BinOp(left=node, operator= token.value, right=self.logical())
         else:
-            if isinstance(node,MutVar):
-                node = self.logical(node)  
-            else:
-                node = self.logical()  
+            match node:
+                case MutVar(_) | Slicing(MutVar(_),_,_,_):
+                    node = self.logical(node)
+                case _:
+                    node = self.logical()
+              
 
         return node
     
